@@ -12,12 +12,34 @@ Ninguno duplica al otro:
 | **/edit-video** | Un video → pieza de estudio: motion, gráficos, mapas, profundidad, SFX, cierre | HyperFrames (Chrome) | **Calidad**: los 1–3 clips que merecen nivel estudio |
 | **motion-design** | Animación desde cero, sin metraje | render local propio | Piezas sin cámara |
 
+## Tres niveles de clipper
+
+| Nivel | Qué sale | Quién lo termina |
+|---|---|---|
+| **1 · Clásico** (`--nivel 1`) | Subtítulo blanco con contorno, palabra activa amarilla, gancho, logo | clipper, en minutos |
+| **2 · Editorial** (`--nivel 2`) | La tipografía de este skill (Inter Tight, Instrument Serif, JetBrains Mono), paleta tinta/papel/acento, palabra activa sobre caja medida al píxel, rótulo, barra de progreso, gancho en dos líneas, grade | clipper, en minutos |
+| **3 · Estudio** (`--nivel 3`) | Corte limpio en el encuadre original + `*-PROPUESTA.md` con el beat sheet cronometrado y 3 cuadros | **Este skill**, después de que el director apruebe la propuesta |
+
+**Nivel 3, paso a paso:**
+1. `clipper.py render t.json clips.json --nivel 3 --cliente <slug>` → corte limpio + propuesta.
+2. Completa la propuesta: concepto, estilo (kit del cliente), gráficos únicos (`motion-design.md`),
+   imágenes a generar con Higgsfield (prompts), sonido.
+3. Enséñala con 2–3 **cuadros de muestra** (imágenes de Higgsfield o un `snapshot` de HyperFrames).
+4. **PARADA hasta el OK del director.** Cambiar en papel es gratis.
+5. Con el OK: Paso 3 de este skill sobre el corte limpio, y se construye.
+
+La plantilla del cliente para clipper vive en `edit-video-clients/clients/<slug>/clipper.json`
+(colores, rótulos, logo) y se aplica con `--cliente <slug>`.
+
+**macOS:** el ffmpeg de Homebrew core ya no trae libass; clipper lo detecta y da el comando
+(`brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg`). El nivel 3 no lo necesita.
+
 ## Cómo decidir — una pregunta al empezar
 
 Si alguien trae un video largo y pide clips, pregunta **una vez**:
 
-> ¿Rápido (subtítulos, marca de agua y formatos para redes) o de estudio (motion design)?
-> ¿O los dos: todos rápidos y los mejores de estudio?
+> ¿Nivel 1 (rápido), 2 (editorial: tipografía y detalles) o 3 (estudio: propuesta + motion)?
+> ¿O combinados: todos en 1 o 2 y los mejores en 3?
 
 - **Rápido** → clipper entero. El agente propone momentos con motivo (`why`), el humano elige.
 - **Estudio** → se corta solo el tramo, **sin subtítulos quemados** (aquí se montan después), y

@@ -2,7 +2,7 @@
 name: edit-video
 description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 2.5.2
+  version: 2.6.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -28,7 +28,7 @@ Este skill **no reimplementa HyperFrames**: pone el método, las reglas y el idi
 | Un video grabado, o clips ya generados | **Seguir aquí** |
 | Solo una idea, sin material filmado | **No es este skill.** Se genera primero (Seedance, Grok, Veo, Kling…) y el montaje entra al final. Ver `references/pipeline.md` |
 | Solo gráficos, sin cámara (logo animado, explicativo sin cara) | Enrutar directo a HyperFrames: `/motion-graphics`, `/faceless-explainer` |
-| **Un video largo** (entrevista, podcast, charla) → **varios clips cortos** | **clipper** para cortar y sacarlos en volumen; aquí solo los que merezcan nivel estudio. Ver `references/clipper.md` |
+| **Un video largo** (entrevista, podcast, charla) → **varios clips cortos** | **clipper**: nivel 1 (rápido) o 2 (editorial) en volumen; los mejores en nivel 3 → propuesta, OK del director, y se construyen aquí. Ver `references/clipper.md` |
 
 Si no está claro, **una** pregunta de una línea.
 

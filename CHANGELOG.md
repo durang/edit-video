@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.0 — 2026-09-29
+**clipper en tres niveles, y el nivel 3 pasa por aquí con aprobación.**
+- `references/clipper.md`: niveles 1 Clásico, 2 Editorial (la tipografía y la paleta de este skill,
+  hechas con FFmpeg/libass) y 3 Estudio (corte limpio + propuesta → OK del director → construir aquí).
+  Plantilla de clipper por cliente en el área privada. Aviso de libass en macOS.
+
 ## 2.5.2 — 2026-09-29
 - `scripts/qa.sh`: alarmas automáticas — cuadros con ≥10 % en negro (luma < 24; el negro de video es 16, no 0) (video que no pinta, capa
   que tapa) y final en silencio digital.
