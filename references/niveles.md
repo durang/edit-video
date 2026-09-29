@@ -20,6 +20,11 @@ de aprobación**.
 - **Pieza que representa a alguien** (reel de marca, lanzamiento, el clip estrella): 3.
 - **Pieza de autor** con escenas que no existen en el metraje: 4.
 
+## Otro igual vs. cambio de diseño
+
+- **"Otro video como el de X"** → `--cliente X`: su plantilla, su diccionario, su kit. Sin preguntas.
+- **"Cambio de diseño" / cliente nuevo** → `references/shotgun.md` (3 direcciones, eliges, se guarda).
+
 ## Comandos
 
 ```bash

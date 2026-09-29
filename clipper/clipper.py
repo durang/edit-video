@@ -697,7 +697,14 @@ def build_ass_editorial(segs: list[dict], start: float, end: float, W: int, H: i
     ink, acc, txt = C.get("tinta", "#111111"), C.get("acento", "#FFD23F"), C.get("texto", "#FFFFFF")
     T = remap or (lambda t: t - start)
     dur = dur if dur is not None else end - start
-    D, S, X, MO = "Clipper Display", "Clipper Serif", "Clipper Text", "Clipper Mono"
+    FU = P.get("fuentes", {})
+    D = FU.get("display", "Clipper Display")      # titulares y subtítulos
+    S = FU.get("serif", "Clipper Serif")          # acento editorial (primera línea del gancho)
+    MO = FU.get("mono", "Clipper Mono")           # rótulos
+    X = "Clipper Text"
+    for fam in (D, S, MO):
+        if fam not in metrics():
+            print(f"  aviso: la fuente '{fam}' no está en fonts/metrics.json; las medidas serán aproximadas")
 
     ev = []
     def add(layer, a, b, style, body):
@@ -750,16 +757,21 @@ def build_ass_editorial(segs: list[dict], start: float, end: float, W: int, H: i
             ds -= 4
         y = (300 if vertical else 170) * k
         fade = "\\fad(200,250)"
+        centro = g.get("alineacion", "izquierda") == "centro"
+        hx = lambda w_: (W - w_) / 2 if centro else M
         if serif_t.strip():
             b1 = y + cap_h(S, ss)
             t1 = cell_top(S, ss, b1)
-            add(4, 0, hd, "Fx", f"{{\\an7\\move({M:.0f},{t1 + 24 * k:.0f},{M:.0f},{t1:.0f},0,380){fade}\\fn{S}\\fs{ss:.0f}\\1c{ass_color(txt)}\\bord{4 * k:.1f}\\3c{ass_color(ink)}\\3a&H90&\\blur{8 * k:.1f}\\shad0}}{ass_escape(serif_t.strip())}")
+            sx = hx(text_w(serif_t.strip(), S, ss))
+            add(4, 0, hd, "Fx", f"{{\\an7\\move({sx:.0f},{t1 + 24 * k:.0f},{sx:.0f},{t1:.0f},0,380){fade}\\fn{S}\\fs{ss:.0f}\\1c{ass_color(txt)}\\bord{4 * k:.1f}\\3c{ass_color(ink)}\\3a&H90&\\blur{8 * k:.1f}\\shad0}}{ass_escape(serif_t.strip())}")
             y = b1 + 22 * k
         b2 = y + cap_h(D, ds)
         t2 = cell_top(D, ds, b2)
-        add(4, 0.08, hd, "Fx", f"{{\\an7\\move({M:.0f},{t2 + 28 * k:.0f},{M:.0f},{t2:.0f},0,420){fade}\\fn{D}\\fs{ds:.0f}\\1c{ass_color(txt)}\\bord{4 * k:.1f}\\3c{ass_color(ink)}\\3a&H90&\\blur{8 * k:.1f}\\shad0}}{ass_escape(disp_t)}")
+        dx = hx(text_w(disp_t, D, ds))
+        add(4, 0.08, hd, "Fx", f"{{\\an7\\move({dx:.0f},{t2 + 28 * k:.0f},{dx:.0f},{t2:.0f},0,420){fade}\\fn{D}\\fs{ds:.0f}\\1c{ass_color(txt)}\\bord{4 * k:.1f}\\3c{ass_color(ink)}\\3a&H90&\\blur{8 * k:.1f}\\shad0}}{ass_escape(disp_t)}")
         uw = max(text_w(disp_t, D, ds) * 0.45, 120 * k)
-        add(4, 0.35, hd, "Fx", f"{{\\an7\\pos({M:.0f},{b2 + 18 * k:.0f})\\1c{ass_color(acc)}\\fscx0\\t(0,350,\\fscx100){fade}\\p1}}{_rect(uw, 12 * k)}")
+        ux = (W - uw) / 2 if centro else M
+        add(4, 0.35, hd, "Fx", f"{{\\an7\\pos({ux:.0f},{b2 + 18 * k:.0f})\\1c{ass_color(acc)}\\fscx0\\t(0,350,\\fscx100){fade}\\p1}}{_rect(uw, 12 * k)}")
 
     # Subtítulos: bloque centrado, palabra activa sobre caja de acento con tinta
     all_words = [w for s in segs for w in (s.get("words") or [])]
@@ -768,27 +780,33 @@ def build_ass_editorial(segs: list[dict], start: float, end: float, W: int, H: i
         fs = st.get("tamano", 70) * k
         # vertical: por encima del 20 % inferior (Reels/TikTok); horizontal: 86 % del alto
         base = st.get("linea_base", 1400) * k if vertical else H * 0.86
-        box_on = st.get("activa", "caja") == "caja"
+        modo = st.get("activa", "caja")               # caja | color | subrayado
+        box_on = modo == "caja"
+        fam_sub = FU.get(st.get("fuente", "display"), st.get("fuente")) if st.get("fuente") else D
+        if fam_sub not in metrics():
+            fam_sub = D
+        upper = bool(st.get("mayusculas", False))
         maxw = W - 2 * M - 24 * k
-        sp = text_w(" ", D, fs)
         per = int(st.get("palabras", per_chunk))
         # bloques: por palabras y por ancho real
         blocks, cur = [], []
         for w in [w for w in all_words if w["end"] > start and w["start"] < end]:
             test = cur + [w]
-            if cur and (len(cur) >= per or text_w(" ".join(x["w"] for x in test), D, fs) > maxw):
+            if cur and (len(cur) >= per or text_w(" ".join(x["w"] for x in test), fam_sub, fs) > maxw):
                 blocks.append(cur); cur = []
             cur.append(w)
         if cur:
             blocks.append(cur)
-        top = cell_top(D, fs, base)
-        ch = cap_h(D, fs)
+        sp = text_w(" ", fam_sub, fs)
+        top = cell_top(fam_sub, fs, base)
+        ch = cap_h(fam_sub, fs)
+        cw = (lambda t_: t_.upper()) if upper else (lambda t_: t_)
         for grp in blocks:
             a = T(max(grp[0]["start"], start))
             b = T(min(grp[-1]["end"], end))
             if b - a < 0.08:
                 b = a + 0.08
-            widths = [text_w(w["w"], D, fs) for w in grp]
+            widths = [text_w(cw(w["w"]), fam_sub, fs) for w in grp]
             total = sum(widths) + sp * (len(grp) - 1)
             x0 = W / 2 - total / 2
             xs, x = [], x0
@@ -805,12 +823,14 @@ def build_ass_editorial(segs: list[dict], start: float, end: float, W: int, H: i
                     bw_, bh_ = widths[j] + 2 * px, ch + 2 * py
                     cx, cy = xs[j] + widths[j] / 2, base - ch / 2
                     add(5, wa, wb, "Fx", f"{{\\an5\\pos({cx:.0f},{cy:.0f})\\1c{ass_color(acc)}\\fscx90\\fscy90\\t(0,90,\\fscx100\\fscy100){fin}\\p1}}{_rect(bw_, bh_)}")
+                if modo == "subrayado":
+                    add(5, wa, wb, "Fx", f"{{\\an7\\pos({xs[j]:.0f},{base + 12 * k:.0f})\\1c{ass_color(acc)}\\fscx0\\t(0,120,\\fscx100)\\p1}}{_rect(widths[j], 8 * k)}")
                 parts = []
                 for i2, x2 in enumerate(grp):
-                    col = ass_color(ink) if (i2 == j and box_on) else (ass_color(acc) if i2 == j else ass_color(txt))
+                    col = ass_color(ink) if (i2 == j and box_on) else (ass_color(acc) if (i2 == j and modo == "color") else ass_color(txt))
                     shadow = "\\bord0\\shad0\\blur0" if (i2 == j and box_on) else f"\\bord{3.5 * k:.1f}\\3c{ass_color(ink)}\\3a&H60&\\blur{3 * k:.1f}"
-                    parts.append(f"{{\\1c{col}{shadow}}}{ass_escape(x2['w'])}")
-                add(6, wa, wb, "Fx", f"{{\\an7\\pos({x0:.0f},{top:.0f})\\fn{D}\\fs{fs:.0f}{fin}}}" + " ".join(parts))
+                    parts.append(f"{{\\1c{col}{shadow}}}{ass_escape(cw(x2['w']))}")
+                add(6, wa, wb, "Fx", f"{{\\an7\\pos({x0:.0f},{top:.0f})\\fn{fam_sub}\\fs{fs:.0f}{fin}}}" + " ".join(parts))
 
     header = f"""[Script Info]
 ScriptType: v4.00+

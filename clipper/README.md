@@ -223,6 +223,14 @@ la del cliente (`<área de clientes>/clients/<slug>/clipper.json`: colores, rót
 
 Por clip también: `"kicker"` (rótulo), `"fuente"` (texto de la derecha), `"hook"`.
 
+### Shotgun de estilo
+
+`shotgun.py` renderiza varias direcciones de diseño del nivel 2 sobre el mismo momento, saca cuadros
+de estilo, abre un tablero para elegir (el de gstack si está instalado) y guarda la elegida como
+plantilla del cliente, con memoria de gusto. Detalle en `references/shotgun.md` de `/edit-video`.
+El nivel 2 acepta `fuentes` (display/serif/mono), `subtitulo.activa` (`caja`, `color`, `subrayado`),
+`subtitulo.mayusculas`, `subtitulo.fuente` y `gancho.alineacion` (`izquierda`, `centro`).
+
 ### El campo `hook`
 
 Si un clip trae `hook`, ese texto aparece **grande, en amarillo, arriba, los

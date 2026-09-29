@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.3.0 — 2026-09-29
+**Shotgun de estilo: cambiar el diseño eligiendo, no adivinando** (método de /design-shotgun de
+gstack, adaptado a video).
+- `clipper/shotgun.py`: `preparar` (renderiza N direcciones sobre el metraje real y saca cuadros de
+  estilo; se niega si dos direcciones se parecen), `tablero` (el de gstack si está; si no, el chat),
+  `elegir` (la elegida pasa a ser la plantilla del cliente, la anterior se guarda con fecha) y `gusto`
+  (aprobado/rechazado por dimensión, con olvido del 5 % por semana).
+- Nivel 2 más flexible: `fuentes`, palabra activa `caja | color | subrayado`, `mayusculas`, gancho
+  `izquierda | centro`.
+- 5 fuentes nuevas incluidas (OFL, con métricas): Clipper Wide (Archivo expandido), Condensed
+  (Oswald), Soft Serif e Soft Italic (Fraunces), Mono B (IBM Plex Mono).
+- `references/shotgun.md`; `SKILL.md` y `niveles.md`: "otro igual" usa el kit; "cambio de diseño"
+  usa el shotgun.
+
 ## 3.2.0 — 2026-09-29
 **Quien descarga el skill también se mantiene al día.**
 - `check.sh`: compara la versión instalada con la de GitHub en cada sesión y avisa con el comando
