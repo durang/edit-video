@@ -2,7 +2,7 @@
 name: edit-video
 description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 2.0.1
+  version: 2.1.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -31,14 +31,25 @@ Este skill **no reimplementa HyperFrames**: pone el método, las reglas y el idi
 
 Si no está claro, **una** pregunta de una línea.
 
-## Paso 1 · Preflight — una vez por sesión
+## Paso 1 · Todo instalado — el skill se instala lo que le falta
+
+`SKILL_DIR` es la carpeta donde está este `SKILL.md`. Normalmente una de estas:
+`~/.agents/skills/edit-video` · `~/.claude/skills/edit-video` · `~/.openclaw/skills/edit-video` ·
+`~/.hermes/skills/edit-video`. Si no la sabes: `ls -d ~/.*/skills/edit-video ~/.agents/skills/edit-video`.
 
 ```bash
-bash <SKILL_DIR>/scripts/check.sh
+bash SKILL_DIR/scripts/check.sh
 ```
 
-Comprueba Node 22+, FFmpeg, HyperFrames y sus skills. Si algo falta, **enseña el comando exacto
-y pide permiso antes de instalar**. Nunca se trabaja alrededor de una herramienta que falta.
+- **Sale en verde** → sigue al Paso 2.
+- **Falta algo** → corre `bash SKILL_DIR/scripts/setup.sh`. **Sin `--yes` no instala nada**: solo
+  imprime el plan exacto (qué falta y con qué comando) y sale con código 2. **Enséñale ese plan al
+  usuario tal cual, pide permiso**, y con su sí vuelve a correr `bash SKILL_DIR/scripts/setup.sh --yes`.
+  Instala FFmpeg, Node, whisper-cpp, los skills de HyperFrames en este agente y el modelo de Whisper
+  multilingüe, y termina con `check.sh`.
+- **Nunca instales sin permiso. Nunca trabajes alrededor de lo que falta.**
+
+Una vez en verde, no se vuelve a instalar: las siguientes sesiones pasan directo.
 
 ## Paso 2 · Reglas del proyecto — onboarding la primera vez
 
@@ -126,8 +137,14 @@ míralo, y vuelve a enseñar. Guarda `v1`, `v2`, `v3`… antes de cada ronda.
 
 ## Dónde corre
 
-Todo en **la máquina del usuario** (Node, FFmpeg y sus archivos). El render puede ser local o en la
-nube de HeyGen. Un agente remoto sin acceso al disco del usuario no puede correr esto.
+**Donde corre el agente.** Necesita el disco con los videos, Node, FFmpeg y whisper-cpp.
+
+- Agente en tu ordenador (Claude Code, OpenClaw o Hermes en tu Mac) → **el ordenador tiene que
+  estar prendido**.
+- Agente en un servidor (OpenClaw o Hermes en un VPS, hablándole por Telegram o WhatsApp) → corre
+  en el servidor; **tu ordenador puede estar apagado**. `setup.sh` funciona igual en Linux.
+- El render pesado puede irse a la nube de HeyGen con `npx hyperframes cloud render`.
+- Un chat sin terminal ni disco (una app de chat en la nube) no puede correrlo.
 
 ## Referencias
 
@@ -141,5 +158,5 @@ nube de HeyGen. Un agente remoto sin acceso al disco del usuario no puede correr
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/troubleshooting.md` | Defecto → arreglo |
-| `scripts/check.sh` · `scripts/ingest.sh` | Preflight · oídos y ojos |
+| `scripts/check.sh` · `scripts/setup.sh` · `scripts/ingest.sh` | Comprobar · auto-instalar · oídos y ojos |
 | `templates/AGENTS.md.template` | Reglas del proyecto del usuario |

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.0 — 2026-09-29
+**El skill se instala lo que le falta.**
+- `scripts/setup.sh`: detecta qué falta (FFmpeg, Node, whisper-cpp, skills de HyperFrames en cada
+  agente, modelo de Whisper multilingüe), imprime el plan, pide permiso y lo instala. macOS y Linux.
+  Sin `--yes` nunca instala: pensado para que un agente le enseñe el plan al usuario.
+- `SKILL.md` Paso 1: el agente comprueba, y si falta algo corre `setup.sh` con permiso.
+- `install.sh` delega en `setup.sh`: una sola lógica para personas y agentes.
+- README: instrucción lista para pegarle a cualquier agente, y cuándo tiene que estar prendido el ordenador.
+
 ## 2.0.1 — 2026-09-29
 Probado de verdad: instalado desde GitHub en Claude Code, OpenClaw y Hermes, y transcripción real en español.
 - `install.sh`: `npx skills` quiere un `-a` por agente, no una lista con comas.

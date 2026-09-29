@@ -33,7 +33,17 @@ bash install.sh hermes-agent
 bash install.sh claude-code,openclaw
 ```
 
-## Opción B — a mano con el instalador universal
+## Opción B — que lo instale el propio agente
+
+El skill trae su instalador. Cualquier agente con terminal puede hacerlo solo:
+
+```bash
+npx skills add durang/edit-video -g -y
+bash ~/.agents/skills/edit-video/scripts/setup.sh          # enseña el plan, no instala
+bash ~/.agents/skills/edit-video/scripts/setup.sh --yes    # con permiso del usuario
+```
+
+## Opción C — a mano con el instalador universal
 
 ```bash
 npx skills add durang/edit-video -g -a claude-code -a openclaw -a hermes-agent -y
