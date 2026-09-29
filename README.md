@@ -92,6 +92,7 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 | `references/film-it-right.md` | **Cómo grabar una toma editable — léelo antes de grabar** |
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
+| `references/motion-design.md` | Nivel estudio: coherencia, mapas, profundidad, cierre con personaje, sonido |
 | `references/troubleshooting.md` | Defecto → arreglo |
 
 ## Si hablas español (o cualquier idioma que no sea inglés)
