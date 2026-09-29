@@ -59,6 +59,20 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
 
 ## Errores reales que este checklist ya cazó
 
+- **El video del recuadro salió NEGRO 18 segundos** y el constructor dijo "verificado": un cambio en
+  el encuadre sacó el metraje del recuadro y solo quedó el fondo `#000`. El revisor independiente lo
+  vio en la primera hoja de contacto. Desde entonces `qa.sh` avisa solo de cuadros con ≥10 % en negro.
+- **Recorte de persona hecho sobre un cuadro ya recortado** → en el cierre se veía un corte recto
+  vertical en su hombro y su moño. Los recortes se sacan **del cuadro completo del original**, y
+  ningún borde recto de la silueta puede verse (solo el borde inferior del lienzo).
+- **Artefacto de máscara**: un rectángulo color piel en la mandíbula del recorte, un solo cuadro.
+  Por eso se miran también los cuadros de transición, no solo los de reposo.
+- **Créditos encima de la persona** en el cierre, y sobre un fondo dibujado donde no se leían.
+  Texto pequeño solo sobre papel limpio o con placa sólida.
+- **Tarjeta vacía**: el marco del mapa entraba medio segundo antes que el mapa. Contenedor y
+  contenido entran juntos.
+- **Final en silencio digital** (−91 dB): el último sonido tiene que llegar al último cuadro con fade.
+
 - Titular de cierre partido en dos líneas: `COLOMBI` / `A.`
 - Medio logo de la fuente asomando por el borde de un recuadro
 - Micro-etiquetas mono finas sobre metraje: ilegibles en el teléfono

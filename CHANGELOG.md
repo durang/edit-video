@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.5.2 — 2026-09-29
+- `scripts/qa.sh`: alarmas automáticas — cuadros con ≥10 % en negro (luma < 24; el negro de video es 16, no 0) (video que no pinta, capa
+  que tapa) y final en silencio digital.
+- `references/qa.md`: seis errores reales más de la ronda 5 (video negro que el constructor dio por
+  bueno, recorte hecho sobre un cuadro recortado, artefacto de máscara, créditos sobre la persona,
+  tarjeta vacía antes del contenido, final en silencio).
+
 ## 2.5.1 — 2026-09-29
 - `references/clipper.md`: lo que clipper ya hace (recorte 9:16, palabra activa, zona segura,
   tapar subtítulos quemados, silencios, idioma, diccionario por cliente) y cómo pedírselo; el corte

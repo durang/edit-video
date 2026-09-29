@@ -25,4 +25,13 @@ done
 for t in "$@"; do
   ffmpeg -v error -y -ss "$t" -i "$V" -frames:v 1 -q:v 2 "$OUT/full_$t.jpg"
 done
+# Alarmas automáticas (no sustituyen mirar; avisan de lo que un ojo cansado se salta)
+BF=$(ffmpeg -hide_banner -i "$V" -vf "fps=2,blackframe=amount=10:threshold=24" -f null - 2>&1 \
+  | sed -n 's/.* t:\([0-9.]*\) .*/\1/p' | awk '{printf "%.1f ", $1}')
+if [ -n "$BF" ]; then
+  echo "⚠ NEGRO: ≥10 % del cuadro en negro puro en t = $BF"
+  echo "   (video que no pinta, capa que tapa, recuadro vacío). Míralos a tamaño completo."
+fi
+TAIL=$(ffmpeg -hide_banner -sseof -0.8 -i "$V" -vn -af volumedetect -f null - 2>&1 | sed -n 's/.*max_volume: \([-0-9.]*\) dB.*/\1/p')
+[ -n "$TAIL" ] && awk "BEGIN{exit !($TAIL < -60)}" && echo "⚠ SILENCIO: los últimos 0.8 s están en silencio digital ($TAIL dB). ¿Muere en seco?"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"

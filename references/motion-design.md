@@ -73,8 +73,9 @@ Para texturas, fondos de cierre o ilustraciones (nunca texto ni logos — ver `p
 El último plano es el que se recuerda. Receta probada:
 
 1. **Congela** el último cuadro (suena un obturador).
-2. **Recorta a la persona** de ese cuadro (Higgsfield `remove_background` o
-   `npx hyperframes remove-background`) y colócala **alineada al píxel** con la capa de video
+2. **Recorta a la persona** del cuadro **completo del original** (nunca de uno ya recortado: deja
+   bordes rectos en la silueta) y quédate solo con la mancha más grande del alfa (limpia restos): Higgsfield `remove_background` o
+   `npx hyperframes remove-background` y colócala **alineada al píxel** con la capa de video
    (misma escala y desplazamiento que tenía en ese instante). El fondo del cuadro se va con una
    máscara desde los bordes y queda ella sobre papel.
 3. **Un fondo generado sube detrás** (`MOVE`) con **parallax**: se mueve más lento que ella.
