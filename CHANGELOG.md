@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1 — 2026-09-29
+- Aprendizaje: un `": "` sin comillas en la `description` de `SKILL.md` rompe el YAML y `npx skills`
+  deja de ver el skill ("No valid skills found"). `sync.sh push` ya no sube si pasa.
+
 ## 3.0.0 — 2026-09-29
 **Una sola máquina de edición, en niveles.**
 - **clipper entra al repo** (`clipper/`, con su historial completo): motor de los niveles 1–2 y del

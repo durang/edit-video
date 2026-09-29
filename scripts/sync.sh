@@ -90,6 +90,11 @@ case "${1:-status}" in
     m="${2:?uso: sync.sh push \"qué aprendimos\"}"; rc=0
     commit_push "$CLIENTS" "aprendizaje: $m" 0 || rc=1
     if isrepo "$SRC"; then
+      # El instalador (npx skills) descarta el skill si el frontmatter no es YAML válido:
+      # un ": " suelto en la descripción basta para que "no encuentre" el skill.
+      if sed -n '2,/^---$/p' "$SRC/SKILL.md" | grep -E '^description: ' | grep -vE '^description: ["'"'"']' | sed 's/^description: //' | grep -q ': '; then
+        say "  ✗ SKILL.md: la descripción tiene ': ' sin comillas → el instalador no verá el skill. No subo."; exit 1
+      fi
       commit_push "$SRC" "aprendizaje: $m" 1 || rc=1
       git -C "$SRC" log -1 --format=%s | grep -q "^aprendizaje: $m" && npx -y skills update edit-video -g -y >/dev/null 2>&1 && say "  ↻ skill edit-video reinstalado"
     fi
