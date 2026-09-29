@@ -9,12 +9,13 @@ para todos.**
 | Pieza | Para qué | Coste |
 |---|---|---|
 | **Un agente** | Claude Code, OpenClaw, Hermes Agent, Codex, Cursor… | Según el agente |
-| **HyperFrames** | El motor: escribe el video como página web y lo renderiza en MP4. Trae su propio Whisper | Gratis, open source (HeyGen) |
+| **HyperFrames** | El motor: escribe el video como página web y lo renderiza en MP4 | Gratis, open source (HeyGen) |
+| **whisper-cpp** | Los oídos: HyperFrames transcribe con él (`whisper-cli`) | Gratis |
 | **FFmpeg** | Los ojos y las tijeras: frames, cortes, audio | Gratis |
 | **Node.js 22+** | Corre HyperFrames | Gratis |
 | **Python 3** | Scripts auxiliares | Gratis |
 
-HyperFrames se baja su propio Chrome para renderizar y su propio modelo de Whisper la primera vez.
+HyperFrames usa el Chrome que tengas (o baja uno) y descarga el modelo de Whisper la primera vez.
 
 ## Opción A — un comando (recomendado)
 
@@ -35,8 +36,8 @@ bash install.sh claude-code,openclaw
 ## Opción B — a mano con el instalador universal
 
 ```bash
-npx skills add durang/edit-video -g -a claude-code,openclaw,hermes-agent -y
-npx skills add heygen-com/hyperframes -g -a claude-code,openclaw,hermes-agent --skill '*' -y
+npx skills add durang/edit-video -g -a claude-code -a openclaw -a hermes-agent -y
+npx skills add heygen-com/hyperframes -g -a claude-code -a openclaw -a hermes-agent --skill '*' -y
 ```
 
 En **Claude Code** también se puede usar el plugin oficial en vez de los skills sueltos:
@@ -52,7 +53,7 @@ claude plugin install hyperframes@hyperframes
 
 ```bash
 # macOS
-brew install node ffmpeg python
+brew install node ffmpeg python whisper-cpp
 
 # Windows
 winget install OpenJS.NodeJS.LTS

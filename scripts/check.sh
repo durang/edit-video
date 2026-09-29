@@ -27,23 +27,39 @@ else b "FFmpeg / ffprobe no están" "$PM ffmpeg"; fi
 if command -v python3 >/dev/null 2>&1; then g "Python $(python3 --version 2>&1 | awk '{print $2}')"
 else w "Python 3 no está (opcional)" "$PM python"; fi
 
+# whisper-cpp (HyperFrames transcribe con whisper-cli)
+if command -v whisper-cli >/dev/null 2>&1; then g "whisper-cpp $(command -v whisper-cli)"
+else w "whisper-cpp no está — HyperFrames lo usa para transcribir" "$PM whisper-cpp"; fi
+
 # HyperFrames CLI
 if command -v npx >/dev/null 2>&1; then
   hv=$(npx -y hyperframes --version 2>/dev/null | tail -1)
   if [ -n "$hv" ]; then g "HyperFrames CLI $hv"; else b "HyperFrames CLI no responde" "npx -y hyperframes doctor"; fi
 fi
 
-# Skills de HyperFrames en algún agente
-found=""
-for d in "$HOME/.claude/plugins" "$HOME/.claude/skills" "$HOME/.openclaw/skills" "$HOME/.hermes/skills" "$HOME/.agents/skills" "$HOME/.codex/skills"; do
-  if [ -d "$d" ] && grep -rqs "name: embedded-captions" "$d" 2>/dev/null; then found="$found ${d/#$HOME/~}"; fi
+# Skills de HyperFrames y edit-video, agente por agente
+hf=""; ev=""
+for pair in "Claude Code:$HOME/.claude/skills" "OpenClaw:$HOME/.openclaw/skills" "Hermes:$HOME/.hermes/skills" "Codex:$HOME/.codex/skills" "Cursor:$HOME/.cursor/skills" "Gemini:$HOME/.gemini/skills"; do
+  name="${pair%%:*}"; d="${pair#*:}"
+  [ -d "$d" ] || continue
+  [ -e "$d/embedded-captions" ] && hf="$hf, $name"
+  [ -e "$d/edit-video" ] && ev="$ev, $name"
 done
-if [ -n "$found" ]; then g "Skills de HyperFrames en:$found"
-else b "No encuentro los skills de HyperFrames en ningún agente" "npx skills add heygen-com/hyperframes -g -y   (o: bash install.sh)"; fi
+# En Claude Code, HyperFrames suele venir como plugin oficial
+if command -v claude >/dev/null 2>&1 && claude plugin list 2>/dev/null | grep -q "hyperframes@hyperframes"; then
+  case "$hf" in *"Claude Code"*) ;; *) hf="$hf, Claude Code (plugin)";; esac
+fi
+if [ -n "$ev" ]; then g "edit-video en: ${ev#, }"; else w "edit-video no está en ningún agente" "bash install.sh"; fi
+if [ -n "$hf" ]; then g "HyperFrames en: ${hf#, }"
+else b "No encuentro los skills de HyperFrames en ningún agente" "bash install.sh   (o: npx skills add heygen-com/hyperframes -g -y)"; fi
 
 # Doctor de HyperFrames (Chrome headless, deps de render)
 if [ "$ok" -eq 0 ]; then
-  if npx -y hyperframes doctor >/tmp/edit-video-doctor.log 2>&1; then g "hyperframes doctor en verde"
+  if npx -y hyperframes doctor >/tmp/edit-video-doctor.log 2>&1; then
+    opt=$(sed 's/\x1b\[[0-9;]*m//g' /tmp/edit-video-doctor.log | awk '/✗/{sub(/^.*✗[ ]*/,""); print $1}' | paste -sd',' - | sed 's/,/, /g')
+    if [ -n "$opt" ]; then g "hyperframes doctor: lo necesario, en verde (opcional sin instalar: $opt)"
+    else g "hyperframes doctor en verde"; fi
+    grep -q "Low memory" /tmp/edit-video-doctor.log && w "Poca memoria libre — los renders pueden fallar" "cerrar otras apps, o usar: npx hyperframes cloud render"
   else w "hyperframes doctor marcó algo" "cat /tmp/edit-video-doctor.log  y seguir su indicación"; fi
 fi
 

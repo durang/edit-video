@@ -66,9 +66,15 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 
 ## Si hablas español (o cualquier idioma que no sea inglés)
 
-El modelo de Whisper por defecto de HyperFrames es **solo inglés** (`small.en`). Este skill siempre
-le pasa el idioma, así que cambia solo al modelo multilingüe. Si transcribes a mano:
-`npx hyperframes transcribe video.mp4 -l es`.
+El modelo de Whisper por defecto de HyperFrames es **solo inglés** (`small.en`). Prueba real, el
+mismo audio en español:
+
+| | Resultado |
+|---|---|
+| `hyperframes transcribe audio.wav` | *"We are going to do this for you, for you to do what you want, for you to do what you want…"* |
+| `hyperframes transcribe audio.wav -l es` | *"Trabajamos para que tú estés seguro, para que duermas tranquilo, para que tengas la seguridad de que tu propiedad va a estar en buenas manos."* |
+
+Sin el idioma, **inventa**. Este skill siempre le pasa el idioma. A mano: `-l es`.
 
 ## English
 

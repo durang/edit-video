@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.1 — 2026-09-29
+Probado de verdad: instalado desde GitHub en Claude Code, OpenClaw y Hermes, y transcripción real en español.
+- `install.sh`: `npx skills` quiere un `-a` por agente, no una lista con comas.
+- `scripts/check.sh`: comprueba agente por agente dónde está `edit-video` y dónde HyperFrames
+  (incluido el plugin de Claude Code); comprueba `whisper-cli`; separa lo opcional del doctor;
+  avisa de poca memoria y ofrece el render en la nube.
+- `scripts/ingest.sh`: `transcript.txt` corta en puntuación y cada 10 palabras; resolución y fps en una línea.
+- `whisper-cpp` vuelve a la lista de macOS: HyperFrames transcribe con `whisper-cli`.
+- README: la prueba real de por qué hay que pasar el idioma.
+
 ## 2.0.0 — 2026-09-29
 **Portable a cualquier agente.**
 - Renombrado a `edit-video` (repo y skill). Se invoca con `/edit-video`.

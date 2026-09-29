@@ -24,8 +24,8 @@ mkdir -p "$OUT/frames"
 echo "① Metadatos"
 ffprobe -v error -print_format json -show_format -show_streams "$VIDEO" > "$OUT/metadata.json"
 DUR=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$VIDEO")
-FPS=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$VIDEO")
-RES=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$VIDEO")
+FPS=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=nw=1:nk=1 "$VIDEO" | head -1)
+RES=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$VIDEO" | head -1)
 printf '   %.2f s · %s · %s fps\n' "$DUR" "$RES" "$FPS"
 
 echo "② Audio (16 kHz mono para Whisper)"
@@ -36,7 +36,7 @@ npx -y hyperframes transcribe "$OUT/audio.wav" -d "$OUT" -l "$LANG_CODE" -m "$MO
   echo "   ✗ Falló la transcripción. Ver $OUT/transcribe.log" >&2; exit 1; }
 [ -f "$OUT/transcript.json" ] || { echo "   ✗ No se generó transcript.json. Ver $OUT/transcribe.log" >&2; exit 1; }
 
-# transcript.txt legible: una línea por frase, cortando en pausas de más de 0.35 s
+# transcript.txt legible: una línea por frase — corta en pausas > 0.35 s, en puntuación o cada 10 palabras
 python3 - "$OUT/transcript.json" "$OUT/transcript.txt" <<'PY' || true
 import json, sys
 d = json.load(open(sys.argv[1]))
@@ -45,7 +45,8 @@ lines, cur, start, prev_end = [], [], None, None
 for w in words:
     t = (w.get("text") or w.get("word") or "").strip()
     s, e = float(w.get("start", 0)), float(w.get("end", 0))
-    if cur and prev_end is not None and s - prev_end > 0.35:
+    brk = cur and prev_end is not None and (s - prev_end > 0.35 or cur[-1][-1:] in ".?!,;:" or len(cur) >= 10)
+    if brk:
         lines.append((start, prev_end, " ".join(cur))); cur, start = [], None
     if start is None: start = s
     cur.append(t); prev_end = e

@@ -23,8 +23,12 @@ fi
 [ -n "$AGENTS" ] || { echo "No detecté ningún agente. Pásalo a mano: bash install.sh claude-code"; exit 1; }
 echo "Agentes: $AGENTS"
 
+# npx skills quiere un -a por agente, no una lista con comas.
+aflags(){ local out=(); IFS=',' read -ra L <<< "$1"; for a in "${L[@]}"; do [ -n "$a" ] && out+=(-a "$a"); done; printf '%s\n' "${out[@]}"; }
+
 echo "① Skill edit-video"
-npx -y skills add "$REPO" -g -a "$AGENTS" -y
+AF=($(aflags "$AGENTS"))
+npx -y skills add "$REPO" -g "${AF[@]}" -y
 
 echo "② Skills de HyperFrames (el motor)"
 HF_AGENTS="$AGENTS"
@@ -34,7 +38,10 @@ if [[ ",$AGENTS," == *",claude-code,"* ]] && command -v claude >/dev/null 2>&1 \
   HF_AGENTS=$(echo ",$AGENTS," | sed 's/,claude-code,/,/; s/^,//; s/,$//')
   echo "   Claude Code ya tiene el plugin oficial de HyperFrames — no lo duplico."
 fi
-[ -n "$HF_AGENTS" ] && npx -y skills add heygen-com/hyperframes -g -a "$HF_AGENTS" --skill '*' -y
+if [ -n "$HF_AGENTS" ]; then
+  HF=($(aflags "$HF_AGENTS"))
+  npx -y skills add heygen-com/hyperframes -g "${HF[@]}" --skill '*' -y
+fi
 
 echo "③ Comprobación"
 DIR="$(cd "$(dirname "$0")" && pwd)"
