@@ -56,6 +56,24 @@ Luego, siempre igual:
 6. **Render** — MP4 final, local o en la nube
 7. **Revisor final** — el video entero, cuadro cada 0.5 s: ninguna palabra partida, nada tapado, nada ilegible
 
+## Área de clientes y autoaprendizaje
+
+Son **dos repos**:
+
+| | Qué guarda | |
+|---|---|---|
+| **`edit-video`** (este) | El método y todo lo aprendido que sirve para **cualquier** video | público |
+| **`edit-video-clients`** | Por cliente: reglas (`CLIENTE.md`), kit de diseño, aprendizajes, historial | **privado** |
+
+```bash
+bash install.sh --clients git@github.com:TU_USUARIO/edit-video-clients.git
+```
+
+El agente lo hace solo: **al empezar** (`sync.sh pull`) trae lo último de los dos y lee al cliente
+antes del beat sheet; **al entregar** (`sync.sh push`) guarda lo general aquí y lo del cliente en el
+privado. Un guardia impide que un dato de cliente llegue al repo público. Así cada video sale mejor
+que el anterior, y el segundo de un mismo cliente parte de su kit. Detalle: `references/aprendizaje.md`.
+
 ## ¿Tiene que estar prendido mi ordenador?
 
 Corre **donde corre el agente**:
@@ -92,6 +110,7 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 | `references/film-it-right.md` | **Cómo grabar una toma editable — léelo antes de grabar** |
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
+| `references/aprendizaje.md` + `scripts/sync.sh` | Área privada de clientes y autoaprendizaje en dos repos |
 | `references/motion-design.md` | Nivel estudio: coherencia, mapas, profundidad, cierre con personaje, sonido |
 | `references/troubleshooting.md` | Defecto → arreglo |
 

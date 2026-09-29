@@ -4,6 +4,7 @@
 #   bash install.sh                                   detecta tus agentes e instala en todos
 #   bash install.sh hermes-agent                      solo en uno
 #   bash install.sh claude-code,openclaw,hermes-agent varios
+#   bash install.sh --clients git@github.com:TU/edit-video-clients.git   + área privada de clientes
 #
 # Hace dos cosas:
 #   1. Pone el skill edit-video en tus agentes (con el instalador universal: npx skills)
@@ -33,10 +34,22 @@ AF=(); IFS=',' read -ra L <<< "$AGENTS"; for a in "${L[@]}"; do [ -n "$a" ] && A
 echo "① edit-video"
 npx -y skills add "$REPO" -g "${AF[@]}" -y
 
+# --clients <url> es nuestro; el resto va a setup.sh
+CLIENTS_URL=""; REST=()
+while [ $# -gt 0 ]; do
+  if [ "$1" = "--clients" ]; then CLIENTS_URL="${2:-}"; shift 2; else REST+=("$1"); shift; fi
+done
+set -- ${REST[@]+"${REST[@]}"}
+
 echo "② todo lo demás"
 SETUP="$HOME/.agents/skills/edit-video/scripts/setup.sh"
 [ -f "$SETUP" ] || SETUP="$(cd "$(dirname "$0")" && pwd)/scripts/setup.sh"
 bash "$SETUP" --agents "$AGENTS" "$@"
+
+if [ -n "$CLIENTS_URL" ]; then
+  echo "③ área de clientes (privada)"
+  bash "$(dirname "$SETUP")/sync.sh" init --clients "$CLIENTS_URL"
+fi
 
 echo
 echo "Listo. Abre tu agente en la carpeta de tu video y di:  /edit-video mi-video.mp4"

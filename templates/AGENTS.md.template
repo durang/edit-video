@@ -3,6 +3,9 @@
 > Reglas de este proyecto de video. Las lee cualquier agente (Claude Code vía `CLAUDE.md` → `@AGENTS.md`,
 > OpenClaw, Hermes, Codex, Cursor…). Se escribió en el onboarding; se edita a mano cuando quieras.
 
+### Cliente
+- **cliente:** {{cliente_slug}}   ← carpeta en `edit-video-clients/clients/` (vacío si es propio)
+
 ### Identidad
 - **Nombre:** {{nombre}}
 - **Handle:** {{handle}}

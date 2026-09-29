@@ -1,7 +1,19 @@
 # Changelog
 
+## 2.4.0 — 2026-09-29
+**Dos repos y autoaprendizaje.**
+- Área de clientes en un repo **privado** aparte (`edit-video-clients`): por cliente `CLIENTE.md`
+  (reglas), `APRENDIZAJES.md`, `HISTORIAL.md` y `kit/` (plantilla, tokens, generadores, sonidos,
+  fondos). El segundo video de un cliente parte de su kit.
+- `scripts/sync.sh`: `init`, `status`, `pull` (al empezar), `new-client`, `push` (al entregar).
+  Guardia: si una `palabra_privada` de un cliente va a subir al repo público, no sube.
+- `SKILL.md`: Paso 2 lee el cliente antes del beat sheet; **Paso 9 · Aprender** obligatorio: lo general
+  a este repo, lo del cliente al privado. Regla dura 13.
+- `references/aprendizaje.md`: el ciclo completo. `install.sh --clients <url>`, `check.sh` y la
+  plantilla de `AGENTS.md` conocen el área de clientes.
+
 ## 2.3.0 — 2026-09-29
-**Motion design nivel estudio.** Lo aprendido llevando el reel "Why Colombia" de v1 a v5.
+**Motion design nivel estudio.** Lo aprendido llevando un reel real de entrevista (16:9 → 9:16) de v1 a v5.
 - `references/motion-design.md`: sistema de coherencia (IN/OUT/MOVE, staggers, una sola `.pill`,
   margen único), mapas con datos reales (Natural Earth, precalculado, `pathLength="1"`, etiquetas sin
   solape, arcos con punto viajero), hacer sitio paneando, palabras detrás de la persona con mate y su

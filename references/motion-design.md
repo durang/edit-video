@@ -2,7 +2,7 @@
 
 Lo que separa un montaje correcto de uno "de 15 000 al mes" no es meter más cosas: es que **todo
 responde al mismo sistema**, que hay **profundidad**, que **suena**, y que **cierra con una firma**.
-Todo esto salió de piezas reales revisadas cuadro a cuadro (reel "Why Colombia", v1→v5).
+Todo esto salió de piezas reales revisadas cuadro a cuadro (un reel de entrevista 16:9 → 9:16, de v1 a v5).
 
 ## 1 · Sistema de coherencia — antes de animar nada
 

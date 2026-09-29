@@ -2,7 +2,7 @@
 name: edit-video
 description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 2.3.0
+  version: 2.4.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -59,6 +59,18 @@ Busca en la carpeta del video un `AGENTS.md` (o `CLAUDE.md`) con una sección `#
 - **Si no existe**, haz el onboarding de `references/onboarding.md`: seis preguntas cortas, y
   escribe el archivo de reglas desde `templates/AGENTS.md.template`. Una sola vez; las siguientes
   sesiones ya lo encuentran.
+
+**Cliente y aprendizaje.** Antes de seguir:
+
+```bash
+bash SKILL_DIR/scripts/sync.sh pull      # lo último de edit-video y del área de clientes
+```
+
+Si el video es de un cliente (`cliente: <slug>` en el `AGENTS.md`, o el usuario lo nombra), lee su
+carpeta del área privada **antes del beat sheet**: `CLIENTE.md`, `APRENDIZAJES.md`, `kit/`. Sus reglas
+mandan sobre los valores por defecto, y se parte de su `kit/plantilla.html` si existe. Cliente nuevo:
+`sync.sh new-client <slug>`. Sin área de clientes instalada, dilo en una línea y sigue.
+Detalle: `references/aprendizaje.md`.
 
 ## Paso 3 · Oídos y ojos
 
@@ -132,6 +144,22 @@ la safe zone, nada ilegible en el teléfono, nada del original asomando, coheren
 Si el entorno permite subagentes, que la revisión la haga **otro agente** que solo vea el video.
 Cada defecto: anotar en `SNAPSHOTS.md`, arreglar, re-renderizar, **re-revisar entero**.
 
+## Paso 9 · Aprender — obligatorio al entregar
+
+Con el video entregado, clasifica cada aprendizaje (notas del director, defectos cazados, lo que
+funcionó) con una pregunta: **¿serviría en un video de otro cliente?**
+
+- **Sí** → `edit-video` (este repo): la referencia que toque + `CHANGELOG.md` + versión. Generalizado,
+  **sin nada del cliente**.
+- **No** → `edit-video-clients/clients/<slug>/`: `CLIENTE.md`, `APRENDIZAJES.md`, `HISTORIAL.md`, `kit/`.
+
+```bash
+bash SKILL_DIR/scripts/sync.sh push "resumen en una línea"
+```
+
+Sube los dos repos; un guardia bloquea el público si se cuela algo privado. Reporta en una línea qué
+fue a cada sitio. Procedimiento completo: `references/aprendizaje.md`.
+
 ---
 
 ## Reglas duras
@@ -145,6 +173,7 @@ Cada defecto: anotar en `SNAPSHOTS.md`, arreglar, re-renderizar, **re-revisar en
 7. **Una nota = un cambio**, con el tiempo. Qué, dónde, cuándo — nunca cómo.
 8. **Versionar** antes de cada ronda.
 9. **Revisor final antes de decir "listo"** (Paso 8): el MP4 entero, cuadro cada 0.5 s. Decir "listo" sin haberlo revisado es mentir.
+13. **Cada entrega deja aprendizaje** (Paso 9): lo general al público, lo del cliente al privado. Nunca datos de un cliente en `edit-video`.
 10. **La voz del usuario nunca se sustituye ni se re-sintetiza.**
 11. **Máximo un zoom cada cinco segundos.** Lo raro es lo que impacta.
 12. **El director es el usuario.** El gusto no se delega.
@@ -172,6 +201,7 @@ Cada defecto: anotar en `SNAPSHOTS.md`, arreglar, re-renderizar, **re-revisar en
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/motion-design.md` | **Nivel estudio**: sistema de coherencia, mapas, palabras detrás de la persona, cierre con personaje, diseño sonoro |
+| `references/aprendizaje.md` | **Los dos repos**: área de clientes, qué va a cada uno, `sync.sh` |
 | `references/qa.md` | **Revisor final**: la checklist que decide si se entrega |
 | `references/troubleshooting.md` | Defecto → arreglo |
 | `scripts/check.sh` · `scripts/setup.sh` · `scripts/ingest.sh` · `scripts/qa.sh` | Comprobar · auto-instalar · oídos y ojos · revisor final |

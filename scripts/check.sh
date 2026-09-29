@@ -63,6 +63,12 @@ if [ "$ok" -eq 0 ]; then
   else w "hyperframes doctor marcó algo" "cat /tmp/edit-video-doctor.log  y seguir su indicación"; fi
 fi
 
+# Área de clientes y aprendizaje (opcional)
+CONF="$HOME/.config/edit-video/config"; [ -f "$CONF" ] && . "$CONF"
+CL="${EDIT_VIDEO_CLIENTS:-$HOME/.agents/edit-video-clients}"
+if [ -d "$CL/clients" ]; then g "Área de clientes: $CL ($(ls "$CL/clients" | grep -vc '^_') clientes)"
+else w "Sin área de clientes (opcional)" "bash SKILL_DIR/scripts/sync.sh init --clients <git-url-privado>"; fi
+
 echo "──────────────────────────"
 if [ "$ok" -eq 0 ]; then
   [ "$warn" -eq 0 ] && echo "✅ Todo listo." || echo "✅ Listo, con avisos."
