@@ -1,25 +1,47 @@
 #!/usr/bin/env bash
 # edit-video · oídos y ojos.
 # Uso: bash scripts/ingest.sh VIDEO [idioma] [modelo]
-#   idioma: código ISO (es, en, pt, fr…). Por defecto: es
+#   idioma: código ISO (es, en, pt, fr…) o auto. Por defecto: auto (detecta con 30 s de audio).
+#           Si lo pasas y el audio dice otra cosa con claridad, se detiene: evita transcribir inglés
+#           como español (error real: 50 min perdidos). Forzar: EDIT_VIDEO_FORCE_LANG=1
 #   modelo: small | medium | large-v3. Por defecto: small
 # Deja todo en VIDEO.edit/ : metadata.json · audio.wav · transcript.json · transcript.txt · frames/
 set -euo pipefail
 
 VIDEO="${1:?Uso: ingest.sh VIDEO [idioma] [modelo]}"
-LANG_CODE="${2:-es}"
+LANG_CODE="${2:-auto}"
 MODEL="${3:-small}"
 [ -f "$VIDEO" ] || { echo "No existe: $VIDEO" >&2; exit 1; }
+
+BASE="${VIDEO%.*}"
+OUT="${BASE}.edit"
+mkdir -p "$OUT/frames"
+SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# ⓪ Idioma: detectar con 30 s de audio (desde el 10 % del video) y el modelo multilingüe ya descargado
+detect_lang(){
+  local m="$HOME/.cache/hyperframes/whisper/models/ggml-small.bin" d ss
+  command -v whisper-cli >/dev/null 2>&1 && [ -f "$m" ] || return 1
+  d=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$VIDEO")
+  ss=$(awk "BEGIN{s=$d*0.1; if(s>60)s=60; print s}")
+  ffmpeg -y -v error -ss "$ss" -t 30 -i "$VIDEO" -vn -ac 1 -ar 16000 "$OUT/_lang.wav" || return 1
+  whisper-cli -m "$m" -f "$OUT/_lang.wav" -dl 2>&1 | sed -n 's/.*auto-detected language: \([a-z]*\) (p = \([0-9.]*\)).*/\1 \2/p' | head -1
+  rm -f "$OUT/_lang.wav"
+}
+DET="$(detect_lang || true)"; DL="${DET%% *}"; DP="${DET##* }"
+if [ "$LANG_CODE" = "auto" ]; then
+  [ -n "$DL" ] || { echo "✗ No pude detectar el idioma. Pásalo: ingest.sh VIDEO es|en|pt…" >&2; exit 1; }
+  LANG_CODE="$DL"; echo "⓪ Idioma detectado: $LANG_CODE (p=$DP)"
+elif [ -n "$DL" ] && [ "$DL" != "$LANG_CODE" ] && awk "BEGIN{exit !($DP >= 0.6)}" && [ -z "${EDIT_VIDEO_FORCE_LANG:-}" ]; then
+  echo "✗ Pediste '$LANG_CODE' pero el audio suena a '$DL' (p=$DP). Repite con '$DL', o fuerza con EDIT_VIDEO_FORCE_LANG=1." >&2
+  exit 3
+fi
 
 # Nunca un modelo .en si el idioma no es inglés: el default de HyperFrames es small.en.
 if [ "$LANG_CODE" != "en" ] && [[ "$MODEL" == *.en ]]; then
   echo "⚠ $MODEL es solo inglés y el idioma es '$LANG_CODE'. Uso ${MODEL%.en}." >&2
   MODEL="${MODEL%.en}"
 fi
-
-BASE="${VIDEO%.*}"
-OUT="${BASE}.edit"
-mkdir -p "$OUT/frames"
 
 echo "① Metadatos"
 ffprobe -v error -print_format json -show_format -show_streams "$VIDEO" > "$OUT/metadata.json"
@@ -35,6 +57,9 @@ echo "③ Transcripción · idioma=$LANG_CODE · modelo=$MODEL"
 npx -y hyperframes transcribe "$OUT/audio.wav" -d "$OUT" -l "$LANG_CODE" -m "$MODEL" --json > "$OUT/transcribe.log" 2>&1 || {
   echo "   ✗ Falló la transcripción. Ver $OUT/transcribe.log" >&2; exit 1; }
 [ -f "$OUT/transcript.json" ] || { echo "   ✗ No se generó transcript.json. Ver $OUT/transcribe.log" >&2; exit 1; }
+
+# Diccionario permanente: global → clipper → cliente → proyecto, antes de que nadie lo lea
+python3 "$SKILL_DIR/scripts/diccionario.py" aplicar "$OUT/transcript.json" || echo "   ⚠ diccionario no aplicado" >&2
 
 # transcript.txt legible: una línea por frase — corta en pausas > 0.35 s, en puntuación o cada 10 palabras
 python3 - "$OUT/transcript.json" "$OUT/transcript.txt" <<'PY' || true
@@ -64,4 +89,4 @@ N=$(ls "$OUT/frames" | wc -l | tr -d ' ')
 echo "   $N frames a $RATE fps (frame n = segundo $( [ $RATE = 2 ] && echo '(n-1)/2' || echo 'n-1'))"
 
 echo "✅ Listo en $OUT/"
-echo "   Siguiente: corregir nombres propios en transcript.json, leer TODOS los frames, y armar el beat sheet."
+echo "   Siguiente: revisar nombres propios (cada corrección nueva → diccionario.py agregar), leer TODOS los frames, y armar el beat sheet."

@@ -21,7 +21,8 @@ Si el proyecto tiene cliente (`cliente: <slug>` en su `AGENTS.md`, o el usuario 
 `kit/README.md`. Parte de `kit/plantilla.html` si existe. ¿Cliente nuevo? `sync.sh new-client <slug>`
 y el onboarding llena su `CLIENTE.md`.
 
-**2 · Durante**: cada nota del director, cada defecto que caza el revisor y cada cosa que funcionó
+**2 · Durante**: cada nombre mal transcrito que se corrige va **en ese momento** al diccionario
+(`scripts/diccionario.py agregar … --cliente <slug>`); cada nota del director, cada defecto que caza el revisor y cada cosa que funcionó
 especialmente bien se apunta al momento en `SNAPSHOTS.md` del proyecto.
 
 **3 · Al entregar** (Paso 9), clasifica cada aprendizaje con una pregunta:

@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.5.0 — 2026-09-29
+**Lo mejor de clipper, sin duplicarlo.**
+- `scripts/diccionario.py`: diccionario permanente de correcciones en capas (global → clipper →
+  cliente → proyecto). Palabra completa, sin mayúsculas, y **correcciones de varias palabras a nivel de
+  palabra** ("near Turing" → "nearshoring" funde los tokens y conserva los tiempos). `ingest.sh` lo
+  aplica solo; cada corrección nueva se guarda con `agregar`.
+- `ingest.sh`: el idioma **se detecta** (30 s, modelo multilingüe ya descargado) si no se pasa, y
+  **se verifica** si se pasa: si el audio dice otra cosa, se detiene con código 3.
+- `references/clipper.md` y Paso 0: video largo → muchos clips va a clipper; aquí solo los que
+  merecen nivel estudio. Una pregunta al empezar: rápido, estudio o los dos.
+
 ## 2.4.0 — 2026-09-29
 **Dos repos y autoaprendizaje.**
 - Área de clientes en un repo **privado** aparte (`edit-video-clients`): por cliente `CLIENTE.md`
