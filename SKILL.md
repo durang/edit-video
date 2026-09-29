@@ -226,7 +226,7 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/motion-design.md` | **Nivel estudio**: sistema de coherencia, mapas, palabras detrás de la persona, cierre con personaje, diseño sonoro |
-| `references/mejora-continua.md` | **Cuándo se investiga**: retro por video, búsqueda dirigida, radar quincenal, estado del arte trimestral |
+| `references/mejora-continua.md` | **Cuándo se investiga**: retro por video, búsqueda dirigida, radar quincenal (días 1 y 15) con revisión profunda de los niveles 2 y 3 |
 | `LIMITACIONES.md` · `references/radar.md` | Lo que aún no sale bien (lo vigila el radar) · bitácora de cada radar |
 | `references/niveles.md` | **Los niveles**: motor, línea de diseño, comandos, aprobación |
 | `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
