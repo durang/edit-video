@@ -1,0 +1,54 @@
+# Reglas de este proyecto de video
+
+> Copia este archivo como `CLAUDE.md` en la carpeta donde estén tus videos.
+> Claude lo lee en cada sesión, así no repites nunca estas reglas.
+
+## Identidad
+
+- **Nombre:** [tu nombre, escrito como quieres que aparezca]
+- **Handle:** [@tuhandle]
+- **Marca:** [nombre de marca]
+- **Producto(s):** [nombres]
+
+**Estos nombres se corrigen siempre en la transcripción de Whisper y en los subtítulos.**
+
+## Marca
+
+- **Tipografía titulares:** [fuente]
+- **Tipografía subtítulos:** [fuente]
+- **Color primario:** [#hex]
+- **Color de acento** (palabra clave de cada frase): [#hex]
+- **Logo:** [ruta al archivo]
+
+## Formato por defecto
+
+- **Relación de aspecto:** 9:16 vertical
+- **Safe zone:** nada de texto en el 20% inferior ni a menos de [X]px del borde derecho
+- **Altura de subtítulos:** 65% de la pantalla
+- **Palabras por subtítulo:** 2 a 3
+
+## Ritmo
+
+- Máximo **un zoom cada cinco segundos**
+- Pausas de más de **0.3 s** se cortan, nunca dentro de una palabra
+- Un beat corto antes de cada remate
+- Nunca el mismo efecto de sonido dos veces seguidas
+
+## Audio
+
+- **Música:** [ruta] a volumen bajo, bajando más mientras hablo
+- **SFX:** carpeta `sfx/`
+- **Mi voz nunca se sustituye ni se re-sintetiza**
+
+## Flujo obligatorio
+
+1. Transcripción + frames antes de nada
+2. **Beat sheet y esperar OK** — nunca construir antes
+3. Rough cut, reportar duración nueva
+4. Efectos, cada uno anclado a su palabra
+5. Preview, notas con tiempo, snapshot para verificar
+6. Render
+
+## Versiones
+
+Guardar `v1`, `v2`, `v3`... antes de cada ronda de cambios.
