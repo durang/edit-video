@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.0 — 2026-09-29
+**Quien descarga el skill también se mantiene al día.**
+- `check.sh`: compara la versión instalada con la de GitHub en cada sesión y avisa con el comando
+  para actualizar (el agente pide permiso).
+- `CONTRIBUTING.md`: cómo proponer mejoras (issue / PR), nunca con datos de clientes.
+- `mejora-continua.md`: el radar del dueño revisa también issues y PRs (nunca fusiona solo); quien
+  descarga recibe mejoras por actualización y propone por issue/PR; radar propio en modo informe.
+
 ## 3.1.0 — 2026-09-29
 **Mejora continua con ritmo, no a ciegas.**
 - `references/mejora-continua.md`: retro de 3 preguntas en cada entrega (sin internet), búsqueda

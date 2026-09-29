@@ -71,6 +71,15 @@ if [ -f "$SD/clipper/clipper.py" ] && command -v python3 >/dev/null 2>&1; then
          "macOS: brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg"; fi
 else w "Niveles 1–2: falta clipper/ o python3" "reinstala el skill: npx skills add durang/edit-video -g -y"; fi
 
+# ¿Versión al día? El repo cambia seguido: cada sesión compara con GitHub (5 s máx., sin red se salta)
+LOCAL_V=$(sed -n 's/^  version: *//p' "$SD/SKILL.md" | head -1)
+REMOTE_V=$(curl -fsS -m 5 https://raw.githubusercontent.com/durang/edit-video/main/SKILL.md 2>/dev/null | sed -n 's/^  version: *//p' | head -1)
+if [ -n "$REMOTE_V" ] && [ -n "$LOCAL_V" ]; then
+  if [ "$REMOTE_V" != "$LOCAL_V" ] && [ "$(printf '%s\n%s\n' "$LOCAL_V" "$REMOTE_V" | sort -V | tail -1)" = "$REMOTE_V" ]; then
+    w "Hay versión nueva de edit-video: $LOCAL_V → $REMOTE_V (qué cambió: CHANGELOG.md en GitHub)" "npx skills update edit-video -g -y   (con permiso del usuario)"
+  else g "edit-video $LOCAL_V (al día)"; fi
+fi
+
 # Área de clientes y aprendizaje (opcional)
 CONF="$HOME/.config/edit-video/config"; [ -f "$CONF" ] && . "$CONF"
 CL="${EDIT_VIDEO_CLIENTS:-$HOME/.agents/edit-video-clients}"

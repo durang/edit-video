@@ -55,4 +55,5 @@ Luego reinstala el skill para que todos los agentes de la máquina lean la versi
 4. **No se aprende de lo que no se verificó.** Solo entra lo que pasó el revisor final o lo que dijo el director.
 5. **Lo viejo que se contradice se corrige**, no se apila: se edita la línea y se anota la fecha.
 6. Sin permiso de escritura en `edit-video` (otra persona usando el skill), los aprendizajes
-   generales van a `edit-video-clients/_general/APRENDIZAJES.md` hasta que el dueño los suba.
+   generales se apuntan en su `edit-video-clients/_general/APRENDIZAJES.md` y, si el usuario quiere,
+   se **proponen como issue o PR** (`CONTRIBUTING.md`). El dueño los revisa en su radar.

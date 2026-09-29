@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.1.0
+  version: 3.2.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -64,6 +64,11 @@ bash SKILL_DIR/scripts/check.sh
 - **Nunca instales sin permiso. Nunca trabajes alrededor de lo que falta.**
 
 Una vez en verde, no se vuelve a instalar: las siguientes sesiones pasan directo.
+
+**Versión al día.** El repo cambia seguido. `check.sh` compara la versión instalada con la de GitHub;
+si hay una nueva, **díselo al usuario** con lo que cambió (CHANGELOG) y actualiza con su permiso
+(`npx skills update edit-video -g -y`) antes de empezar. Mejoras que sirvan a todos y no seas el dueño
+del repo: issue o PR (`CONTRIBUTING.md`).
 
 ## Paso 2 · Reglas del proyecto — onboarding la primera vez
 

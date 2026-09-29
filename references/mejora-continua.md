@@ -50,6 +50,9 @@ Una tarea programada abre una sesión y hace esto, en este orden:
 6. Si no hay nada que valga la pena: una línea "sin novedades relevantes" y se acaba. Eso también es
    un resultado.
 
+El radar también **revisa los issues y pull requests abiertos** de `durang/edit-video`: los resume,
+prueba lo que se pueda y propone aceptar o no. **Nunca fusiona un PR de otra persona por su cuenta.**
+
 ### Fuentes vigiladas
 
 | Qué | Dónde |
@@ -67,3 +70,16 @@ Una tarea programada abre una sesión y hace esto, en este orden:
 - **Una novedad sin una limitación que resuelva es un "quizá"**: se apunta en `radar.md`, no se adopta.
 - **Las decisiones de diseño y de herramientas las toma Sergio.** El radar implementa lo obvio y propone lo demás.
 - Todo radar deja rastro en `radar.md`, aunque sea "sin novedades".
+
+## Si descargaste el skill (no eres el dueño del repo)
+
+El radar programado es **del dueño**: es el único que cambia el repo. Tú recibes sus mejoras así:
+
+1. **Cada sesión**, `check.sh` compara tu versión con la de GitHub y, si hay una nueva, te lo dice con
+   el comando para actualizar (`npx skills update edit-video -g -y`). Tu agente te pide permiso.
+2. **Tu retro** (las 3 preguntas) funciona igual. Lo de tus clientes va a **tu** área privada.
+3. **Lo que serviría a todos** se propone con un issue o un PR (`CONTRIBUTING.md`), nunca con datos
+   de clientes. El dueño lo revisa en su radar.
+
+Si quieres tu propio radar, prográmalo en **modo informe**: investiga y te deja propuestas, pero no
+sube nada al repo público (no tienes permiso) — solo a tu área privada o como issue.
