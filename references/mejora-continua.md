@@ -9,8 +9,7 @@ en seis meses. La regla: **se investiga cuando hay una razón, y se vigila con c
 |---|---|---|---|
 | **Retro** | Al entregar **cada** video (Paso 9) | Sin buscar en internet. 3 preguntas sobre lo que acaba de pasar | casi nada |
 | **Búsqueda dirigida** | Solo si pasó algo de la lista de abajo | 2–4 búsquedas sobre **ese** problema | bajo |
-| **Radar** | **Cada 2 semanas** (tarea programada) | Novedades de las herramientas + revisar cada limitación abierta | ≤ 12 búsquedas, informe de 1 página |
-| **Estado del arte** | **Cada 3 meses** (el radar de ese mes) | Revisar el contrato del nivel 3 y las líneas de diseño contra lo que se hace ahora | ≤ 25 búsquedas |
+| **Radar** | **Cada 2 semanas**, días 1 y 15 (tarea programada, decisión de Sergio) | Limitaciones abiertas + novedades de herramientas + **revisión profunda de los niveles 2 y 3** (técnicas, estilo, retención) | ≤ 25 búsquedas, informe de 1 página |
 
 ## 1 · Retro (cada video, obligatoria)
 
@@ -42,9 +41,13 @@ Una tarea programada abre una sesión y hace esto, en este orden:
 2. **Mira las fuentes vigiladas** (abajo) desde la fecha del último radar en `radar.md`.
 3. Escribe en `radar.md` una entrada: fecha, qué hay nuevo, **qué limitación resolvería**, y una
    propuesta concreta (qué archivo cambia, cómo se prueba).
-4. **No cambia el skill por su cuenta.** Lo que sea solo documentación se puede dejar listo en una
-   rama; lo que cambie herramientas, versiones o el diseño, se le propone a Sergio. Él aprueba.
-5. Si no hay nada que valga la pena: una línea "sin novedades relevantes" y se acaba. Eso también es
+4. **Mejora obvia → se implementa.** Obvia = no cambia herramientas ni instala nada, no cambia la
+   línea de diseño de ningún nivel, y se puede probar ahí mismo: una regla nueva en `qa.md`, una
+   alarma en `qa.sh`, un dato corregido, una técnica documentada con su fuente, un arreglo de un
+   script con su prueba. Se prueba, se sube versión (parche/menor), `CHANGELOG`, `sync.sh push`.
+5. **Lo demás se propone** (herramienta nueva, instalar algo, cambiar una línea de diseño o el
+   contrato de un nivel, activar el nivel 4). Sergio aprueba.
+6. Si no hay nada que valga la pena: una línea "sin novedades relevantes" y se acaba. Eso también es
    un resultado.
 
 ### Fuentes vigiladas
@@ -56,11 +59,11 @@ Una tarea programada abre una sesión y hace esto, en este orden:
 | Transcripción | releases de `whisper.cpp` y `openai-whisper` |
 | Generativos (nivel 4 y fondos) | modelos nuevos en Higgsfield (`models_explore`) · Seedance · el canon de `seedance2_5` |
 | FFmpeg / libass | notas de versión, y si Homebrew vuelve a traer libass |
-| Estilo y retención | análisis de edición de video corto del último trimestre (solo en el radar trimestral) |
+| Estilo y retención (niveles 2 y 3) | análisis recientes de edición de video corto, motion design y tipografía cinética |
 
 ## Reglas
 
 - **Nada entra al skill sin probarse** en un video o en una prueba real.
 - **Una novedad sin una limitación que resuelva es un "quizá"**: se apunta en `radar.md`, no se adopta.
-- **Las decisiones de diseño y de herramientas las toma Sergio.** El radar propone.
+- **Las decisiones de diseño y de herramientas las toma Sergio.** El radar implementa lo obvio y propone lo demás.
 - Todo radar deja rastro en `radar.md`, aunque sea "sin novedades".

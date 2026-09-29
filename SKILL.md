@@ -181,7 +181,7 @@ fue a cada sitio. Procedimiento completo: `references/aprendizaje.md`.
 
 **Retro (sin buscar en internet), tres líneas:** ¿qué corrigió el director? ¿qué cazó el revisor que
 el constructor no vio? ¿qué no pudimos hacer o salió peor de lo querido? Lo tercero, si no tiene
-arreglo hoy, va a `LIMITACIONES.md`: es lo que el **radar quincenal** vigila. Se busca en internet
+arreglo hoy, va a `LIMITACIONES.md`: es lo que el **radar quincenal** (días 1 y 15) vigila. Se busca en internet
 durante un trabajo **solo** con razón (fallo desconocido, defecto repetido, pedido que no sabemos
 hacer). Detalle: `references/mejora-continua.md`.
 

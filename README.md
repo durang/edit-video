@@ -72,8 +72,8 @@ Luego, siempre igual:
 
 Cada entrega cierra con una **retro** de tres preguntas (sin gastar en búsquedas). Lo que no sale bien
 va a [`LIMITACIONES.md`](LIMITACIONES.md). **Cada 2 semanas un radar** revisa si algo nuevo resuelve
-esas limitaciones y qué cambió en las herramientas; **cada 3 meses**, el estado del arte del nivel 3.
-Propone; no cambia nada sin aprobación. Detalle: [`references/mejora-continua.md`](references/mejora-continua.md).
+esas limitaciones, qué cambió en las herramientas, y el estado del arte de los niveles 2 y 3.
+Implementa lo obvio (probado); lo demás lo propone para aprobación. Detalle: [`references/mejora-continua.md`](references/mejora-continua.md).
 
 ## Área de clientes y autoaprendizaje
 

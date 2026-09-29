@@ -3,8 +3,8 @@
 ## 3.1.0 — 2026-09-29
 **Mejora continua con ritmo, no a ciegas.**
 - `references/mejora-continua.md`: retro de 3 preguntas en cada entrega (sin internet), búsqueda
-  dirigida solo con razón, **radar cada 2 semanas** (≤ 12 búsquedas) y **estado del arte cada 3
-  meses**. El radar propone; Sergio aprueba.
+  dirigida solo con razón, y **radar cada 2 semanas** (días 1 y 15) con revisión profunda de los
+  niveles 2 y 3. Lo obvio lo implementa (probado y versionado); lo demás lo propone a Sergio.
 - `LIMITACIONES.md`: 8 limitaciones abiertas con su arreglo provisional y qué las resolvería. El radar
   busca primero soluciones a estas, no novedades por novedad.
 - `references/radar.md`: bitácora; primera entrada con lo investigado para la 3.0.
