@@ -1,5 +1,17 @@
 # /edit-video
 
+**Una máquina de edición profesional, con cualquier agente.** Cuatro niveles:
+
+| Nivel | Qué sale | Cuánto tarda |
+|---|---|---|
+| **1 · Recorte** | Clips limpios de un video largo: subtítulo palabra por palabra, gancho, logo | minutos |
+| **2 · Editorial** | Lo mismo con tipografía de estudio, paleta, caja en la palabra activa, rótulo, barra de progreso y grade | minutos |
+| **3 · Estudio** | Motion design avanzado (mapas, profundidad, datos, cierre con personaje, diseño sonoro), con propuesta aprobada antes | horas |
+| **4 · Director** *(propuesto)* | Lo del 3 + planos generados con IA, 3D y música a la imagen | días |
+
+Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, HyperFrames. Detalle:
+[`references/niveles.md`](references/niveles.md) · contrato del nivel 3: [`references/nivel-3.md`](references/nivel-3.md).
+
 **Monta videos que ya existen, con cualquier agente.** Subtítulos, cortar silencios, zooms,
 rótulos, gráficos encima, música, reencuadre a vertical, recorte de fondo, objetos 3D, estilos con
 nombre — y unir clips generados con IA en una pieza terminada.

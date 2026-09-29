@@ -1,6 +1,6 @@
 # clipper — video largo a muchos clips
 
-[`durang/clipper`](https://github.com/durang/clipper) corta un video largo en clips cortos con
+`clipper/` (dentro de este skill desde la 3.0; antes `durang/clipper`) corta un video largo en clips cortos con
 subtítulos quemados, marca de agua y audio normalizado, en varios formatos a la vez. FFmpeg + Whisper,
 sin HyperFrames. Es **sustractivo**: recorta lo que existe. `/edit-video` es **de montaje**: añade.
 
@@ -16,7 +16,7 @@ Ninguno duplica al otro:
 
 | Nivel | Qué sale | Quién lo termina |
 |---|---|---|
-| **1 · Clásico** (`--nivel 1`) | Subtítulo blanco con contorno, palabra activa amarilla, gancho, logo | clipper, en minutos |
+| **1 · Recorte** (`--nivel 1`) | Subtítulo blanco con contorno, palabra activa amarilla, gancho, logo | clipper, en minutos |
 | **2 · Editorial** (`--nivel 2`) | La tipografía de este skill (Inter Tight, Instrument Serif, JetBrains Mono), paleta tinta/papel/acento, palabra activa sobre caja medida al píxel, rótulo, barra de progreso, gancho en dos líneas, grade | clipper, en minutos |
 | **3 · Estudio** (`--nivel 3`) | Corte limpio en el encuadre original + `*-PROPUESTA.md` con el beat sheet cronometrado y 3 cuadros | **Este skill**, después de que el director apruebe la propuesta |
 
@@ -85,8 +85,9 @@ ffmpeg -i TOMA.mp4 -af silencedetect=noise=-35dB:d=0.3 -f null - 2>&1 | grep sil
 ## Instalar
 
 ```bash
-git clone https://github.com/durang/clipper ~/clipper && ffmpeg -version | grep -q libass && echo ok
-pip install -U openai-whisper yt-dlp
+# viene con el skill: SKILL_DIR/clipper/clipper.py
+ffmpeg -hide_banner -filters | grep -q " ass " && echo "libass ok"
+pip install -U openai-whisper yt-dlp      # transcribir y bajar (opcionales si ya hay transcripción)
 ```
 
 Con permiso del usuario, como todo lo demás.

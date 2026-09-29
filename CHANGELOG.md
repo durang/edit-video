@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.0.0 — 2026-09-29
+**Una sola máquina de edición, en niveles.**
+- **clipper entra al repo** (`clipper/`, con su historial completo): motor de los niveles 1–2 y del
+  corte limpio del 3. `durang/clipper` queda como puntero.
+- **Niveles** en `SKILL.md`, `README.md` y `references/niveles.md`: 1 Recorte, 2 Editorial,
+  3 Estudio, 4 Director (propuesto). Cada uno con su motor, su línea de diseño y su aprobación.
+- `references/nivel-3.md`: **contrato del nivel 3** (12 puntos que el revisor comprueba), tiempos y
+  curvas, técnicas con los nombres reales de HyperFrames, GSAP completo gratis, lo que ya no se hace
+  en 2026, y la propuesta. Con fuentes.
+- `references/nivel-4.md`: propuesta del nivel Director (insertos generados, 2.5D/3D, música,
+  versiones del gancho, másters por formato; tres puertas de aprobación).
+- `check.sh`: libass (niveles 1–2) y el motor clipper.
+
 ## 2.6.0 — 2026-09-29
 **clipper en tres niveles, y el nivel 3 pasa por aquí con aprobación.**
 - `references/clipper.md`: niveles 1 Clásico, 2 Editorial (la tipografía y la paleta de este skill,

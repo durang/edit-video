@@ -1,6 +1,9 @@
-# clipper
+# clipper — el motor de los niveles 1 y 2 de /edit-video
 
 De video largo a clips verticales con subtítulos quemados.
+
+> Vive dentro de [`durang/edit-video`](https://github.com/durang/edit-video) desde la versión 3.0.
+> `/edit-video` decide el nivel y lo llama; también se usa solo, por terminal o con Studio.
 
 Sin suscripciones, sin subir tu material a un tercero, sin API keys. Corre sobre
 `ffmpeg` + `whisper` en tu propia máquina.
@@ -52,9 +55,9 @@ Requisitos:
 - Python 3.9+
 
 ```bash
-git clone https://github.com/durang/clipper.git
-cd clipper
-chmod +x clipper.py
+# viene con /edit-video (ver su README). A mano:
+git clone https://github.com/durang/edit-video.git
+cd edit-video/clipper
 
 # verificar que ffmpeg trae libass
 ffmpeg -version | grep libass
@@ -193,14 +196,14 @@ Todo lo de encuadre se puede fijar **por clip** en el JSON (`fit`, `crop_x`, `ti
 ### Tres niveles
 
 ```bash
-python3 clipper.py render t.json clips.json --nivel 1    # Clásico (default)
+python3 clipper.py render t.json clips.json --nivel 1    # Recorte (default)
 python3 clipper.py render t.json clips.json --nivel 2    # Editorial
 python3 clipper.py render t.json clips.json --nivel 3    # Estudio: corte limpio + propuesta
 ```
 
 | Nivel | Qué es | Cuándo |
 |---|---|---|
-| **1 · Clásico** | Blanco con contorno, palabra activa en amarillo, gancho, logo con sombra | Volumen, rápido, cualquier red |
+| **1 · Recorte** | Blanco con contorno, palabra activa en amarillo, gancho, logo con sombra | Volumen, rápido, cualquier red |
 | **2 · Editorial** | Tipografía de estudio (Inter Tight, Instrument Serif, JetBrains Mono — incluidas en `fonts/`, OFL), paleta tinta/papel/acento, **palabra activa sobre caja de color**, rótulo superior (`kicker` + `fuente`), barra de progreso, gancho en dos líneas (`"hook": "Lo que\|nadie te dice"` → serif + display), degradados suaves de legibilidad y un grade de color | Marca, clientes, piezas que tienen que verse caras sin motion |
 | **3 · Estudio** | No quema nada: corta limpio en el encuadre original con la voz intacta y escribe `NN-slug-PROPUESTA.md` con el beat sheet ya cronometrado y 3 cuadros de referencia | Los 1–3 mejores momentos. La propuesta se completa (concepto, gráficos, imágenes de Higgsfield, sonido), **el director la aprueba**, y se construye con [`/edit-video`](https://github.com/durang/edit-video) |
 
@@ -208,7 +211,7 @@ El nivel 2 coloca cada elemento con las **métricas reales de las fuentes** (`fo
 la caja de la palabra activa mide exactamente la palabra, los bloques nunca se salen del cuadro, y el
 subtítulo queda en la zona segura. Sin dependencias: sigue siendo solo librería estándar.
 
-**Plantillas:** `plantillas/1-clasico.json`, `2-editorial.json`, `3-estudio.json`. Encima se superpone
+**Plantillas:** `plantillas/1-recorte.json`, `2-editorial.json`, `3-estudio.json`. Encima se superpone
 la del cliente (`<área de clientes>/clients/<slug>/clipper.json`: colores, rótulos, logo) con
 `--cliente`, y encima un JSON propio con `--plantilla`. Ejemplo de cliente:
 

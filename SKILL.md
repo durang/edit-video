@@ -1,14 +1,26 @@
 ---
 name: edit-video
-description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
+description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed: generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 2.6.0
+  version: 3.0.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
 ---
 
-# /edit-video — montar un video que ya existe
+# /edit-video — la máquina de edición
+
+**Cuatro niveles, un solo skill.** El nivel decide el motor, la línea de diseño y la aprobación:
+
+| Nivel | Qué es | Motor | Aprobación |
+|---|---|---|---|
+| **1 · Recorte** | Clips limpios: subtítulo, palabra activa, gancho, logo | `clipper/` (FFmpeg) | sale directo |
+| **2 · Editorial** | Tipografía de estudio, paleta, caja en la palabra, rótulo, barra, grade | `clipper/` (FFmpeg) | sale directo |
+| **3 · Estudio** | Motion design avanzado, **siempre** (contrato en `references/nivel-3.md`) | HyperFrames | **propuesta aprobada** antes |
+| **4 · Director** *(propuesto)* | Lo del 3 + planos generados, 3D, música a la imagen | HyperFrames + Seedance/Higgsfield | tratamiento + animatic + cada inserto |
+
+Detalle, comandos y quién puede correr cada uno: `references/niveles.md`. Si el usuario no dijo el
+nivel, **una** pregunta: *"¿Nivel 1, 2 o 3? ¿O todos en 1–2 y los mejores en 3?"*
 
 Tú (el agente) no reproduces video. Así que antes de editar nada te das **oídos** (transcripción
 con el tiempo de cada palabra) y **ojos** (fotogramas). Con eso planeas el montaje, lo enseñas,
@@ -28,7 +40,8 @@ Este skill **no reimplementa HyperFrames**: pone el método, las reglas y el idi
 | Un video grabado, o clips ya generados | **Seguir aquí** |
 | Solo una idea, sin material filmado | **No es este skill.** Se genera primero (Seedance, Grok, Veo, Kling…) y el montaje entra al final. Ver `references/pipeline.md` |
 | Solo gráficos, sin cámara (logo animado, explicativo sin cara) | Enrutar directo a HyperFrames: `/motion-graphics`, `/faceless-explainer` |
-| **Un video largo** (entrevista, podcast, charla) → **varios clips cortos** | **clipper**: nivel 1 (rápido) o 2 (editorial) en volumen; los mejores en nivel 3 → propuesta, OK del director, y se construyen aquí. Ver `references/clipper.md` |
+| **Un video largo** (entrevista, podcast, charla) → **varios clips cortos** | `clipper/` (viene dentro): niveles 1–2 en volumen; los mejores en nivel 3 → propuesta, OK, y se construyen aquí. Ver `references/niveles.md` y `references/clipper.md` |
+| Un video corto que quiere **nivel 3** | Propuesta según `references/nivel-3.md` → **PARADA** → Pasos 3–9 |
 
 Si no está claro, **una** pregunta de una línea.
 
@@ -207,6 +220,10 @@ fue a cada sitio. Procedimiento completo: `references/aprendizaje.md`.
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/motion-design.md` | **Nivel estudio**: sistema de coherencia, mapas, palabras detrás de la persona, cierre con personaje, diseño sonoro |
+| `references/niveles.md` | **Los niveles**: motor, línea de diseño, comandos, aprobación |
+| `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
+| `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
+| `clipper/` | Motor de los niveles 1–2 y del corte del 3 (`clipper.py`, `studio.py`, plantillas, fuentes) |
 | `references/clipper.md` | Video largo → muchos clips: cuándo clipper, cuándo aquí, y juntos |
 | `references/aprendizaje.md` | **Los dos repos**: área de clientes, qué va a cada uno, `sync.sh` |
 | `references/qa.md` | **Revisor final**: la checklist que decide si se entrega |

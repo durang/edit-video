@@ -606,7 +606,7 @@ def build_ass(segs: list[dict], start: float, end: float, vertical: bool,
 
 # ---------------------------------------------------------------- plantillas (niveles)
 #
-# Nivel 1 · Clásico    → build_ass() de arriba. Rápido, seguro.
+# Nivel 1 · Recorte    → build_ass() de arriba. Rápido, seguro.
 # Nivel 2 · Editorial  → build_ass_editorial(): tipografía de estudio, paleta, caja en la palabra
 #                        activa, rótulo, barra de progreso, gancho en dos líneas, grade suave.
 # Nivel 3 · Estudio    → no se quema nada: corte limpio + propuesta para /edit-video (ver cmd_render).
@@ -1280,7 +1280,7 @@ def main() -> int:
                    help="sin resaltar la palabra que se está diciendo")
     r.add_argument("--cliente", help="slug del cliente: su diccionario y su plantilla (clipper.json)")
     r.add_argument("--nivel", default="1", choices=["1", "2", "3"],
-                   help="1 clásico · 2 editorial (tipografía, paleta, detalles) · "
+                   help="1 recorte · 2 editorial (tipografía, paleta, detalles) · "
                         "3 estudio (corte limpio + propuesta para /edit-video)")
     r.add_argument("--plantilla", help="JSON que se superpone a la plantilla del nivel")
     r.set_defaults(func=cmd_render)

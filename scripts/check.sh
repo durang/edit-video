@@ -63,6 +63,14 @@ if [ "$ok" -eq 0 ]; then
   else w "hyperframes doctor marcó algo" "cat /tmp/edit-video-doctor.log  y seguir su indicación"; fi
 fi
 
+# Niveles 1–2: clipper (Python) + FFmpeg con libass
+SD="$(cd "$(dirname "$0")/.." && pwd)"
+if [ -f "$SD/clipper/clipper.py" ] && command -v python3 >/dev/null 2>&1; then
+  if ffmpeg -hide_banner -filters 2>/dev/null | grep -q " ass "; then g "Niveles 1–2 (clipper): listos"
+  else w "Niveles 1–2: tu FFmpeg no trae libass (no puede quemar subtítulos). El 3 funciona igual" \
+         "macOS: brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg"; fi
+else w "Niveles 1–2: falta clipper/ o python3" "reinstala el skill: npx skills add durang/edit-video -g -y"; fi
+
 # Área de clientes y aprendizaje (opcional)
 CONF="$HOME/.config/edit-video/config"; [ -f "$CONF" ] && . "$CONF"
 CL="${EDIT_VIDEO_CLIENTS:-$HOME/.agents/edit-video-clients}"
