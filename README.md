@@ -1,81 +1,82 @@
 # /edit-video
 
-Skill para **montar un video que ya existe** — subtítulos, cortar silencios, zooms, rótulos,
-pop-ups, música, reencuadre a vertical, recorte de fondo, objetos 3D y estilos con nombre.
+**Monta videos que ya existen, con cualquier agente.** Subtítulos, cortar silencios, zooms,
+rótulos, gráficos encima, música, reencuadre a vertical, recorte de fondo, objetos 3D, estilos con
+nombre — y unir clips generados con IA en una pieza terminada.
 
 No genera video. Monta el que ya tienes.
 
-## Cómo funciona
+Funciona en **Claude Code, OpenClaw, Hermes Agent, Codex, Cursor, Gemini CLI** y cualquier agente
+que lea skills en formato `SKILL.md`.
 
-Claude no puede reproducir un video, así que se le dan dos sentidos antes de editar:
-
-- **Oídos → Whisper**: transcripción con el tiempo de **cada palabra**
-- **Ojos → FFmpeg**: fotogramas fijos
-
-De ahí sale lo único que importa: **cada efecto se ancla a una palabra, no a un segundo.**
-
-El montaje lo construye **[HyperFrames](https://github.com/heygen-com/hyperframes)** (HeyGen), que
-ya trae unos veinte skills propios — subtítulos, gráficos encima, montaje libre, audio, recorte
-de fondo. **Este skill no los reimplementa**: es la capa encima que pone el método, el idioma
-(español por defecto), las reglas de marca y el checkpoint del beat sheet, y le pasa la
-construcción al skill del plugin que toca.
-
-## Instalación
+## Instalar
 
 ```bash
-# el skill
-git clone https://github.com/durang/claude-video-edit ~/.claude/skills/edit-video
-
-# las herramientas (macOS)
-brew install node ffmpeg python
-
-# el motor
-claude plugin marketplace add heygen-com/hyperframes
-claude plugin install hyperframes@hyperframes
-npx hyperframes doctor
+git clone https://github.com/durang/edit-video && cd edit-video && bash install.sh
 ```
 
-Detalle completo, incluido Windows: [`references/setup.md`](references/setup.md).
+Detecta tus agentes, instala el skill y el motor ([HyperFrames](https://github.com/heygen-com/hyperframes))
+en todos, y comprueba que no falte nada. Detalle y Windows: [`references/setup.md`](references/setup.md).
 
-## Uso
+## Usar
 
-En la carpeta donde esté tu video:
+Abre tu agente en la carpeta de tu video y di:
 
 ```
-/edit-video take.mp4 — subtítulos, córtale los silencios y hazlo vertical para Reels
+/edit-video mi-video.mp4 — subtítulos, córtale los silencios y hazlo vertical para Reels
 ```
 
-o sin la barra: *"edita take.mp4, ponle subtítulos…"*
+o en lenguaje normal: *"edita mi-video.mp4, ponle subtítulos y quítale las pausas"*.
 
-Claude transcribe, mira los frames, te enseña el **beat sheet** y espera tu OK antes de construir
-nada. Luego rough cut, efectos, preview y render.
+La primera vez te hace **seis preguntas** (idioma, cómo se escribe tu nombre, dónde publicas,
+colores, tipografía, logo) y guarda tus reglas en `AGENTS.md`. Nunca más las repites.
 
-Copia `CLAUDE.md.template` como `CLAUDE.md` en tu carpeta con tus fuentes, colores y safe zone,
-y no tendrás que repetirlas nunca.
+Luego, siempre igual:
+
+1. **Escucha y mira** — transcripción con el tiempo de cada palabra, y fotogramas
+2. **Te enseña el plan** (beat sheet) y **espera tu OK**
+3. **Rough cut** — fuera silencios y respiraciones
+4. **Construye** — cada efecto anclado a una palabra
+5. **Preview** — le das notas con el tiempo: *"en 0:07 el logo me tapa la cara"*
+6. **Render** — MP4 final, local o en la nube
+
+## Por qué funciona
+
+Un agente no puede ver un video. Así que se le dan **oídos** (Whisper: cada palabra con su tiempo)
+y **ojos** (FFmpeg: fotogramas). Con eso **cada efecto cae en una palabra exacta**, no en un segundo
+adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 
 ## Contenido
 
-| Archivo | Qué es |
+| | |
 |---|---|
-| `SKILL.md` | El método y las reglas duras |
-| `references/setup.md` | Instalación y comprobación |
+| `SKILL.md` | El método, los pasos y las reglas duras |
+| `install.sh` | Instala en todos tus agentes |
+| `scripts/check.sh` | Comprueba que no falte nada |
+| `scripts/ingest.sh` | Oídos y ojos en un comando, con el idioma bien puesto |
+| `templates/AGENTS.md.template` | Tus reglas de marca |
+| `references/onboarding.md` | Las seis preguntas de la primera vez |
+| `references/setup.md` | Instalación en detalle |
 | `references/routing.md` | Qué skill de HyperFrames construye cada cosa |
-| `references/pipeline.md` | Combinar con Seedance / Grok / cine-grade: generar → montar |
-| `references/film-it-right.md` | Cómo grabar una toma editable — **léelo antes de grabar** |
-| `references/prompts.md` | Prompts listos, de diario y para lucirse |
-| `references/styles.md` | Copiar un estilo con referencias o nombrando uno famoso |
+| `references/pipeline.md` | Combinar con Seedance, Grok, Veo, Kling: generar → montar |
+| `references/film-it-right.md` | **Cómo grabar una toma editable — léelo antes de grabar** |
+| `references/prompts.md` | Pedidos listos, de diario y para lucirse |
+| `references/styles.md` | Copiar un estilo |
 | `references/troubleshooting.md` | Defecto → arreglo |
-| `CLAUDE.md.template` | Tus reglas de estilo |
 
-## Dónde corre
+## Si hablas español (o cualquier idioma que no sea inglés)
 
-El montaje se arma **en tu máquina**. El render puede ser local (`hyperframes render`) o en la
-nube de HeyGen (`hyperframes cloud render`, con créditos).
+El modelo de Whisper por defecto de HyperFrames es **solo inglés** (`small.en`). Este skill siempre
+le pasa el idioma, así que cambia solo al modelo multilingüe. Si transcribes a mano:
+`npx hyperframes transcribe video.mp4 -l es`.
+
+## English
+
+`/edit-video` edits footage that already exists — captions, dead-air cuts, zooms, overlays, music,
+reframing, background removal — in any agent that reads `SKILL.md` skills, on top of HyperFrames.
+Install with `bash install.sh`. Docs are in Spanish; the skill works in any language.
 
 ## Crédito
 
-Método original: **[@pauloshimas](https://github.com/aipauloshimas) · The Creator Stack** (2026),
-"Let Claude Edit Your Videos". Motor: **HyperFrames**, de HeyGen.
-Este repo es la adaptación del método a un skill repetible, con las reglas duras explícitas.
-
-MIT.
+Método: **"Let Claude Edit Your Videos"**, [@pauloshimas](https://github.com/aipauloshimas) · The
+Creator Stack (2026). Motor: **HyperFrames**, de HeyGen. Skill: Sergio Duran. MIT.

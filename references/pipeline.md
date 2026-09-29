@@ -1,57 +1,56 @@
-# Pipeline completo — generar, iluminar, montar
+# Pipeline — generar, montar
 
-`/edit-video` es el **último eslabón**. Casi todo lo que se hace en el canon de Seedance/Grok
-termina aquí. Esto es lo que se combina con qué.
+`/edit-video` es **el último eslabón**. Lo que sale de un modelo generativo casi nunca está
+terminado: le faltan texto, subtítulos, ritmo, música y un cierre. Eso se hace aquí.
 
 ```
-  IDEA ─┬─► Seedance / Grok ─────────────────┐     (generar escenas, personajes, TV show, vlog)
-        │                                     │
-  TOMA ─┼─► multiángulo (Seedance) ──────────┤     (una toma → cobertura multicámara)
-  REAL  ├─► cine-grade (Seedance) ───────────┤     (la luz de una película)
-        ├─► swap Genjutsu (Higgsfield) ──────┤     (cambiar mundo, ropa, persona)
-        │                                     ▼
-        └──────────────────────────► /edit-video   (subtítulos, cortes, gráficos, música, render)
+  IDEA ──► modelo generativo (Seedance, Grok, Veo, Kling, Runway…) ──┐
+                                                                     │   escenas, personas,
+  TOMA REAL ──► re-filmado / re-iluminado / swap (Seedance, Genjutsu)─┤   cámara, luz, actuación
+                                                                     ▼
+                                                              /edit-video   texto, subtítulos,
+                                                                            gráficos, ritmo,
+                                                                            audio, render final
 ```
 
-## Qué aporta cada lado
+## Qué pone cada lado
 
-| Generación (Seedance / Grok / Genjutsu) | Montaje (`/edit-video` + HyperFrames) |
+| Generativo | `/edit-video` + HyperFrames |
 |---|---|
 | Personas, escenas, cámara, luz, actuación | Texto, subtítulos, gráficos, ritmo, audio |
-| **No** pone texto legible (lo rompe) | **Sí** pone texto perfecto, en tu fuente |
-| Clips de 4–30 s | Une clips de cualquier duración |
-| Audio generado o preservado | Mezcla, ducking, música, SFX |
+| **Escribe mal las letras** | **Texto perfecto**, en tu tipografía |
+| Clips de 4 a 30 segundos | Une clips de cualquier duración |
+| Audio generado o preservado | Mezcla, ducking, música, efectos |
 
-**Regla de oro de la combinación: el texto nunca se genera, se monta.** Seedance y Grok escriben
-mal las letras; los rótulos, subtítulos, precios y logos van siempre en HyperFrames encima.
+**Regla de oro: el texto nunca se genera, se monta.** Los modelos generativos rompen letras,
+rótulos, precios y logos. Todo eso va encima, en HyperFrames.
 
 ## Recetas
 
-### 1. Asesores Aldara con multiángulo + subtítulos
-1. Clip A y clip B por Seedance con los prompts de multiángulo.
-2. `/edit-video`: une A + B en orden, **audio original intacto**, subtítulos en español con
-   `/embedded-captions`, rótulo con el nombre de cada asesor la primera vez que habla con
-   `/talking-head-recut`, logo de Aldara al cierre.
+### Varias personas, cada una grabada por separado
+1. Si hace falta, cobertura multicámara de cada toma con el generativo.
+2. `/edit-video`: une en orden con el **audio original intacto**, subtítulos, y el nombre de cada
+   persona en un rótulo la primera vez que habla.
 
-### 2. Talking head con look de película
-1. `cine-grade` en Seedance: la luz de la película, mismo encuadre, misma voz.
-2. `/edit-video`: subtítulos en el estilo del género (tráiler, noir…), título de apertura.
+### Talking head con el look de una película
+1. Re-iluminado con el generativo (misma cara, misma voz, luz nueva).
+2. `/edit-video`: subtítulos en el estilo del género, título de apertura.
 
-### 3. Serie de personaje (@vigilante, Figo y el Humano)
-1. Episodio generado en Grok o Seedance.
-2. `/edit-video`: cabecera del show (logo animado con `/motion-graphics`), subtítulos, placa
-   con el nombre del episodio, música de cierre con `/hyperframes-audio`.
+### Serie o personaje recurrente
+1. Episodio generado.
+2. `/edit-video`: cabecera del show (logo animado con `motion-graphics`), subtítulos, placa con el
+   nombre del episodio, música de cierre con `hyperframes-audio`.
 
-### 4. Vlog de una toma con cameos
-1. Generado en Grok.
-2. `/edit-video`: subtítulos palabra por palabra, SFX en cada cameo, reencuadre 9:16.
+### Video de una toma generado (vlog, POV)
+1. Generado de una pieza.
+2. `/edit-video`: subtítulos palabra por palabra, SFX en los momentos clave, reencuadre 9:16.
 
-## Traspaso Seedance → montaje
+## Traspaso generativo → montaje
 
-- **Exportar siempre el MP4 del generador sin recomprimir** y dejarlo en la carpeta del montaje.
-- **Si el clip se generó en varias subidas** (Seedance corta en 30 s), nombrarlos en orden
-  (`A.mp4`, `B.mp4`) y decirlo en el primer prompt: *"une A y B en este orden"*.
-- **El render de Genjutsu vuelve ~0.1 s más corto** por la cola. Si hay que re-sincronizar
-  con el audio original, se hace aquí.
-- **La transcripción se hace sobre el clip generado, no sobre el original**: si el modelo movió
-  el timing, los subtítulos siguen al clip nuevo.
+- **Exporta el MP4 del generador sin recomprimir** y déjalo en la carpeta del montaje.
+- **Si se generó en varias subidas** (muchos modelos cortan en 15 o 30 s), nómbralas en orden
+  (`A.mp4`, `B.mp4`…) y dilo en el primer pedido: *"une A y B en este orden"*.
+- **Algunos generadores devuelven el clip unas décimas más corto**, recortado por la cola. Si hay
+  que re-sincronizar con el audio original, se hace aquí.
+- **Transcribe el clip generado, no el original.** Si el modelo movió el timing, los subtítulos
+  tienen que seguir al clip nuevo.

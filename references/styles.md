@@ -5,7 +5,7 @@ Dos caminos, y se pueden mezclar.
 ## A · Enseñarle una referencia tuya
 
 Guarda capturas, un GIF o un clip corto del estilo que te gusta en una carpeta `refs`.
-Claude no puede reproducir el clip, así que le saca fotogramas y los estudia: composición,
+El agente no puede reproducir el clip, así que le saca fotogramas y los estudia: composición,
 tipografías, colores, cómo se mueven las cosas y el ritmo.
 
 > En la carpeta `refs` hay capturas y un clip corto de un estilo de motion graphics que me gusta.
@@ -19,7 +19,7 @@ Si la descripción falla, el montaje iba a fallar igual y te acabas de ahorrar u
 
 ## B · Nombrar un estilo famoso
 
-No hace falta referencia. Claude ya sabe cómo son, y rellena los detalles: las tipografías, las
+No hace falta referencia. El agente ya sabe cómo son, y rellena los detalles: las tipografías, las
 transiciones, el ritmo.
 
 - Tráiler de cine

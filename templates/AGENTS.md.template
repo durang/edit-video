@@ -1,0 +1,44 @@
+## edit-video
+
+> Reglas de este proyecto de video. Las lee cualquier agente (Claude Code vía `CLAUDE.md` → `@AGENTS.md`,
+> OpenClaw, Hermes, Codex, Cursor…). Se escribió en el onboarding; se edita a mano cuando quieras.
+
+### Identidad
+- **Nombre:** {{nombre}}
+- **Handle:** {{handle}}
+- **Marca:** {{marca}}
+- **Productos:** {{productos}}
+
+Estos nombres se corrigen **siempre** en la transcripción y en los subtítulos.
+
+### Idioma
+- **Idioma hablado:** {{idioma}}  → al transcribir: `-l {{codigo_idioma}}`
+- **Modelo de Whisper:** `small` (rápido) o `medium` (mejor). **Nunca el `.en` por defecto si no es inglés.**
+- **Subtítulos en:** {{idioma_subtitulos}}
+
+### Formato
+- **Relación de aspecto por defecto:** {{aspecto}}
+- **Safe zone:** nada de texto en el 20% inferior ni pegado al borde derecho
+- **Subtítulos:** 2–3 palabras a la vez, a la altura del 65% de la pantalla
+
+### Marca
+- **Color principal:** {{color_principal}}
+- **Color de acento** (palabra clave de cada frase): {{color_acento}}
+- **Tipografía titulares:** {{tipo_titulares}}
+- **Tipografía subtítulos:** {{tipo_subtitulos}}
+- **Logo:** {{ruta_logo}}
+
+### Audio
+- **Música:** {{ruta_musica}} — volumen bajo, bajando más mientras hablo
+- **Efectos:** {{carpeta_sfx}}
+- **Mi voz nunca se sustituye ni se re-sintetiza.**
+
+### Ritmo
+- Pausas de más de 0.3 s fuera, nunca dentro de una palabra
+- Un beat corto antes de cada remate
+- Máximo un zoom cada cinco segundos
+- Nunca el mismo efecto de sonido dos veces seguidas
+
+### Flujo obligatorio
+Transcripción + frames → **beat sheet y esperar OK** → rough cut → efectos → preview → snapshot → render.
+Guardar `v1`, `v2`, `v3`… antes de cada ronda.

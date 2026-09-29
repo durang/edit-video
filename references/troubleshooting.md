@@ -6,7 +6,7 @@ Describe qué ves y cuándo, o pega el error.
 |---|---|
 | **Nombres mal escritos** | Dar los nombres y marcas en el primer prompt. Corrige la transcripción **y** los subtítulos |
 | **El texto queda tapado por los botones de la app** | Declarar la safe zone: nada en el 20% inferior ni pegado al borde derecho |
-| **El efecto llega tarde** | Nombrar **la palabra** en la que debe empezar. Claude tiene el tiempo exacto de cada una |
+| **El efecto llega tarde** | Nombrar **la palabra** en la que debe empezar. El agente tiene el tiempo exacto de cada una |
 | **Dice que está hecho pero se ve mal** | `snapshot el frame en 0:07 y revísalo tú mismo`. Entonces ve lo que ves tú |
 | **El preview o el render fallan** | `npx hyperframes doctor`, y pegarle el error |
 | **Un cambio rompió algo** | Guardar versión antes de cada ronda (v1, v2...) y volver atrás |
@@ -26,7 +26,7 @@ Describe qué ves y cuándo, o pega el error.
 - Rough cut primero, efectos después.
 - Previsualizar secciones cortas antes de un render completo.
 - Las reglas de estilo (tipografías, colores, safe zone) en un `CLAUDE.md` en la carpeta.
-  Claude lo lee cada vez.
+  El agente lo lee cada vez.
 - Cuando un efecto funcione, pedir que lo guarde como plantilla.
 
 ## Racionalizaciones que hay que rechazar

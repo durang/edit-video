@@ -1,7 +1,7 @@
 # Grabar una toma que se pueda editar
 
 Cinco minutos de preparación deciden si los recortes, los subtítulos y los efectos salen limpios.
-Un teléfono basta. **Claude solo puede montar lo que la cámara capturó.**
+Un teléfono basta. **El agente solo puede montar lo que la cámara capturó.**
 
 ## Cámara y luz
 
@@ -23,9 +23,9 @@ Sin clean plate, los efectos de capas no se pueden hacer. Punto.
 
 ## Mientras hablas
 
-- **Una petición por frase**, en voz alta: *"Haz zoom en mi mano."* Claude la encuentra en la
+- **Una petición por frase**, en voz alta: *"Haz zoom en mi mano."* El agente la encuentra en la
   transcripción y la construye en esa palabra exacta.
-- **Una pausa corta después de cada petición.** Le da aire al efecto. Claude la recorta luego.
+- **Una pausa corta después de cada petición.** Le da aire al efecto. El agente la recorta luego.
 - **Quédate quieto un segundo donde cae el efecto** — por ejemplo, la mano abierta para un logo.
 - **Mira donde va a aparecer el efecto, y reacciona.** Eso es lo que lo vende.
 - **Di la llamada a la acción despacio y claro.** Es la línea que más importa.
@@ -34,7 +34,7 @@ Sin clean plate, los efectos de capas no se pueden hacer. Punto.
 
 1. **En cámara, mientras grabas.** El espectador te oye pedirlo y lo ve pasar. Es lo que hace
    que el video sea el propio demo.
-2. **Por escrito después, en el chat.** Igual de válido, porque Claude tiene la transcripción.
+2. **Por escrito después, en el chat.** Igual de válido, porque el agente tiene la transcripción.
 
 Las dos funcionan. La primera es más viral.
 

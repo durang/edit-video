@@ -1,99 +1,98 @@
-# Setup — quince minutos, una vez
+# Instalación — en cualquier agente
 
-## Las seis piezas
+`edit-video` es un skill en formato `SKILL.md`, el estándar abierto que leen Claude Code,
+OpenClaw, Hermes Agent, Codex, Cursor, Gemini CLI y más de 70 agentes. **Es la misma carpeta
+para todos.**
+
+## Lo que hace falta
 
 | Pieza | Para qué | Coste |
 |---|---|---|
-| **Claude Code** | El editor. Lee los archivos, corre comandos, escribe el montaje | Claude Pro ($20/mes) o superior |
-| **HyperFrames** | El motor. Convierte una página web en video y renderiza el MP4 | Gratis, open source (HeyGen) |
-| **Whisper** | Los oídos. Voz a texto con tiempo por palabra. **HyperFrames trae el suyo** (`hyperframes transcribe`) | Gratis (OpenAI) |
-| **FFmpeg** | Los ojos y las tijeras. Frames, cortes, audio, conversión | Gratis |
-| **Python 3** | Corre Whisper y los scripts sueltos | Gratis |
+| **Un agente** | Claude Code, OpenClaw, Hermes Agent, Codex, Cursor… | Según el agente |
+| **HyperFrames** | El motor: escribe el video como página web y lo renderiza en MP4. Trae su propio Whisper | Gratis, open source (HeyGen) |
+| **FFmpeg** | Los ojos y las tijeras: frames, cortes, audio | Gratis |
 | **Node.js 22+** | Corre HyperFrames | Gratis |
+| **Python 3** | Scripts auxiliares | Gratis |
 
-HyperFrames se baja su propio Chrome para renderizar.
+HyperFrames se baja su propio Chrome para renderizar y su propio modelo de Whisper la primera vez.
 
-## Instalación
-
-```bash
-# macOS
-brew install node ffmpeg python
-# whisper-cpp es opcional: HyperFrames transcribe por su cuenta y baja el modelo la primera vez
-
-# Windows
-winget install OpenJS.NodeJS.LTS
-winget install Gyan.FFmpeg
-winget install Python.Python.3.13
-python -m pip install faster-whisper
-```
-
-Claude Code:
+## Opción A — un comando (recomendado)
 
 ```bash
-curl -fsSL https://claude.ai/install.sh | bash      # macOS
-irm https://claude.ai/install.ps1 | iex             # Windows
+git clone https://github.com/durang/edit-video && cd edit-video && bash install.sh
 ```
 
-El plugin:
+`install.sh` detecta qué agentes tienes (Claude Code, OpenClaw, Hermes, Codex, Cursor, Gemini),
+instala `edit-video` y los skills de HyperFrames en todos, y corre la comprobación.
+
+Solo en uno:
+
+```bash
+bash install.sh hermes-agent
+bash install.sh claude-code,openclaw
+```
+
+## Opción B — a mano con el instalador universal
+
+```bash
+npx skills add durang/edit-video -g -a claude-code,openclaw,hermes-agent -y
+npx skills add heygen-com/hyperframes -g -a claude-code,openclaw,hermes-agent --skill '*' -y
+```
+
+En **Claude Code** también se puede usar el plugin oficial en vez de los skills sueltos:
 
 ```bash
 claude plugin marketplace add heygen-com/hyperframes
 claude plugin install hyperframes@hyperframes
 ```
 
-Comprobación:
+(`install.sh` lo detecta y no duplica.)
+
+## Las herramientas del sistema
 
 ```bash
+# macOS
+brew install node ffmpeg python
+
+# Windows
+winget install OpenJS.NodeJS.LTS
+winget install Gyan.FFmpeg
+winget install Python.Python.3.13
+
+# Linux
+sudo apt-get install -y nodejs ffmpeg python3
+```
+
+## Comprobar
+
+```bash
+bash scripts/check.sh          # desde la carpeta del skill
 npx hyperframes doctor
 ```
 
-**Después de instalar, abrir una terminal nueva o empezar una sesión de Claude nueva**, para que
-el sistema encuentre las herramientas.
+**Después de instalar, abre una terminal nueva o una sesión nueva del agente** para que encuentre
+las herramientas y el skill.
 
-## Prompt de instalación asistida
-
-Pegar en una sesión nueva de Claude Code, en cualquier carpeta:
-
-> Quiero que edites mis videos con HyperFrames. Comprueba si este ordenador tiene Node.js 22 o
-> más nuevo, FFmpeg, Python 3 y Whisper (faster-whisper en Windows, whisper-cpp en Mac). Instala
-> lo que falte, y pregúntame antes de cada instalación. Luego corre
-> `claude plugin marketplace add heygen-com/hyperframes` y
-> `claude plugin install hyperframes@hyperframes`, y corre `npx hyperframes doctor`.
-> Arregla lo que marque y termina con una lista de lo instalado, con versiones.
-
-## Transcribir en español
+## Transcribir en otro idioma que no sea inglés
 
 ```bash
-npx hyperframes transcribe TOMA.mp4 --json --model small
+npx hyperframes transcribe TOMA.mp4 -l es -m small --json
 ```
 
-**Nunca `--model small.en` ni `base.en` si se habla español.** Los `.en` son solo inglés y el
-plugin los usa en sus ejemplos. Para español: `small` (rápido), `medium` (mejor), `large-v3`
-(el mejor, más lento). El modelo se baja la primera vez.
+El modelo por defecto de HyperFrames es **`small.en`, solo inglés**. Con `-l es` (o `pt`, `fr`…)
+cambia solo al modelo multilingüe. **Sin `-l`, el español sale destrozado.** `scripts/ingest.sh`
+ya lo hace bien.
 
 ## Render en la nube (opcional)
 
 ```bash
-npx hyperframes auth login      # una vez, con cuenta HeyGen
-npx hyperframes cloud render    # zip, sube, renderiza en HeyGen, descarga el MP4
+npx hyperframes auth login      # una vez, con cuenta de HeyGen
+npx hyperframes cloud render    # sube, renderiza en HeyGen, descarga el MP4
 ```
 
-Se paga con créditos de HeyGen. Útil para renders largos o para no tener el Mac ocupado.
-El montaje sigue armándose en local.
-
-## Este skill
-
-```bash
-git clone https://github.com/durang/claude-video-edit ~/.claude/skills/edit-video
-```
-
-Se invoca con **`/edit-video`**, o simplemente pidiendo "edita mi video".
-
-O se sube como skill de cuenta para usarlo desde Cowork.
+Se paga con créditos de HeyGen. Útil para renders largos. El montaje sigue armándose en local.
 
 ## Dónde corre
 
-El montaje se arma **en la máquina del usuario**: Node, FFmpeg y los archivos de video viven ahí.
-El **render** puede ser local o en la nube de HeyGen (`cloud render`). Una sesión remota de
-Cowork puede lanzar los comandos en el ordenador por el puente, pero no puede correr HyperFrames
-dentro de su propio contenedor.
+En **la máquina del usuario**: ahí están Node, FFmpeg y los videos. Un agente remoto sin acceso
+al disco no puede correr esto.

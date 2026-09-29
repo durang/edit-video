@@ -1,122 +1,145 @@
 ---
 name: edit-video
-description: Use when the user wants a video that ALREADY EXISTS edited or packaged — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated in Seedance or Grok) into one finished piece. Sergio's layer on top of the HyperFrames plugin — Spanish-first defaults, his brand rules, the beat-sheet checkpoint — that routes the build to the right HyperFrames skill. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", a video file plus an edit request. NOT for generating new footage from a prompt (that is the Seedance/Grok canon) and NOT for multicam re-filming of one take (multiángulo).
+description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
+metadata:
+  version: 2.0.0
+  author: Sergio Duran
+  method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
+  engine: heygen-com/hyperframes
 ---
 
 # /edit-video — montar un video que ya existe
 
-**Método:** "Let Claude Edit Your Videos", **@pauloshimas / The Creator Stack**.
-**Motor:** plugin **HyperFrames** de HeyGen, que ya trae ~20 skills propios.
+Tú (el agente) no reproduces video. Así que antes de editar nada te das **oídos** (transcripción
+con el tiempo de cada palabra) y **ojos** (fotogramas). Con eso planeas el montaje, lo enseñas,
+esperas el OK, y le pasas la construcción a los skills de **HyperFrames**, que escriben el video
+como una página web y lo renderizan en MP4.
 
-Este skill **no reimplementa HyperFrames**. Es la capa de Sergio encima: decide **qué** se hace,
-con **qué reglas** y en **qué idioma**, y le entrega la construcción al skill del plugin que toca.
+**Cada efecto se ancla a una PALABRA, no a un segundo.** Eso es lo que hace que parezca hecho a mano.
+
+Este skill **no reimplementa HyperFrames**: pone el método, las reglas y el idioma, y enruta.
 
 ---
 
-## Paso 0 · ¿Esto es editar o crear?
+## Paso 0 · ¿Editar o crear?
 
-| El usuario tiene… | Va a… |
+| El usuario tiene… | Qué hacer |
 |---|---|
-| Un video grabado, o clips ya generados | **Aquí.** Seguir leyendo |
-| Solo una idea, sin material | **No es aquí.** Es generación: canon Seedance/Grok |
-| Una toma y quiere verla desde otros ángulos | **No es aquí.** Es multiángulo (Seedance) |
-| Una toma y quiere la luz de una película | **No es aquí.** Es cine-grade (Seedance) |
+| Un video grabado, o clips ya generados | **Seguir aquí** |
+| Solo una idea, sin material filmado | **No es este skill.** Se genera primero (Seedance, Grok, Veo, Kling…) y el montaje entra al final. Ver `references/pipeline.md` |
+| Solo gráficos, sin cámara (logo animado, explicativo sin cara) | Enrutar directo a HyperFrames: `/motion-graphics`, `/faceless-explainer` |
 
-Si no está claro, se pregunta en una línea. Si hay que generar **y** montar, se genera primero
-y el montaje entra al final (ver `references/pipeline.md`).
+Si no está claro, **una** pregunta de una línea.
 
-## Paso 1 · Preflight (una vez por sesión)
+## Paso 1 · Preflight — una vez por sesión
 
 ```bash
-npx hyperframes doctor
-claude plugin list | grep -i hyperframes
+bash <SKILL_DIR>/scripts/check.sh
 ```
 
-Si el plugin no está, se instala con permiso del usuario (`references/setup.md`). Nunca se
-trabaja alrededor de una herramienta que falta.
+Comprueba Node 22+, FFmpeg, HyperFrames y sus skills. Si algo falta, **enseña el comando exacto
+y pide permiso antes de instalar**. Nunca se trabaja alrededor de una herramienta que falta.
 
-## Paso 2 · Oídos y ojos
+## Paso 2 · Reglas del proyecto — onboarding la primera vez
+
+Busca en la carpeta del video un `AGENTS.md` (o `CLAUDE.md`) con una sección `## edit-video`.
+
+- **Si existe**, léela y aplícala en todo: idioma, nombres, colores, tipografías, safe zone, ritmo.
+- **Si no existe**, haz el onboarding de `references/onboarding.md`: seis preguntas cortas, y
+  escribe el archivo de reglas desde `templates/AGENTS.md.template`. Una sola vez; las siguientes
+  sesiones ya lo encuentran.
+
+## Paso 3 · Oídos y ojos
 
 ```bash
-npx hyperframes transcribe TOMA.mp4 --json --model small      # multilingüe
-ffmpeg -i TOMA.mp4 -vf fps=1 -q:v 3 frames/f_%03d.jpg
+bash <SKILL_DIR>/scripts/ingest.sh TOMA.mp4 es        # idioma hablado: es, en, pt…
 ```
 
-- **Nunca un modelo `.en`** (`small.en`, `base.en`) si se habla español. El propio plugin trae
-  `small.en` en sus ejemplos y con eso el español sale destrozado. Español → `small`, `medium`
-  o `large-v3`.
-- **Los nombres propios se dan antes de transcribir** — nombre, marca, producto — y se corrigen
-  en la transcripción y en los subtítulos. Whisper escribe los nombres como suenan.
-- Se leen **todos** los frames junto con las palabras, y se le cuenta al usuario qué dice,
-  cuándo, y qué hay en el plano en cada momento.
+Deja en `TOMA.edit/`: `metadata.json`, `transcript.json` (palabras con `start`/`end`),
+`transcript.txt` legible con tiempos, y `frames/` (2 fps si dura ≤10 s, 1 fps si más).
 
-**Cada efecto se ancla a una PALABRA, no a un segundo.** Es lo que hace que parezca hecho a mano.
+- **El idioma siempre se pasa.** El modelo por defecto de HyperFrames es `small.en`, **solo
+  inglés**: sin `-l es` el español sale destrozado. Con `-l es` cambia solo al modelo multilingüe.
+- **Corrige los nombres propios** (de las reglas del proyecto) en la transcripción antes de usarla.
+  Whisper escribe los nombres como suenan.
+- **Lee TODOS los frames junto con las palabras.** Luego cuéntale al usuario, breve: qué dice,
+  cuándo, qué hay en el plano, dónde están la cara, las manos y los huecos libres.
 
-## Paso 3 · Beat sheet, y PARADA
+## Paso 4 · Beat sheet, y PARADA
 
-Tabla: `inicio | fin | palabras exactas | qué aparece | dónde | sonido`.
-Declarar formato y safe zone. **Esperar el OK. Nunca construir antes.**
+```
+| inicio | fin | palabras exactas | qué aparece en pantalla | dónde | sonido |
+```
 
-## Paso 4 · Rough cut
+Declara formato (9:16 / 16:9 / 1:1 / 4:5), safe zone y duración estimada.
+**Espera el OK explícito. No construyas nada antes.** Cambiar en papel es gratis.
 
-Pausas de más de 0.3 s y respiraciones fuera, nunca dentro de una palabra, un beat corto antes
-de cada remate. Reportar la duración nueva.
+## Paso 5 · Rough cut
 
-## Paso 5 · Construir — se enruta al skill del plugin
+Fuera las pausas de más de 0.3 s y las respiraciones, **nunca dentro de una palabra**, con un beat
+corto antes de cada remate. Reporta la duración nueva. Efectos, después.
 
-| Lo que se pide | Skill de HyperFrames |
+## Paso 6 · Construir — enrutar al skill de HyperFrames
+
+| Lo que se pide | Skill |
 |---|---|
 | Subtítulos, sin tocar el metraje | `/embedded-captions` |
-| Tarjetas gráficas encima: títulos, rótulos, datos, citas, PiP | `/talking-head-recut` |
-| Montaje libre, varios clips, reel, sizzle, remix | `/general-video` |
+| Tarjetas encima: títulos, rótulos, datos, citas, panel lateral, PiP | `/talking-head-recut` |
+| Varios clips, reel, sizzle, remix, montaje libre | `/general-video` |
 | Pieza corta de motion: logo, contador, mapa, titular animado | `/motion-graphics` |
 | Música, ducking, fades, efectos de audio | `/hyperframes-audio` |
-| Recorte de fondo, TTS, música, imágenes, SFX | `/media-use` |
-| No está claro | `/hyperframes` — la puerta de entrada del plugin |
+| Recorte de fondo, TTS, SFX, música, imágenes | `/media-use` |
+| No está claro | `/hyperframes` — la puerta de entrada de HyperFrames |
 
-Detalle en `references/routing.md`. Al skill del plugin se le pasa **el beat sheet aprobado y
-las reglas del `CLAUDE.md`**: él construye, este skill vigila que se cumplan.
+Al skill de HyperFrames le pasas: **el beat sheet aprobado, el `transcript.json` corregido, las
+reglas del proyecto y el formato**. Él construye; tú vigilas que se cumpla cada regla.
+Detalle: `references/routing.md`.
 
-## Paso 6 · Preview, notas, verificar, render
+## Paso 7 · Preview, notas, verificar, render
 
 ```bash
-npx hyperframes preview                  # el usuario mira en el navegador
-npx hyperframes snapshot                 # Claude mira el frame antes de decir "listo"
-npx hyperframes render -o final.mp4      # render local
-npx hyperframes cloud render             # o en la nube de HeyGen, con créditos
+npx hyperframes preview                 # el usuario lo mira en su navegador
+npx hyperframes snapshot                # TÚ miras el frame antes de decir "listo"
+npx hyperframes render -o final.mp4     # render local
+npx hyperframes cloud render            # o en la nube de HeyGen (créditos, requiere auth login)
 ```
+
+Notas del usuario: una por línea, con el tiempo. Aplica, haz snapshot del frame afectado,
+míralo, y vuelve a enseñar. Guarda `v1`, `v2`, `v3`… antes de cada ronda.
 
 ---
 
 ## Reglas duras
 
-- **Beat sheet antes de construir.** Siempre. Cambiar en papel es gratis.
-- **Rough cut primero, efectos después.**
-- **Nunca cortar dentro de una palabra.**
-- **Español por defecto**: modelo multilingüe, subtítulos en español, nombres corregidos.
-- **Safe zone**: nada de texto en el 20% inferior ni pegado al borde derecho.
-- **Una nota, un cambio, con el tiempo.** Qué, dónde, cuándo — nunca cómo.
-- **Versionar** antes de cada ronda (v1, v2, v3…).
-- **Snapshot antes de decir "listo".** Decirlo sin haber mirado el frame es mentir.
-- **La voz del usuario nunca se sustituye ni se re-sintetiza.**
-- **El director es el usuario.** El gusto no se delega.
+1. **Beat sheet antes de construir.** Siempre.
+2. **Rough cut primero, efectos después.**
+3. **Nunca cortar dentro de una palabra.**
+4. **El idioma siempre se declara al transcribir.** Nunca el modelo `.en` por defecto si no es inglés.
+5. **Nombres propios corregidos** en transcripción y subtítulos.
+6. **Safe zone**: nada de texto en el 20% inferior ni pegado al borde derecho (botones de la app).
+7. **Una nota = un cambio**, con el tiempo. Qué, dónde, cuándo — nunca cómo.
+8. **Versionar** antes de cada ronda.
+9. **Snapshot antes de decir "listo".** Decirlo sin haber mirado el frame es mentir.
+10. **La voz del usuario nunca se sustituye ni se re-sintetiza.**
+11. **Máximo un zoom cada cinco segundos.** Lo raro es lo que impacta.
+12. **El director es el usuario.** El gusto no se delega.
 
 ## Dónde corre
 
-El montaje se arma **en la máquina del usuario** (Node, FFmpeg, sus archivos). El render puede
-ser local (`render`) o en la nube de HeyGen (`cloud render`, con créditos, tras
-`npx hyperframes auth login`). Una sesión remota de Cowork puede lanzar los comandos en el
-ordenador por el puente, pero no puede correr HyperFrames dentro de su propio contenedor.
+Todo en **la máquina del usuario** (Node, FFmpeg y sus archivos). El render puede ser local o en la
+nube de HeyGen. Un agente remoto sin acceso al disco del usuario no puede correr esto.
 
 ## Referencias
 
 | Archivo | Cuándo |
 |---|---|
-| `references/setup.md` | Instalación y comprobación |
-| `references/routing.md` | Qué skill del plugin construye cada cosa |
-| `references/pipeline.md` | Combinar con Seedance / Grok / cine-grade: generar → montar |
+| `references/onboarding.md` | Primera vez en una carpeta: las seis preguntas |
+| `references/setup.md` | Instalación en cualquier agente |
+| `references/routing.md` | Qué skill de HyperFrames construye cada cosa |
+| `references/pipeline.md` | Combinar con modelos generativos: generar → montar |
 | `references/film-it-right.md` | **Antes de grabar** |
-| `references/prompts.md` | Prompts listos, de diario y para lucirse |
+| `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/troubleshooting.md` | Defecto → arreglo |
-| `CLAUDE.md.template` | Las reglas de marca del usuario, para su carpeta |
+| `scripts/check.sh` · `scripts/ingest.sh` | Preflight · oídos y ojos |
+| `templates/AGENTS.md.template` | Reglas del proyecto del usuario |

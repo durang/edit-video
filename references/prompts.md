@@ -64,7 +64,7 @@ Estos suelen salir a la primera.
 ## Montajes para lucirse
 
 Piden más preparación y son los que se comparten. Cada línea entrecomillada se dice **en cámara**,
-tal cual. Claude la encuentra en la transcripción y construye el efecto en esa palabra exacta.
+tal cual. El agente la encuentra en la transcripción y construye el efecto en esa palabra exacta.
 
 **Objeto 3D en la mano**
 > *"Haz zoom en mi mano y pon el logo aquí, en 3D."* → *"¡Ahora lánzalo a la cámara!"*
@@ -88,7 +88,7 @@ animado —títulos, iconos y una gráfica— sincronizado con lo que dices desp
 **Tus videos flotando detrás**
 > *"Vuelve a pantalla completa. Ahora haz flotar mis mejores reels detrás de mí, en 3D."*
 Construye: tu recorte delante, tus videos reproduciéndose en pantallas 3D flotando detrás.
-**Necesitas:** los videos en una carpeta. Claude elige los 3 o 4 segundos más visuales de cada uno.
+**Necesitas:** los videos en una carpeta. El agente elige los 3 o 4 segundos más visuales de cada uno.
 
 **Un objeto real que cobra vida**
 > *"La última: coge la cámara de mi estante y ábrela."* → *"Ahora devuélvela... ¡y hazme una foto!"*
