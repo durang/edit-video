@@ -6,8 +6,9 @@ Se manda **uno cada vez**. Los `[corchetes]` se cambian.
 
 ## El primero de todos — oídos y ojos
 
-> Mi video es `take.mp4` en esta carpeta. Transcríbelo con Whisper, con un timestamp para cada
-> palabra, y guarda las palabras y los tiempos en `take.words.json`. Luego usa FFmpeg para sacar
+> Mi video es `take.mp4` en esta carpeta. Transcríbelo con `npx hyperframes transcribe` y el
+> modelo multilingüe `small` (hablo en español, nunca un modelo `.en`), con un timestamp para
+> cada palabra, y guarda las palabras y los tiempos en `take.words.json`. Luego usa FFmpeg para sacar
 > un fotograma por segundo y mira los fotogramas. Dime qué digo, cuándo lo digo y qué hay en el
 > plano en cada momento. Estos nombres tienen que estar bien escritos: `[tu nombre, marca, producto]`.
 

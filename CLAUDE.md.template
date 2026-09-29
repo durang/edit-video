@@ -12,6 +12,12 @@
 
 **Estos nombres se corrigen siempre en la transcripción de Whisper y en los subtítulos.**
 
+## Idioma
+
+- **Idioma hablado:** español ([México / España / …])
+- **Modelo de transcripción:** `small` o `medium` — **nunca un modelo `.en`**
+- **Subtítulos en:** español
+
 ## Marca
 
 - **Tipografía titulares:** [fuente]

@@ -1,136 +1,122 @@
 ---
-name: video-edit
-description: Use when the user wants an EXISTING video of theirs edited — captions, cutting dead air, punch-in zooms, title cards, lower thirds, pop-ups, music and SFX, reframing 16:9 to 9:16, background removal, 3D objects, or a named style like a movie trailer or a Vox explainer. This edits footage that already exists; it never generates new footage. Runs on the user's own machine with HyperFrames + Whisper + FFmpeg and renders an MP4. Triggers on "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "edit my video", "add captions", "cut the pauses", "make it look like a movie trailer", or a video file plus an edit request. NOT for generating new shots (use the Seedance/Grok prompting canon), and NOT for multicam re-filming of a take (that is habilidad #7, multiángulo).
+name: edit-video
+description: Use when the user wants a video that ALREADY EXISTS edited or packaged — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated in Seedance or Grok) into one finished piece. Sergio's layer on top of the HyperFrames plugin — Spanish-first defaults, his brand rules, the beat-sheet checkpoint — that routes the build to the right HyperFrames skill. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", a video file plus an edit request. NOT for generating new footage from a prompt (that is the Seedance/Grok canon) and NOT for multicam re-filming of one take (multiángulo).
 ---
 
-# video-edit — montar un video que ya existe
+# /edit-video — montar un video que ya existe
 
-**Método original:** "Let Claude Edit Your Videos" de **@pauloshimas / The Creator Stack**.
-**Motor:** [HyperFrames](https://github.com/heygen-com/hyperframes), de HeyGen — plugin de Claude Code
-que escribe el montaje como una página web y la renderiza en MP4.
+**Método:** "Let Claude Edit Your Videos", **@pauloshimas / The Creator Stack**.
+**Motor:** plugin **HyperFrames** de HeyGen, que ya trae ~20 skills propios.
 
-Esto **no genera video**. Monta el que ya tienes. Si hace falta material nuevo, eso es otro
-sistema (prompting generativo). Si hace falta re-filmar una toma desde otros ángulos, eso es
-multiángulo, no esto.
-
----
-
-## Principio central
-
-**Claude no puede reproducir un video.** Así que antes de editar nada se le dan dos sentidos:
-
-- **Oídos → Whisper**: la transcripción con el tiempo exacto de **cada palabra**
-- **Ojos → FFmpeg**: fotogramas fijos, uno por segundo
-
-De ahí sale lo único que importa: **cada efecto se ancla a una PALABRA, no a un segundo.**
-El zoom cae en "ahora" porque Whisper sabe que "ahora" empieza en 5.32 s. Eso es lo que separa
-un montaje que parece hecho a mano de uno que parece una plantilla.
+Este skill **no reimplementa HyperFrames**. Es la capa de Sergio encima: decide **qué** se hace,
+con **qué reglas** y en **qué idioma**, y le entrega la construcción al skill del plugin que toca.
 
 ---
 
-## Reglas duras (no se rompen)
+## Paso 0 · ¿Esto es editar o crear?
 
-- **Nunca construir antes del beat sheet.** Se presenta la tabla — tiempo, palabras exactas, qué
-  aparece, dónde y qué suena — y **se espera el OK**. Cambiar en papel es gratis; cambiar después
-  de renderizar no.
-- **Rough cut primero, efectos después.** Se cortan los silencios, se confirma la duración nueva,
-  y solo entonces entran los efectos.
-- **Nunca cortar dentro de una palabra.** Los cortes usan los tiempos de Whisper.
-- **Los nombres propios se piden en el primer prompt.** Whisper escribe los nombres como suenan.
-  Marca, producto y nombre de la persona se declaran antes de transcribir, y se corrigen en la
-  transcripción **y** en los subtítulos.
-- **Safe zone siempre.** Nada de texto en el **20% inferior** de la pantalla ni pegado al borde
-  derecho: ahí van los botones de la app.
-- **Una nota, un cambio, siempre con el tiempo.** Qué, dónde y cuándo — nunca cómo.
-- **Versionar antes de cada ronda** (v1, v2, v3...) para poder volver atrás.
-- **Verificar con los propios ojos.** Antes de decir que está hecho: `npx hyperframes snapshot`
-  del frame en cuestión y mirarlo. Decir "listo" sin haber mirado el frame es mentir.
-- **El director es el usuario.** El gusto no se delega.
+| El usuario tiene… | Va a… |
+|---|---|
+| Un video grabado, o clips ya generados | **Aquí.** Seguir leyendo |
+| Solo una idea, sin material | **No es aquí.** Es generación: canon Seedance/Grok |
+| Una toma y quiere verla desde otros ángulos | **No es aquí.** Es multiángulo (Seedance) |
+| Una toma y quiere la luz de una película | **No es aquí.** Es cine-grade (Seedance) |
 
----
+Si no está claro, se pregunta en una línea. Si hay que generar **y** montar, se genera primero
+y el montaje entra al final (ver `references/pipeline.md`).
 
-## Flujo
-
-### 0 · Preflight (primera vez en la sesión)
+## Paso 1 · Preflight (una vez por sesión)
 
 ```bash
 npx hyperframes doctor
+claude plugin list | grep -i hyperframes
 ```
 
-Comprueba Node 22+, FFmpeg y Chrome. Si falta algo, se reporta con su comando de instalación
-y **se pregunta antes de instalar**. Nunca se adivina alrededor de una herramienta que falta.
+Si el plugin no está, se instala con permiso del usuario (`references/setup.md`). Nunca se
+trabaja alrededor de una herramienta que falta.
 
-### 1 · Oídos y ojos
+## Paso 2 · Oídos y ojos
 
 ```bash
-# transcripción con tiempo por palabra
-whisper-cli -f VIDEO.mp4 --output-json --max-len 1       # macOS (whisper-cpp)
-python -m faster_whisper VIDEO.mp4 --word_timestamps True # Windows
-
-# fotogramas
-ffmpeg -i VIDEO.mp4 -vf fps=1 -q:v 3 frames/f_%03d.jpg
+npx hyperframes transcribe TOMA.mp4 --json --model small      # multilingüe
+ffmpeg -i TOMA.mp4 -vf fps=1 -q:v 3 frames/f_%03d.jpg
 ```
 
-Se leen **todos** los frames junto con las palabras. Luego se le dice al usuario qué dice, cuándo
-lo dice y qué hay en el plano en cada momento.
+- **Nunca un modelo `.en`** (`small.en`, `base.en`) si se habla español. El propio plugin trae
+  `small.en` en sus ejemplos y con eso el español sale destrozado. Español → `small`, `medium`
+  o `large-v3`.
+- **Los nombres propios se dan antes de transcribir** — nombre, marca, producto — y se corrigen
+  en la transcripción y en los subtítulos. Whisper escribe los nombres como suenan.
+- Se leen **todos** los frames junto con las palabras, y se le cuenta al usuario qué dice,
+  cuándo, y qué hay en el plano en cada momento.
 
-### 2 · Beat sheet, y parada
+**Cada efecto se ancla a una PALABRA, no a un segundo.** Es lo que hace que parezca hecho a mano.
 
-Tabla: `inicio | fin | palabras exactas | qué aparece | dónde se coloca | sonido`.
-Se declara el formato (9:16 Reels / 16:9 / 1:1) y la safe zone. **Se espera el OK.**
+## Paso 3 · Beat sheet, y PARADA
 
-### 3 · Rough cut
+Tabla: `inicio | fin | palabras exactas | qué aparece | dónde | sonido`.
+Declarar formato y safe zone. **Esperar el OK. Nunca construir antes.**
 
-Se cortan las pausas de más de 0.3 s y las respiraciones, sin entrar en ninguna palabra, dejando
-un beat corto antes de cada remate. Se reporta la duración nueva.
+## Paso 4 · Rough cut
 
-### 4 · Construir
+Pausas de más de 0.3 s y respiraciones fuera, nunca dentro de una palabra, un beat corto antes
+de cada remate. Reportar la duración nueva.
 
-HyperFrames escribe el montaje. Cada efecto sincronizado a su palabra.
+## Paso 5 · Construir — se enruta al skill del plugin
 
-### 5 · Preview, notas, render
-
-```bash
-npx hyperframes preview                    # se mira en el navegador
-npx hyperframes render -o final.mp4
-```
-
-Notas del usuario: una por línea, con el tiempo. Se aplica, se hace snapshot del frame afectado,
-se comprueba, y se vuelve a enseñar.
-
----
-
-## Cuándo brilla y cuándo no
-
-| Va bien | Va mal |
+| Lo que se pide | Skill de HyperFrames |
 |---|---|
-| Talking-head: subtítulos, zooms, pop-ups | **Material nuevo** — eso es generación, no montaje |
-| Explicativos: diagramas y listas que se construyen | Movimiento rápido y desordenado — los recortes salen blandos |
-| Tutoriales: zoom en el clic, flechas, callouts | Una hora de golpe — se trabaja por secciones |
-| Demos de producto: 3D, títulos, precios | Corrección de color fina — eso es de colorista |
-| Clips de podcast: 16:9 → 9:16, subtítulos, nombres | **El gusto** — el director sigue siendo el usuario |
-| Datos: números y gráficas animadas | |
-| Lotes: el mismo montaje en 10 videos o en 3 idiomas | |
+| Subtítulos, sin tocar el metraje | `/embedded-captions` |
+| Tarjetas gráficas encima: títulos, rótulos, datos, citas, PiP | `/talking-head-recut` |
+| Montaje libre, varios clips, reel, sizzle, remix | `/general-video` |
+| Pieza corta de motion: logo, contador, mapa, titular animado | `/motion-graphics` |
+| Música, ducking, fades, efectos de audio | `/hyperframes-audio` |
+| Recorte de fondo, TTS, música, imágenes, SFX | `/media-use` |
+| No está claro | `/hyperframes` — la puerta de entrada del plugin |
 
-**Regla del pulgar:** si se puede describir en una frase y señalar la palabra donde pasa,
-se puede construir.
+Detalle en `references/routing.md`. Al skill del plugin se le pasa **el beat sheet aprobado y
+las reglas del `CLAUDE.md`**: él construye, este skill vigila que se cumplan.
+
+## Paso 6 · Preview, notas, verificar, render
+
+```bash
+npx hyperframes preview                  # el usuario mira en el navegador
+npx hyperframes snapshot                 # Claude mira el frame antes de decir "listo"
+npx hyperframes render -o final.mp4      # render local
+npx hyperframes cloud render             # o en la nube de HeyGen, con créditos
+```
 
 ---
+
+## Reglas duras
+
+- **Beat sheet antes de construir.** Siempre. Cambiar en papel es gratis.
+- **Rough cut primero, efectos después.**
+- **Nunca cortar dentro de una palabra.**
+- **Español por defecto**: modelo multilingüe, subtítulos en español, nombres corregidos.
+- **Safe zone**: nada de texto en el 20% inferior ni pegado al borde derecho.
+- **Una nota, un cambio, con el tiempo.** Qué, dónde, cuándo — nunca cómo.
+- **Versionar** antes de cada ronda (v1, v2, v3…).
+- **Snapshot antes de decir "listo".** Decirlo sin haber mirado el frame es mentir.
+- **La voz del usuario nunca se sustituye ni se re-sintetiza.**
+- **El director es el usuario.** El gusto no se delega.
+
+## Dónde corre
+
+El montaje se arma **en la máquina del usuario** (Node, FFmpeg, sus archivos). El render puede
+ser local (`render`) o en la nube de HeyGen (`cloud render`, con créditos, tras
+`npx hyperframes auth login`). Una sesión remota de Cowork puede lanzar los comandos en el
+ordenador por el puente, pero no puede correr HyperFrames dentro de su propio contenedor.
 
 ## Referencias
 
 | Archivo | Cuándo |
 |---|---|
-| `references/setup.md` | Primera vez. Qué se instala y cómo se comprueba |
-| `references/film-it-right.md` | **Antes de grabar.** Decide si los recortes salen limpios |
-| `references/prompts.md` | Prompts listos: los de diario y los de lucirse |
-| `references/styles.md` | Copiar un estilo: con referencias propias o nombrando uno famoso |
-| `references/troubleshooting.md` | Cuando algo sale torcido |
-| `CLAUDE.md.template` | Las reglas de estilo del usuario, para su carpeta de proyecto |
-
----
-
-## Crédito
-
-Método: **@pauloshimas · The Creator Stack** (2026). Motor: **HyperFrames**, de HeyGen.
-Este skill es la adaptación del método a un flujo repetible, con las reglas duras explícitas.
+| `references/setup.md` | Instalación y comprobación |
+| `references/routing.md` | Qué skill del plugin construye cada cosa |
+| `references/pipeline.md` | Combinar con Seedance / Grok / cine-grade: generar → montar |
+| `references/film-it-right.md` | **Antes de grabar** |
+| `references/prompts.md` | Prompts listos, de diario y para lucirse |
+| `references/styles.md` | Copiar un estilo |
+| `references/troubleshooting.md` | Defecto → arreglo |
+| `CLAUDE.md.template` | Las reglas de marca del usuario, para su carpeta |
