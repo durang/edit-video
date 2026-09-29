@@ -54,6 +54,7 @@ Luego, siempre igual:
 4. **Construye** — cada efecto anclado a una palabra
 5. **Preview** — le das notas con el tiempo: *"en 0:07 el logo me tapa la cara"*
 6. **Render** — MP4 final, local o en la nube
+7. **Revisor final** — el video entero, cuadro cada 0.5 s: ninguna palabra partida, nada tapado, nada ilegible
 
 ## ¿Tiene que estar prendido mi ordenador?
 
@@ -82,6 +83,7 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 | `scripts/setup.sh` | **El skill se instala lo que le falta**: plan, permiso, instalación, comprobación |
 | `scripts/check.sh` | Comprueba que no falte nada |
 | `scripts/ingest.sh` | Oídos y ojos en un comando, con el idioma bien puesto |
+| `scripts/qa.sh` + `references/qa.md` | **Revisor final**: el video entero cuadro a cuadro antes de entregar |
 | `templates/AGENTS.md.template` | Tus reglas de marca |
 | `references/onboarding.md` | Las seis preguntas de la primera vez |
 | `references/setup.md` | Instalación en detalle |

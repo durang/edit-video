@@ -2,7 +2,7 @@
 name: edit-video
 description: Edit or package a video that ALREADY EXISTS — captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 2.1.0
+  version: 2.2.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -118,6 +118,20 @@ npx hyperframes cloud render            # o en la nube de HeyGen (créditos, req
 Notas del usuario: una por línea, con el tiempo. Aplica, haz snapshot del frame afectado,
 míralo, y vuelve a enseñar. Guarda `v1`, `v2`, `v3`… antes de cada ronda.
 
+## Paso 8 · Revisor final — obligatorio
+
+El que construye no aprueba. Antes de decir "listo", revisa **el MP4 renderizado entero**:
+
+```bash
+bash SKILL_DIR/scripts/qa.sh final.mp4 2  <tiempos clave: transiciones, entradas grandes, cierre>
+```
+
+Mira **todas** las hojas de contacto (un cuadro cada 0.5 s) y los cuadros a tamaño completo con la
+checklist de `references/qa.md`: ninguna palabra partida o cortada, nada sobre la cara, nada fuera de
+la safe zone, nada ilegible en el teléfono, nada del original asomando, coherencia de movimiento.
+Si el entorno permite subagentes, que la revisión la haga **otro agente** que solo vea el video.
+Cada defecto: anotar en `SNAPSHOTS.md`, arreglar, re-renderizar, **re-revisar entero**.
+
 ---
 
 ## Reglas duras
@@ -130,7 +144,7 @@ míralo, y vuelve a enseñar. Guarda `v1`, `v2`, `v3`… antes de cada ronda.
 6. **Safe zone**: nada de texto en el 20% inferior ni pegado al borde derecho (botones de la app).
 7. **Una nota = un cambio**, con el tiempo. Qué, dónde, cuándo — nunca cómo.
 8. **Versionar** antes de cada ronda.
-9. **Snapshot antes de decir "listo".** Decirlo sin haber mirado el frame es mentir.
+9. **Revisor final antes de decir "listo"** (Paso 8): el MP4 entero, cuadro cada 0.5 s. Decir "listo" sin haberlo revisado es mentir.
 10. **La voz del usuario nunca se sustituye ni se re-sintetiza.**
 11. **Máximo un zoom cada cinco segundos.** Lo raro es lo que impacta.
 12. **El director es el usuario.** El gusto no se delega.
@@ -157,6 +171,7 @@ míralo, y vuelve a enseñar. Guarda `v1`, `v2`, `v3`… antes de cada ronda.
 | `references/film-it-right.md` | **Antes de grabar** |
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
+| `references/qa.md` | **Revisor final**: la checklist que decide si se entrega |
 | `references/troubleshooting.md` | Defecto → arreglo |
-| `scripts/check.sh` · `scripts/setup.sh` · `scripts/ingest.sh` | Comprobar · auto-instalar · oídos y ojos |
+| `scripts/check.sh` · `scripts/setup.sh` · `scripts/ingest.sh` · `scripts/qa.sh` | Comprobar · auto-instalar · oídos y ojos · revisor final |
 | `templates/AGENTS.md.template` | Reglas del proyecto del usuario |

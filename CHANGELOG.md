@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.0 — 2026-09-29
+**Revisor final obligatorio.**
+- `scripts/qa.sh`: el MP4 renderizado entero en hojas de contacto (un cuadro cada 0.5 s) más
+  cuadros a tamaño completo en los tiempos clave.
+- `references/qa.md`: la checklist que decide si se entrega — palabras partidas o cortadas, glifos
+  sueltos, cara tapada, safe zone, legibilidad en teléfono, subtítulos o logos del original
+  asomando, zonas muertas, coherencia de movimiento, sincronía. Con los errores reales que ya cazó.
+- `SKILL.md` Paso 8: el que construye no aprueba; si hay subagentes, revisa otro agente.
+
 ## 2.1.0 — 2026-09-29
 **El skill se instala lo que le falta.**
 - `scripts/setup.sh`: detecta qué falta (FFmpeg, Node, whisper-cpp, skills de HyperFrames en cada
