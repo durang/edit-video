@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.3.0 — 2026-09-29
+**Motion design nivel estudio.** Lo aprendido llevando el reel "Why Colombia" de v1 a v5.
+- `references/motion-design.md`: sistema de coherencia (IN/OUT/MOVE, staggers, una sola `.pill`,
+  margen único), mapas con datos reales (Natural Earth, precalculado, `pathLength="1"`, etiquetas sin
+  solape, arcos con punto viajero), hacer sitio paneando, palabras detrás de la persona con mate y su
+  fallback, fondos generados, cierre con personaje recortado + parallax, diseño sonoro con niveles, y
+  reparto director/constructor.
+- `references/routing.md`: pedidos "que se vea de estudio" → motion-design; SFX sintetizados con
+  FFmpeg cuando no hay catálogo. Higgsfield `generate_audio` es solo voz.
+
 ## 2.2.0 — 2026-09-29
 **Revisor final obligatorio.**
 - `scripts/qa.sh`: el MP4 renderizado entero en hojas de contacto (un cuadro cada 0.5 s) más

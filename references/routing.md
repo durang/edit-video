@@ -20,7 +20,8 @@ Nunca se inventa una ruta que HyperFrames no tiene.
 | "hazlo vertical" | el skill activo, pidiendo lienzo 9:16 | Mantener la cara centrada todo el tiempo |
 | "ponle música", "baja la música cuando hablo", "fade" | `/hyperframes-audio` | Ducking, crossfades, EQ, compresor |
 | "quítame el fondo", "desaparéceme" | `/media-use` → `remove-background` | Necesita el clean plate |
-| "ponle una voz", "un whoosh aquí", "música que no tengo" | `/media-use` | TTS, SFX, música, imágenes, LUT |
+| "ponle una voz", "un whoosh aquí", "música que no tengo" | `/media-use` | TTS, SFX, música, imágenes, LUT. Si no hay SFX, se sintetizan con FFmpeg (`motion-design.md` §7) |
+| "que se vea de estudio", "más pro", "detalles únicos", "un mapa", "que suene" | `/motion-graphics` + `/general-video` | Antes de construir, aplica `references/motion-design.md` |
 
 ## Crear algo nuevo con HyperFrames (sin cámara)
 
