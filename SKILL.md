@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.0.1
+  version: 3.1.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -179,6 +179,12 @@ bash SKILL_DIR/scripts/sync.sh push "resumen en una línea"
 Sube los dos repos; un guardia bloquea el público si se cuela algo privado. Reporta en una línea qué
 fue a cada sitio. Procedimiento completo: `references/aprendizaje.md`.
 
+**Retro (sin buscar en internet), tres líneas:** ¿qué corrigió el director? ¿qué cazó el revisor que
+el constructor no vio? ¿qué no pudimos hacer o salió peor de lo querido? Lo tercero, si no tiene
+arreglo hoy, va a `LIMITACIONES.md`: es lo que el **radar quincenal** vigila. Se busca en internet
+durante un trabajo **solo** con razón (fallo desconocido, defecto repetido, pedido que no sabemos
+hacer). Detalle: `references/mejora-continua.md`.
+
 ---
 
 ## Reglas duras
@@ -220,6 +226,8 @@ fue a cada sitio. Procedimiento completo: `references/aprendizaje.md`.
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/motion-design.md` | **Nivel estudio**: sistema de coherencia, mapas, palabras detrás de la persona, cierre con personaje, diseño sonoro |
+| `references/mejora-continua.md` | **Cuándo se investiga**: retro por video, búsqueda dirigida, radar quincenal, estado del arte trimestral |
+| `LIMITACIONES.md` · `references/radar.md` | Lo que aún no sale bien (lo vigila el radar) · bitácora de cada radar |
 | `references/niveles.md` | **Los niveles**: motor, línea de diseño, comandos, aprobación |
 | `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
 | `references/nivel-4.md` | Nivel 4 · Director (propuesto) |

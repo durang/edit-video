@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.1.0 — 2026-09-29
+**Mejora continua con ritmo, no a ciegas.**
+- `references/mejora-continua.md`: retro de 3 preguntas en cada entrega (sin internet), búsqueda
+  dirigida solo con razón, **radar cada 2 semanas** (≤ 12 búsquedas) y **estado del arte cada 3
+  meses**. El radar propone; Sergio aprueba.
+- `LIMITACIONES.md`: 8 limitaciones abiertas con su arreglo provisional y qué las resolvería. El radar
+  busca primero soluciones a estas, no novedades por novedad.
+- `references/radar.md`: bitácora; primera entrada con lo investigado para la 3.0.
+
 ## 3.0.1 — 2026-09-29
 - Aprendizaje: un `": "` sin comillas en la `description` de `SKILL.md` rompe el YAML y `npx skills`
   deja de ver el skill ("No valid skills found"). `sync.sh push` ya no sube si pasa.

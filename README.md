@@ -68,6 +68,13 @@ Luego, siempre igual:
 6. **Render** — MP4 final, local o en la nube
 7. **Revisor final** — el video entero, cuadro cada 0.5 s: ninguna palabra partida, nada tapado, nada ilegible
 
+## Cómo se mantiene al día
+
+Cada entrega cierra con una **retro** de tres preguntas (sin gastar en búsquedas). Lo que no sale bien
+va a [`LIMITACIONES.md`](LIMITACIONES.md). **Cada 2 semanas un radar** revisa si algo nuevo resuelve
+esas limitaciones y qué cambió en las herramientas; **cada 3 meses**, el estado del arte del nivel 3.
+Propone; no cambia nada sin aprobación. Detalle: [`references/mejora-continua.md`](references/mejora-continua.md).
+
 ## Área de clientes y autoaprendizaje
 
 Son **dos repos**:
