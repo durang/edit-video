@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.5.1 — 2026-09-29
+- `references/clipper.md`: lo que clipper ya hace (recorte 9:16, palabra activa, zona segura,
+  tapar subtítulos quemados, silencios, idioma, diccionario por cliente) y cómo pedírselo; el corte
+  "solo cortar" para nivel estudio es `--no-captions`.
+- Aprendizaje: whisper.cpp pega los tiempos de palabras contiguas; para quitar silencios sobre una
+  transcripción de HyperFrames hay que usar `silencedetect` (energía), no los huecos entre palabras.
+
 ## 2.5.0 — 2026-09-29
 **Lo mejor de clipper, sin duplicarlo.**
 - `scripts/diccionario.py`: diccionario permanente de correcciones en capas (global → clipper →

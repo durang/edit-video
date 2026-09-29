@@ -21,8 +21,7 @@ Si alguien trae un video largo y pide clips, pregunta **una vez**:
 
 - **Rápido** → clipper entero. El agente propone momentos con motivo (`why`), el humano elige.
 - **Estudio** → se corta solo el tramo, **sin subtítulos quemados** (aquí se montan después), y
-  entra por el Paso 3. clipper todavía no tiene modo "solo cortar"; mientras, el tramo exacto:
-  `ffmpeg -ss INICIO -to FIN -i largo.mp4 -c:v libx264 -crf 16 -c:a aac tramo.mp4` (re-encodado: corte exacto).
+  entra por el Paso 3: `clipper.py render t.json clips.json --horizontal --no-captions`.
 - **Los dos** (lo que más rinde) → clipper saca todos; de ahí salen los 1–3 mejores y pasan por aquí.
 
 **La elección de momentos no se automatiza.** Es criterio. El agente puede leer la transcripción y
@@ -34,9 +33,32 @@ Si alguien trae un video largo y pide clips, pregunta **una vez**:
   el idioma se verificó. No se transcribe dos veces.
 - **Diccionario**: `scripts/diccionario.py` lee también `~/clipper-studio/dictionary.json`. Una
   corrección hecha en cualquiera de los dos vale para los dos.
-- **Área de clientes** (propuesto para clipper): el logo, la marca de agua y los formatos de un
-  cliente viven en `edit-video-clients/clients/<slug>/`, para que las dos herramientas saquen al
-  cliente igual.
+- **Área de clientes**: `--cliente <slug>` en clipper aplica el diccionario privado del cliente, el
+  mismo que usa este skill. Logo y formatos del cliente viven en su `kit/`.
+
+## Lo que clipper ya hace bien (y cómo pedírselo)
+
+| Pedido | clipper |
+|---|---|
+| Vertical sin fondo borroso | `--fit crop` + `crop_x` por clip (el agente mira los frames y decide) |
+| Palabra activa resaltada | por defecto (`--no-highlight` para quitarla) |
+| Subtítulos que no tapa la app y que caben | por defecto: por encima de y=1536 y partidos por caracteres |
+| Tapar subtítulos quemados del original | `--cover-subs 0.2` |
+| Quitar silencios | `--tighten 0.35` (o `tighten` → JSON de tramos) |
+| Gancho arriba los primeros 3 s | `"hook": "…"` en el clip |
+| Idioma | `--lang auto` detecta; si lo pasas, lo verifica |
+
+## Silencios: ojo con de dónde salen los tiempos
+
+`tighten` corta entre palabras usando sus tiempos. **Whisper de OpenAI** (el de clipper) deja huecos
+reales entre palabras; **whisper.cpp** (el que usa HyperFrames para este skill) tiende a pegar el
+final de una palabra con el inicio de la siguiente, y entonces no ve los silencios. Para el rough cut
+del Paso 5 sobre una transcripción de HyperFrames, detecta silencios por energía y corta solo entre
+palabras:
+
+```bash
+ffmpeg -i TOMA.mp4 -af silencedetect=noise=-35dB:d=0.3 -f null - 2>&1 | grep silence_
+```
 
 ## Instalar
 
