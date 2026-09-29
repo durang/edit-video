@@ -10,7 +10,8 @@ bash <SKILL_DIR>/scripts/qa.sh final.mp4 2  1 3 <tiempos clave…>
 ```
 
 - Hojas de contacto con un cuadro cada **0.5 s** de todo el video.
-- A tamaño completo: el primer segundo, cada transición, cada entrada de texto grande, el cierre.
+- A tamaño completo: el primer segundo, cada transición, cada entrada de texto grande, el cierre, y
+  **siempre el último cuadro del video** — es el que se queda en pantalla y donde más se esconden fallos.
 - **Se miran TODAS.** Mirar solo unas cuantas es no revisar.
 
 Si el entorno permite subagentes, la revisión la hace **otro agente** con este archivo y las hojas,
@@ -37,6 +38,12 @@ sin ver el código: solo el video. Es lo que más errores caza.
 - [ ] Ningún subtítulo quemado del original asomando
 - [ ] Ningún logo o marca de agua del original cortado a medias (o entero o fuera)
 
+**Trazos y gráficos**
+- [ ] Todo trazo que se dibuja (contornos, flechas, arcos, checks) termina **completo y cerrado**;
+      a mitad del trazo se ve **una sola línea continua** avanzando, nunca trozos sueltos
+- [ ] Mapas con geometría real (Natural Earth), puntos en sus coordenadas reales
+- [ ] Ningún gráfico entra mientras la cámara todavía se está moviendo hacia su hueco
+
 **Movimiento y coherencia**
 - [ ] Mismas curvas y duraciones de entrada/salida en todos los bloques del mismo tipo
 - [ ] Cada efecto cae en su palabra (comparar con `transcript.json`)
@@ -58,3 +65,6 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
 - Un mapa "estilizado" que parecía un garabato → siempre geometría real (Natural Earth)
 - Una banda negra del 20 % de la pantalla con solo una palabra: zona muerta
 - Subtítulos quemados del original asomando durante un zoom
+- Un contorno de país "dibujándose" que al final eran 7 trozos sueltos (dasharray medido en otra
+  escala). Arreglo: `pathLength="1"` y animar de 1 a 0
+- El revisor del propio agente lo dio por bueno: **por eso la revisión la hace otro**
