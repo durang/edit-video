@@ -96,7 +96,9 @@ case "${1:-status}" in
       if sed -n '2,/^---$/p' "$SRC/SKILL.md" | grep -E '^description: ' | grep -vE '^description: ["'"'"']' | sed 's/^description: //' | grep -q ': '; then
         say "  ✗ SKILL.md: la descripción tiene ': ' sin comillas → el instalador no verá el skill. No subo."; exit 1
       fi
+      python3 "$SRC/scripts/guia.py" readme    # la guía rápida del README sale de GUIA.md
       commit_push "$SRC" "aprendizaje: $m" 1 || rc=1
+      python3 "$SRC/scripts/guia.py" github    # descripción del repo (About) + link a GUIA.md
       git -C "$SRC" log -1 --format=%s | grep -q "^aprendizaje: $m" && npx -y skills update edit-video -g -y >/dev/null 2>&1 && say "  ↻ skill edit-video reinstalado"
     fi
     exit $rc

@@ -1,5 +1,27 @@
 # /edit-video
 
+<!-- GUIA:inicio -->
+<!-- generado por scripts/guia.py desde GUIA.md: no editar a mano -->
+## Guía rápida · v3.11.0
+
+Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con descripción, frases de ejemplo, qué recibes, tiempo y comando: [GUIA.md](GUIA.md)
+
+| Quiero… | Uso | Tiempo |
+|---|---|---|
+| Muchos clips rápidos de una entrevista o podcast | **Nivel 1** (clipper) | minutos |
+| Esos clips con la línea gráfica de una marca | **Nivel 2** (clipper) | minutos |
+| Una pieza de estudio con motion design sobre mi video | **Nivel 3** (HyperFrames) | horas |
+| Lo del 3 + planos generados con IA, 3D, música | **Nivel 4** (propuesto) | días |
+| Un video **sin grabar nada**: desde un audio, un guion o una idea | **Desde cero** (§5) | 10–60 min |
+| Clips de una **carpeta entera** de grabaciones | **Modo lote** (§6.3) | minutos por video |
+| Pasar una entrevista horizontal a vertical siguiendo al que habla | **`--fit auto`** (§6.4) | + segundos |
+| Que me proponga los mejores momentos con puntaje | **Rúbrica** (§6.1) | segundos |
+| Cambiar el diseño / cliente nuevo sin línea gráfica | **Shotgun de estilo** (§7) | 15–30 min |
+| Saber cuánto va a tardar o cómo va | **Tiempos** (§8) | al momento |
+
+Contenido: §0 Mapa rápido · §1 Nivel 1 Recorte · §2 Nivel 2 Editorial · §3 Nivel 3 Estudio · §4 Nivel 4 Director · §5 Desde cero · §6 Herramientas de clipper · §7 Shotgun de estilo · §8 Tiempos · §9 Corregir · §10 Problemas comunes
+<!-- GUIA:fin -->
+
 **Una máquina de edición profesional, con cualquier agente.** Cuatro niveles:
 
 | Nivel | Qué sale | Cuánto tarda |

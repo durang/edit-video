@@ -7,6 +7,10 @@ Esta guía es para **usar** la máquina, no para entenderla por dentro (eso est�
 2. **Cómo se pide** — frases de ejemplo, tal cual se las dices al agente.
 3. **Qué recibes, cuánto tarda y qué comando corre** — el detalle.
 
+Es la fuente única: el resumen de arriba del README, la descripción del repo en GitHub y el resumen
+que da el agente cuando pides *"la guía"* salen de aquí (`scripts/guia.py`) y se regeneran en cada
+actualización.
+
 No hace falta nombrar el skill: el agente reconoce el pedido. Si quieres forzarlo, empieza con
 `/edit-video`.
 

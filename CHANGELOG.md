@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.11.0 — 2026-09-30
+- **La guía siempre visible y al día.** `scripts/guia.py` saca de `GUIA.md` la "Guía rápida" arriba
+  del README (mapa quiero → uso → tiempo + link), la descripción del repo en GitHub (versión, qué hace y
+  link a la guía) y el resumen para el chat cuando se pide "la guía". `sync.sh push` lo regenera en cada
+  actualización; `guia.py check` avisa si el README quedó viejo. `SKILL.md`: todo cambio que toque lo que
+  el usuario pide o recibe actualiza `GUIA.md` en el mismo commit.
+
 ## 3.10.0 — 2026-09-30
 - **`GUIA.md`**: guía de uso de toda la máquina. Cada nivel y herramienta empieza con una descripción,
   sigue con cómo pedirlo (frases de ejemplo) y termina con qué se recibe, cuánto tarda y el comando.

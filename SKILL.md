@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video (or a whole folder) into many short clips, ranked by a clipability rubric, with a thumbnail per clip and automatic face and active-speaker vertical reframing. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "los mejores momentos", "toda esta carpeta", "sigue al que habla", "miniaturas", "hazme un video desde cero", "anima este audio", "promo de mi producto", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.10.0
+  version: 3.11.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -11,7 +11,12 @@ metadata:
 # /edit-video — la máquina de edición
 
 > **Para el usuario:** `GUIA.md` dice qué pedir en cada nivel, con frases de ejemplo, comandos y qué
-> se recibe. Cuando alguien pregunte "¿qué puedo hacer?" o "¿cómo pido X?", responde desde ahí.
+> se recibe. Cuando pida **"la guía"**, "¿qué puedo hacer?" o "¿cómo pido X?": corre
+> `python3 SKILL_DIR/scripts/guia.py resumen` y dale ese resumen + el link a la guía completa
+> (https://github.com/durang/edit-video/blob/main/GUIA.md); si pregunta algo concreto, responde desde GUIA.md.
+> **Si un cambio toca lo que el usuario pide o recibe** (nivel, comando, herramienta, tiempos), actualiza
+> `GUIA.md` en el mismo commit. `sync.sh push` regenera la guía rápida del README y la descripción del repo
+> en GitHub desde GUIA.md (`scripts/guia.py`); nunca se editan a mano.
 
 **Cuatro niveles, un solo skill.** El nivel decide el motor, la línea de diseño y la aprobación:
 
@@ -247,6 +252,7 @@ hacer). Detalle: `references/mejora-continua.md`.
 
 | Archivo | Cuándo |
 |---|---|
+| `scripts/guia.py` | Resumen de la guía (`resumen`), bloque del README y descripción de GitHub desde GUIA.md (`todo`, `check`) |
 | `GUIA.md` | **Guía de uso**: cada nivel y herramienta con descripción → cómo se pide (ejemplos) → qué recibes, tiempo y comando; desde cero; notas de corrección |
 | `references/onboarding.md` | Primera vez en una carpeta: las seis preguntas |
 | `references/setup.md` | Instalación en cualquier agente |
