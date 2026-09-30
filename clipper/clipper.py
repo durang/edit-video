@@ -33,8 +33,21 @@ from dataclasses import dataclass, asdict, field
 from pathlib import Path
 
 WHISPER = os.environ.get("CLIPPER_WHISPER", "whisper")
-FFMPEG = os.environ.get("CLIPPER_FFMPEG", "ffmpeg")
-FFPROBE = os.environ.get("CLIPPER_FFPROBE", "ffprobe")
+def _conf(key: str) -> str | None:
+    """Lee KEY="valor" de ~/.config/edit-video/config (lo escribe sync.sh / el instalador)."""
+    f = Path.home() / ".config" / "edit-video" / "config"
+    try:
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if line.startswith(key + "="):
+                return line.split("=", 1)[1].strip().strip('"').strip("'") or None
+    except OSError:
+        pass
+    return None
+
+
+# FFmpeg: variable de entorno → config de edit-video (p. ej. un FFmpeg con libass aparte) → PATH.
+FFMPEG = os.environ.get("CLIPPER_FFMPEG") or _conf("EDIT_VIDEO_FFMPEG") or "ffmpeg"
+FFPROBE = os.environ.get("CLIPPER_FFPROBE") or _conf("EDIT_VIDEO_FFPROBE") or "ffprobe"
 YTDLP = os.environ.get("CLIPPER_YTDLP", "yt-dlp")
 
 # Límites de duración por plataforma, en segundos.
@@ -1090,14 +1103,53 @@ def render_clip(video: Path, segs: list[dict], clip: dict, outdir: Path,
     return out
 
 
+def read_transcript(path) -> dict:
+    """Acepta la transcripción de clipper (`analyze`), la de /edit-video (`ingest.sh` / HyperFrames:
+    lista de palabras {text,start,end}) o un JSON de Whisper con segments. Devuelve siempre el formato
+    de clipper: {"segments": [{id,start,end,text,words:[{w,start,end}]}], "source"?: …}."""
+    data = json.loads(Path(path).expanduser().read_text(encoding="utf-8"))
+    if isinstance(data, dict) and data.get("segments") and any(
+            "w" in w for sg in data["segments"] for w in (sg.get("words") or [])[:1]):
+        return data
+    if isinstance(data, dict) and data.get("segments"):          # Whisper: words con "word"
+        segs = []
+        for i, sg in enumerate(data["segments"], start=1):
+            ws = [{"w": (w.get("word") or w.get("text") or "").strip(), "start": float(w["start"]),
+                   "end": float(w["end"])} for w in (sg.get("words") or [])
+                  if (w.get("word") or w.get("text") or "").strip()]
+            segs.append({"id": i, "start": float(sg["start"]), "end": float(sg["end"]),
+                         "text": (sg.get("text") or "").strip(), "words": ws})
+        return {**{k: v for k, v in data.items() if k != "segments"}, "segments": segs}
+    words = data.get("words", []) if isinstance(data, dict) else data   # lista de palabras
+    ws = [{"w": (w.get("text") or w.get("word") or w.get("w") or "").strip(),
+           "start": float(w["start"]), "end": float(w["end"])} for w in words
+          if (w.get("text") or w.get("word") or w.get("w") or "").strip()]
+    if not ws:
+        die(f"no entiendo la transcripción {path}: ni segments ni lista de palabras")
+    segs, cur = [], []
+    for j, w in enumerate(ws):                  # frase = hasta . ? ! o una pausa de 0.8 s
+        cur.append(w)
+        nxt = ws[j + 1] if j + 1 < len(ws) else None
+        if w["w"][-1:] in ".?!" or nxt is None or nxt["start"] - w["end"] > 0.8:
+            segs.append({"id": len(segs) + 1, "start": cur[0]["start"], "end": cur[-1]["end"],
+                         "text": " ".join(x["w"] for x in cur), "words": cur})
+            cur = []
+    out = {"segments": segs, "duration_sec": ws[-1]["end"]}
+    if isinstance(data, dict) and data.get("source"):
+        out["source"] = data["source"]
+    return out
+
+
 def need_libass():
     """Sin libass no hay subtítulos quemados. Mejor decirlo antes que fallar en cada clip."""
     p = subprocess.run([FFMPEG, "-hide_banner", "-filters"], capture_output=True, text=True, check=False)
     if " ass " in (p.stdout or ""):
         return
     msg = ("tu ffmpeg no trae libass (filtro 'ass'): no puede quemar subtítulos ni gráficos.\n"
-           "  macOS: el ffmpeg de Homebrew core ya no lo incluye. Usa el tap completo:\n"
-           "    brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg && "
+           "  macOS: el ffmpeg de Homebrew core ya no lo incluye. Lo más limpio (no toca tu ffmpeg):\n"
+           "    conda create -y -n edit-video-ffmpeg -c conda-forge ffmpeg\n"
+           "    y en ~/.config/edit-video/config: EDIT_VIDEO_FFMPEG=\"<env>/bin/ffmpeg\" (+ EDIT_VIDEO_FFPROBE)\n"
+           "  O reemplazarlo: brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg && "
            "brew install homebrew-ffmpeg/ffmpeg/ffmpeg\n"
            "  Linux: el paquete ffmpeg de la distro suele traerlo (apt install ffmpeg).\n"
            "  Sin libass solo funciona --nivel 3 (corte limpio, sin quemar nada).")
@@ -1111,8 +1163,10 @@ def cmd_render(args) -> int:
     tpath = Path(args.transcript).expanduser().resolve()
     if not tpath.exists():
         die(f"no existe {tpath}")
-    tdata = json.loads(tpath.read_text(encoding="utf-8"))
+    tdata = read_transcript(tpath)
     segs = tdata["segments"]
+    if not args.video and not tdata.get("source"):
+        die("esta transcripción no dice de qué video sale: pasa --video")
 
     video = Path(args.video).expanduser().resolve() if args.video \
         else Path(tdata["source"])
@@ -1209,7 +1263,7 @@ def cmd_render(args) -> int:
 
 def cmd_tighten(args) -> int:
     """Imprime los tramos a conservar sin silencios (JSON). Lo consume /edit-video para su rough cut."""
-    tdata = json.loads(Path(args.transcript).expanduser().read_text(encoding="utf-8"))
+    tdata = read_transcript(args.transcript)
     words = [w for s in tdata["segments"] for w in (s.get("words") or [])]
     if not words:
         die("la transcripción no tiene tiempos por palabra (analyze sin --no-words)")

@@ -66,9 +66,11 @@ fi
 # Niveles 1–2: clipper (Python) + FFmpeg con libass
 SD="$(cd "$(dirname "$0")/.." && pwd)"
 if [ -f "$SD/clipper/clipper.py" ] && command -v python3 >/dev/null 2>&1; then
-  if ffmpeg -hide_banner -filters 2>/dev/null | grep -q " ass "; then g "Niveles 1–2 (clipper): listos"
+  _c="$HOME/.config/edit-video/config"; _ff=ffmpeg
+  [ -f "$_c" ] && _v=$(sed -n 's/^EDIT_VIDEO_FFMPEG=//p' "$_c" | tr -d '"'"'"'"' | head -1) && [ -n "$_v" ] && _ff="$_v"
+  if "$_ff" -hide_banner -filters 2>/dev/null | grep -q " ass "; then g "Niveles 1–2 (clipper): listos ($_ff)"
   else w "Niveles 1–2: tu FFmpeg no trae libass (no puede quemar subtítulos). El 3 funciona igual" \
-         "macOS: brew uninstall ffmpeg && brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg"; fi
+         "macOS, sin tocar tu ffmpeg: conda create -y -n edit-video-ffmpeg -c conda-forge ffmpeg  y  EDIT_VIDEO_FFMPEG=<env>/bin/ffmpeg en ~/.config/edit-video/config"; fi
 else w "Niveles 1–2: falta clipper/ o python3" "reinstala el skill: npx skills add durang/edit-video -g -y"; fi
 
 # ¿Versión al día? El repo cambia seguido: cada sesión compara con GitHub (5 s máx., sin red se salta)

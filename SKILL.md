@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.4.1
+  version: 3.5.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -26,6 +26,13 @@ nuevo, o propuesta de nivel 3 sin concepto claro** → **shotgun de estilo**: 3 
 distintas, cuadros de estilo reales sobre el metraje, el director elige en un tablero, y lo elegido
 se vuelve la plantilla del cliente y alimenta su gusto. Detalle: `references/shotgun.md`. Si el usuario no dijo el
 nivel, **una** pregunta: *"¿Nivel 1, 2 o 3? ¿O todos en 1–2 y los mejores en 3?"*
+
+**Nivel 3 en tres intensidades** (tabla en `references/nivel-3.md` §0). Se pide *"nivel 3 ·
+intensidad 2 · énfasis recortes"*; sin intensidad es la **1 · Profesional**. **2 · Dinámico** carga
+más cambios, sonido y recortes; **3 · Extremo** es la de *"¿qué es eso?"* y exige una prueba animada
+de 5–10 s aprobada antes. Efectos probados, con tiempos exactos: `references/recetario-3.md`; si el
+director pide uno por su nombre, se construye con esa receta. Al cerrar un video de nivel 3, lo
+nuevo que funcionó se añade como receta.
 
 Tú (el agente) no reproduces video. Así que antes de editar nada te das **oídos** (transcripción
 con el tiempo de cada palabra) y **ojos** (fotogramas). Con eso planeas el montaje, lo enseñas,

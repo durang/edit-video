@@ -6,11 +6,38 @@
 |---|---|---|
 | **1 · Recorte** | Clips limpios de un video largo: subtítulo palabra por palabra, gancho, logo | minutos |
 | **2 · Editorial** | Lo mismo con tipografía de estudio, paleta, caja en la palabra activa, rótulo, barra de progreso y grade | minutos |
-| **3 · Estudio** | Motion design avanzado (mapas, profundidad, datos, cierre con personaje, diseño sonoro), con propuesta aprobada antes | horas |
+| **3 · Estudio** | Motion design avanzado (mapas, profundidad, datos, cierre con personaje, diseño sonoro), con propuesta aprobada antes. **Tres intensidades**: 1 Profesional · 2 Dinámico · 3 Extremo | horas |
 | **4 · Director** *(propuesto)* | Lo del 3 + planos generados con IA, 3D y música a la imagen | días |
 
 Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, HyperFrames. Detalle:
 [`references/niveles.md`](references/niveles.md) · contrato del nivel 3: [`references/nivel-3.md`](references/nivel-3.md).
+
+### Cómo pedirlo
+
+| Dices… | Pasa esto |
+|---|---|
+| *"sácame clips de esta entrevista, nivel 1"* | clipper corta los mejores momentos con subtítulo y logo, sin preguntas |
+| *"nivel 2"* | Lo mismo con la línea editorial del cliente (su plantilla) |
+| *"nivel 3"* | Propuesta de motion design → **tu OK** → construcción → revisor cuadro a cuadro. Sin decir intensidad, es la **1** |
+| *"nivel 3 · intensidad 2"* | Más cargado: un cambio visual cada 2–4 s, sonido en cada evento, 2–4 recortes de la persona, profundidad 2.5D |
+| *"nivel 3 · intensidad 3"* | Extremo, el de *"¿qué es eso?"*: cambio cada 1–2 s, diseño sonoro denso, recorte en movimiento, 3D. Primero una prueba de 5–10 s para aprobar |
+| *"… · énfasis recortes"* (o `efectos`, o `datos`) | Dónde se gasta la carga extra |
+| *"con el cierre congelado con recorte"* | Usa una receta probada del [recetario](references/recetario-3.md), con sus tiempos exactos |
+| *"otro igual para este cliente"* | Parte de su kit y su plantilla, sin preguntas |
+| *"cambio de diseño"* / cliente nuevo | **Shotgun de estilo**: 3 direcciones reales sobre tu metraje, eliges en un tablero ([`shotgun.md`](references/shotgun.md)) |
+
+| Intensidad del 3 | Cambio visual | Sonido | Recortes de la persona | Tiempo |
+|---|---|---|---|---|
+| **1 · Profesional** | cada 3–8 s | uno por transición o gráfico clave | 1 (cierre) | base |
+| **2 · Dinámico** | cada 2–4 s | cada evento + subidas antes de los cambios | 2–4 + texto detrás de ella | ×1.5–2 |
+| **3 · Extremo** | cada 1–2 s | capas densas al cuadro | en movimiento, gráficos delante y detrás | ×3 |
+
+El freno de todas: **la voz se entiende siempre**; si un efecto tapa lo que se dice, se quita.
+
+**El recetario** ([`references/recetario-3.md`](references/recetario-3.md)) guarda cada efecto que
+salió en un video aprobado: qué es, cuándo, tiempos exactos, activos, fallas y su arreglo. Los
+ejemplos que te gusten entran en "Por probar" y suben a receta cuando se prueban. Cada video lo
+hace más grande.
 
 **Monta videos que ya existen, con cualquier agente.** Subtítulos, cortar silencios, zooms,
 rótulos, gráficos encima, música, reencuadre a vertical, recorte de fondo, objetos 3D, estilos con
@@ -132,6 +159,12 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 | `references/clipper.md` | Video largo → muchos clips: clipper para volumen, aquí para los mejores |
 | `scripts/diccionario.py` | Diccionario permanente de nombres: una corrección, para siempre |
 | `references/aprendizaje.md` + `scripts/sync.sh` | Área privada de clientes y autoaprendizaje en dos repos |
+| `references/niveles.md` | Los 4 niveles: qué es cada uno, comandos, quién lo corre |
+| `references/nivel-3.md` | **Contrato del nivel 3**, intensidades, tiempos y curvas, técnicas, lo que ya no se hace |
+| `references/recetario-3.md` | **Recetario**: efectos probados con tiempos exactos, y ejemplos por probar |
+| `references/shotgun.md` | Shotgun de estilo: 3 direcciones, tablero, la elegida se vuelve plantilla |
+| `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
+| `LIMITACIONES.md` | Lo que aún no sale bien, con su arreglo provisional y qué lo resolvería |
 | `references/motion-design.md` | Nivel estudio: coherencia, mapas, profundidad, cierre con personaje, sonido |
 | `references/troubleshooting.md` | Defecto → arreglo |
 

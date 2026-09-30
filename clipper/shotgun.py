@@ -69,9 +69,11 @@ def cmd_preparar(a):
     C.need_libass()          # sin libass no hay cuadros de estilo del nivel 2 (lo explica y sale)
     out = Path(a.out).expanduser().resolve()
     out.mkdir(parents=True, exist_ok=True)
-    tdata = json.loads(Path(a.transcript).read_text(encoding="utf-8"))
+    tdata = C.read_transcript(a.transcript)
     segs = tdata["segments"]
-    video = Path(tdata["source"])
+    if not getattr(a, "video", None) and not tdata.get("source"):
+        C.die("esta transcripción no dice de qué video sale: pasa --video")
+    video = Path(a.video).expanduser().resolve() if getattr(a, "video", None) else Path(tdata["source"])
     clips = json.loads(Path(a.clips).read_text(encoding="utf-8"))
     clips = clips.get("clips", clips) if isinstance(clips, dict) else clips
     clip = dict(clips[a.clip - 1])
@@ -251,6 +253,7 @@ def main():
     ap = argparse.ArgumentParser(prog="shotgun", description="Shotgun de estilo para video.")
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("preparar"); p.add_argument("transcript"); p.add_argument("clips")
+    p.add_argument("--video", help="el video, si la transcripción no lo dice (p. ej. la de ingest.sh)")
     p.add_argument("direcciones"); p.add_argument("--out", required=True)
     p.add_argument("--clip", type=int, default=1); p.add_argument("--cliente")
     p.add_argument("--tiempos", default="1.4,4.6")
