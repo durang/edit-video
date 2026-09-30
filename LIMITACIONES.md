@@ -6,7 +6,7 @@ resuelve cada una.** Cuando una se resuelve, se mueve abajo con la fecha y cómo
 | # | Limitación | Nivel | Arreglo provisional | Qué la resolvería |
 |---|---|---|---|---|
 | L1 | **Palabra detrás de la persona**: el recorte de video (`remove-background`) deja halo o parpadea en tomas con paneo | 3 | Palabra delante | Un matting de video estable en pelo y bordes, que HyperFrames o Higgsfield acepten |
-| L2 | **Video negro en HyperFrames** cuando el video va dentro de un recuadro recortado que se mueve y lleva filtros; la caché lo repite | 3 | Render con extract fresco y GPU por software (en prueba) | Arreglo en HyperFrames, o un patrón de composición que lo evite siempre |
+| L2 | **Video negro en HyperFrames** (0.8.9x, captura por screenshot): un `<video>` recortado con `clip-path` **y escalado hacia abajo** sale negro. Mismo código de video en v4 sale limpio y en v5 negro; sin SFX ni imágenes sigue negro → la causa exacta está pendiente de bisección | 3 | **Pre-render 1:1 con FFmpeg** del contenido del recuadro (`nivel-3.md` §3); el metraje grande solo escala hacia arriba | Causa exacta (bisección v4↔v5) y arreglo o aviso en HyperFrames |
 | L3 | **El FFmpeg de Homebrew (macOS) no trae libass** → los niveles 1–2 no queman subtítulos | 1–2 | Tap `homebrew-ffmpeg/ffmpeg` | Homebrew lo vuelve a incluir, o un binario oficial con libass |
 | L4 | **No hay generador de efectos de sonido** en las herramientas conectadas (Higgsfield solo hace voz) | 3–4 | Sintetizar con FFmpeg | Un generador de SFX con licencia comercial accesible por MCP o CLI |
 | L5 | **No hay fuente de música con licencia** integrada | 3–4 | El usuario pasa la pista | Catálogo con licencia en HyperFrames (`media-use`) o por MCP |

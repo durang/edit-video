@@ -95,6 +95,12 @@ Antes de escribir a mano: `npx hyperframes add <bloque>` y adaptar (reutilizar p
 `hyperframes-creative/references/house-style.md` (la lista de "defaults perezosos" que hay que
 cuestionar) y `video-composition.md`.
 
+**Video dentro de un recuadro** (L2): nunca un `<video>` con `clip-path` y escala < 1 — puede salir
+negro en el render. El contenido del recuadro se **pre-renderiza 1:1 con FFmpeg** (tamaño exacto del
+recuadro, crop con expresión si hay paneo, CRF 14, sin audio) y va en su propio `<video>` sin
+transform; el metraje grande solo aparece a pantalla completa, escalando hacia arriba. **Color con
+FFmpeg** (`source_graded.mp4`), nunca `filter:` CSS sobre video. Receta completa: `troubleshooting.md`.
+
 Reglas técnicas de HyperFrames que no se rompen: nada de `Math.random()` ni `Date.now()`, nada de
 `repeat: -1`, posiciones precalculadas (no `getBoundingClientRect()` en render), timeline pausada en
 `window.__timelines`.

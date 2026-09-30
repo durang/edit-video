@@ -71,6 +71,10 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
   Texto pequeño solo sobre papel limpio o con placa sólida.
 - **Tarjeta vacía**: el marco del mapa entraba medio segundo antes que el mapa. Contenedor y
   contenido entran juntos.
+- **`clip-path` que se encoge a un punto sin fade**: al final del cierre quedaba un rectángulo color
+  piel en el centro, un cuadro. La capa se desvanece mientras se encoge (`recetario-3.md` R1).
+- **Borde recto arriba de un fondo recortado** (paisaje que sube): línea horizontal visible →
+  degradado de 120 px con `mask-image` en el borde superior.
 - **Final en silencio digital** (−91 dB): el último sonido tiene que llegar al último cuadro con fade.
 
 - Titular de cierre partido en dos líneas: `COLOMBI` / `A.`

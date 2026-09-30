@@ -12,6 +12,8 @@ Describe qué ves y cuándo, o pega el error.
 | **Un cambio rompió algo** | Guardar versión antes de cada ronda (v1, v2...) y volver atrás |
 | **Los subtítulos van demasiado rápido** | `De 0:12 a 0:14 los subtítulos van muy rápido. Muestra dos palabras a la vez` |
 | **El recorte tiene bordes blandos** | Movimiento demasiado rápido o poca separación de la pared. Se vuelve a grabar, no se arregla en montaje |
+| **Video negro dentro de un recuadro** (el render sale negro pero el preview se ve bien) | Pre-render 1:1: FFmpeg saca `box.mp4` con lo que se ve en el recuadro, a su tamaño exacto; `<video>` sin transform ni clip-path. Grade con FFmpeg, no con CSS. Worker, GPU, caché o render por tramos **no** lo arreglan (probado) |
+| **Rectángulo o astilla al final de un `clip-path` que se cierra a un punto** | Desvanecer la capa (opacity → 0) **durante** el cierre, empezando casi a la vez; nunca dejar que el inset llegue a 0 × 0 visible |
 | **El clean plate no existe** | Los efectos de capas no se pueden hacer. Se graban 2 s de sala vacía y se repite |
 
 ## Hábitos que evitan casi todo

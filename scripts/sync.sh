@@ -26,7 +26,7 @@ save_conf(){
   printf 'EDIT_VIDEO_CLIENTS="%s"\nEDIT_VIDEO_SRC="%s"\n' "$CLIENTS" "$SRC" > "$CONF"
 }
 
-guard(){  # $1 = repo público. Sale 1 si se cuela algo privado.
+guard(){  # $1 = repo público, $2 = mensaje del commit. Sale 1 si se cuela algo privado.
   isrepo "$CLIENTS" || return 0
   local words w hits=0
   words=$(for f in "$CLIENTS"/clients/*/CLIENTE.md; do
@@ -35,6 +35,7 @@ guard(){  # $1 = repo público. Sale 1 si se cuela algo privado.
     done | sed 's/^[[:space:]"]*//; s/[[:space:]"]*$//' | grep -v '^<' | grep -v '^$' | sort -u)
   [ -z "$words" ] && return 0
   local added; added=$(git -C "$1" diff --cached -U0 | grep '^+' | grep -v '^+++')
+  added="$added"$'\n'"${2:-}"   # el mensaje del commit también es público
   while IFS= read -r w; do
     if printf '%s' "$added" | grep -qiw -- "$w"; then say "  ✗ guardia: \"$w\" es privado de un cliente y va al repo público"; hits=1; fi
   done <<< "$words"
@@ -46,7 +47,7 @@ commit_push(){  # $1 repo, $2 mensaje, $3 público?(1/0)
   isrepo "$r" || return 0
   git -C "$r" add -A
   if git -C "$r" diff --cached --quiet; then say "  = $(basename "$r"): nada nuevo"; return 0; fi
-  if [ "$pub" = 1 ] && ! guard "$r"; then
+  if [ "$pub" = 1 ] && ! guard "$r" "$m"; then
     git -C "$r" reset -q; say "  ✗ $(basename "$r"): NO se subió. Mueve eso al repo de clientes."; return 1
   fi
   git -C "$r" commit -qm "$m" && git -C "$r" push -q && say "  ✓ $(basename "$r"): $(git -C "$r" log --oneline -1)"
