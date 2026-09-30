@@ -27,6 +27,19 @@ sin ver el código: solo el video. Es lo que más errores caza.
 - [ ] Todo legible a tamaño de teléfono: **nada por debajo de 26 px sobre metraje**; las etiquetas
       secundarias van en pastilla sólida, nunca finas sobre video
 
+**Subtítulos (BLOQUEANTE — el director los considera lo más importante)**
+- [ ] **Cobertura N/N**: por CADA palabra de `transcript.json`/`words.json` se extrae el cuadro en su tiempo
+      medio y el subtítulo está visible y legible. El QA escribe "N/N palabras con subtítulo". Menos de N/N = rechazo.
+- [ ] Al reconstruir o ampliar una prueba a pieza completa, el subtítulo se extiende a **toda** la pieza
+      (error real: la prueba de 10 s tenía subtítulo y la pieza completa no, de 10 s al final)
+- [ ] Ningún gráfico tapa el subtítulo; si chocan, se mueve el gráfico
+
+**Recortes de la persona (cierre R1 y congelados)**
+- [ ] La silueta solo puede cortarla el **borde inferior** del cuadro; nunca un lado a media altura
+      (brazo o mano cortados en seco = rechazo). Revisar cada 0.1 s todo el cierre a tamaño completo
+- [ ] Si una versión anterior de la misma pieza ya tiene un cierre aprobado, se **reutiliza ese recorte y
+      esa posición** en lugar de rehacerlo
+
 **Composición**
 - [ ] Nada encima de la cara
 - [ ] Nada de texto fuera de la safe zone
@@ -100,3 +113,10 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
 - **Subtítulos perdidos en un tramo heredado.** Al subir de intensidad se reconstruyó un tramo y el subtítulo de
   0–17 s desapareció; el revisor miraba efectos, no subtítulos. Regla: al hacer una versión nueva, comparar cada
   0.5 s contra la versión aprobada — donde antes había subtítulo, ahora también.
+- **Pieza completa sin subtítulos después de la prueba**: la prueba aprobada (0–10 s) llevaba subtítulo; al
+  construir el resto, el constructor no lo extendió y el revisor no lo buscó. → check de cobertura N/N.
+- **Cierre con el brazo cortado por el lado**: el recorte se escaló grande y el borde derecho le cortó el brazo
+  en seco. La versión hermana (otra intensidad) ya tenía un cierre aprobado → reutilizarlo.
+- **Render cancelado al terminar el turno del constructor**: lanzar el render en segundo plano y cerrar el turno
+  mata el render (`render_cancelled_parent_exited`). El render va en **primer plano** dentro del turno.
+
