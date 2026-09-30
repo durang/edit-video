@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.10.0 — 2026-09-30
+- **`GUIA.md`**: guía de uso de toda la máquina. Cada nivel y herramienta empieza con una descripción,
+  sigue con cómo pedirlo (frases de ejemplo) y termina con qué se recibe, cuánto tarda y el comando.
+  Mapa rápido "quiero… → uso…", intensidades del nivel 3, tabla de notas de corrección, problemas comunes.
+- **Modo desde cero** (sin metraje: audio, guion, idea o web) documentado y enrutado en `SKILL.md`
+  Paso 0: beat sheet → OK → cuadros → HyperFrames → `.mp4` + `.html`. Con audio, cada animación se
+  ancla a la palabra. Cómo escribir un guion que anima bien. Primera pieza de estilo editorial: pendiente.
+
 ## 3.9.0 — 2026-09-30
 **clipper: elegir, empaquetar y encuadrar solo** — las 4 mejoras aprobadas, probadas con video real.
 - **Rúbrica de clipeabilidad** (`clipper/rubrica.py`, `references/clipeabilidad.md`): `candidatos`

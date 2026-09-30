@@ -9,6 +9,8 @@
 | **3 · Estudio** | Motion design avanzado (mapas, profundidad, datos, cierre con personaje, diseño sonoro), con propuesta aprobada antes. **Tres intensidades**: 1 Profesional · 2 Dinámico · 3 Extremo | horas |
 | **4 · Director** *(propuesto)* | Lo del 3 + planos generados con IA, 3D y música a la imagen | días |
 
+**¿Qué pido y cómo?** → [`GUIA.md`](GUIA.md): cada nivel con descripción, frases de ejemplo, comandos y qué recibes — incluido el modo **desde cero** (sin video: desde un audio, un guion o una idea).
+
 Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, HyperFrames. Detalle:
 [`references/niveles.md`](references/niveles.md) · contrato del nivel 3: [`references/nivel-3.md`](references/nivel-3.md).
 
@@ -17,6 +19,7 @@ Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, Hype
 | Dices… | Pasa esto |
 |---|---|
 | *"sácame clips de esta entrevista, nivel 1"* | clipper puntúa los momentos (rúbrica de clipeabilidad), te propone los mejores con su motivo y, con tu OK, los corta con subtítulo, logo y **miniatura** |
+| *"con este audio hazme un video de 20 s, 9:16, estilo editorial"* | **Desde cero**: beat sheet → tu OK → cuadros de prueba → `.mp4` + `.html` editable ([GUIA §5](GUIA.md)) |
 | *"sácale clips a toda esta carpeta"* | **Modo lote**: una propuesta por video, apruebas, y renderiza solo lo aprobado |
 | *"hazlo vertical y que siga al que habla"* | `--fit auto`: detecta las caras y corta al hablante activo (MediaPipe, instalado aparte en un entorno aislado) |
 | *"nivel 2"* | Lo mismo con la línea editorial del cliente (su plantilla) |
