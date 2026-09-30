@@ -34,6 +34,11 @@ Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, Hype
 
 El freno de todas: **la voz se entiende siempre**; si un efecto tapa lo que se dice, se quita.
 
+**¿Cuánto va a tardar?** Antes de empezar, el agente te da un estimado con los 2–3 trabajos más
+parecidos que ya hizo (*"estimado 46–71 min; la última subida de intensidad tardó 40"*), y si preguntas
+*"¿cómo va?"* te dice la fase, el % y la hora estimada de fin. Cada trabajo terminado afina el
+siguiente estimado (`scripts/tiempos.py`).
+
 **El recetario** ([`references/recetario-3.md`](references/recetario-3.md)) guarda cada efecto que
 salió en un video aprobado: qué es, cuándo, tiempos exactos, activos, fallas y su arreglo. Los
 ejemplos que te gusten entran en "Por probar" y suben a receta cuando se prueban. Cada video lo
@@ -157,6 +162,7 @@ adivinado. Es lo que separa un montaje hecho a mano de una plantilla.
 | `references/prompts.md` | Pedidos listos, de diario y para lucirse |
 | `references/styles.md` | Copiar un estilo |
 | `references/clipper.md` | Video largo → muchos clips: clipper para volumen, aquí para los mejores |
+| `scripts/tiempos.py` | Estimados con trabajos parecidos, avance en %, registro de tiempos reales |
 | `scripts/diccionario.py` | Diccionario permanente de nombres: una corrección, para siempre |
 | `references/aprendizaje.md` + `scripts/sync.sh` | Área privada de clientes y autoaprendizaje en dos repos |
 | `references/niveles.md` | Los 4 niveles: qué es cada uno, comandos, quién lo corre |

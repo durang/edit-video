@@ -1156,7 +1156,28 @@ def need_libass():
     die(msg)
 
 
+def _log_tiempo(nivel: int, clips: int, segundos: float, t0: float, cliente: str | None) -> None:
+    """Cada render de clipper deja su tiempo real para que scripts/tiempos.py estime los próximos."""
+    import time as _t
+    c = os.environ.get("EDIT_VIDEO_CLIENTS") or _conf("EDIT_VIDEO_CLIENTS")
+    p = (Path(c) / "_general" / "tiempos.jsonl") if c and Path(c).is_dir() \
+        else Path.home() / ".config" / "edit-video" / "tiempos.jsonl"
+    e = {"fecha": _t.strftime("%Y-%m-%dT%H:%M+00:00", _t.gmtime(t0)), "pieza": f"clipper {clips} clips",
+         "nivel": nivel, "tipo": "clipper", "duracion_video_s": round(segundos, 1),
+         "minutos": round((_t.time() - t0) / 60, 1), "renders": clips}
+    if cliente:
+        e["cliente"] = cliente
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with p.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(e, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
 def cmd_render(args) -> int:
+    import time as _t
+    _t0 = _t.time()
     need(FFMPEG)
     if str(getattr(args, "nivel", "1")) != "3":
         need_libass()
@@ -1254,6 +1275,8 @@ def cmd_render(args) -> int:
                 print(f"      propuesta: {prop.name}")
 
     print(f"\n{len(made)}/{len(clips)} listos en:\n  {outdir}")
+    if made:
+        _log_tiempo(nivel, len(made), sum(float(c["end"]) - float(c["start"]) for c in clips), _t0, args.cliente)
     if nivel == 3 and made:
         print("\nNivel 3: completa cada *-PROPUESTA.md (concepto, gráficos, imágenes de Higgsfield,"
               "\nsonido), enséñala con 2–3 cuadros de muestra y ESPERA el OK del director."

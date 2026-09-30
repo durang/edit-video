@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.5.0
+  version: 3.6.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -33,6 +33,13 @@ más cambios, sonido y recortes; **3 · Extremo** es la de *"¿qué es eso?"* y 
 de 5–10 s aprobada antes. Efectos probados, con tiempos exactos: `references/recetario-3.md`; si el
 director pide uno por su nombre, se construye con esa receta. Al cerrar un video de nivel 3, lo
 nuevo que funcionó se añade como receta.
+
+**Tiempos reales, siempre.** Antes de lanzar un trabajo: `python3 scripts/tiempos.py estimar --nivel N
+--intensidad I --tipo nuevo|subida|ronda|detalles --duracion S` y se le dice al director *"estimado
+X–Y min; referencias: …"* (los 2–3 trabajos parecidos más recientes, con lo que tardaron). Si pregunta
+cómo va: `tiempos.py avance --log <stream-json del constructor> …` (fase, %, hora estimada de fin).
+Al terminar: `tiempos.py registrar …` (clipper registra solo). Sin historia parecida se dice que es la
+primera vez y se registra.
 
 Tú (el agente) no reproduces video. Así que antes de editar nada te das **oídos** (transcripción
 con el tiempo de cada palabra) y **ojos** (fotogramas). Con eso planeas el montaje, lo enseñas,
@@ -249,6 +256,7 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `references/niveles.md` | **Los niveles**: motor, línea de diseño, comandos, aprobación |
 | `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
 | `references/recetario-3.md` | **Recetario del nivel 3**: efectos probados con tiempos exactos (R1 cierre congelado con recorte) y ejemplos por probar |
+| `scripts/tiempos.py` | Tiempos reales: estimar con trabajos parecidos, avance en %, registrar al terminar |
 | `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
 | `clipper/` | Motor de los niveles 1–2 y del corte del 3 (`clipper.py`, `studio.py`, plantillas, fuentes) |
 | `references/clipper.md` | Video largo → muchos clips: cuándo clipper, cuándo aquí, y juntos |
