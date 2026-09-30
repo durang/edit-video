@@ -477,6 +477,8 @@ def cmd_analyze(args) -> int:
     print(f"\n{len(segs)} segmentos"
           f"{f', {word_total} palabras con tiempo' if word_total else ''}"
           f", {total/60:.1f} minutos de material.")
+    if getattr(args, "candidatos", True):
+        escribir_candidatos(payload, out)
     return 0
 
 
@@ -928,6 +930,182 @@ SFX por evento (niveles ≤ −16 dBFS, la voz manda). Música: ¿sí/no, cuál?
     return p
 
 
+# ---------------------------------------------------------------- recorte por cara / hablante activo
+
+def caras_python() -> str | None:
+    """El python del entorno aislado con MediaPipe (nunca el del sistema)."""
+    c = os.environ.get("EDIT_VIDEO_CARAS_PY") or _conf("EDIT_VIDEO_CARAS_PY")
+    for p in (c, str(Path.home() / ".config" / "edit-video" / "venv-caras" / "bin" / "python")):
+        if p and Path(p).exists():
+            return p
+    return None
+
+
+def camara_auto(video: Path, start: float, end: float) -> dict | None:
+    """Corre caras.py (MediaPipe) sobre el tramo. None = no hay entorno o no hay caras → blur."""
+    py = caras_python()
+    if not py:
+        print("  --fit auto: falta el entorno de caras (references/clipper.md § Recorte por cara); "
+              "uso fondo difuminado")
+        return None
+    fd, out = tempfile.mkstemp(suffix=".json", prefix="clipper-cam-"); os.close(fd)
+    try:
+        rc = subprocess.run([py, str(HERE / "caras.py"), str(video), "--start", f"{start:.3f}",
+                             "--end", f"{end:.3f}", "--out", out], stdout=subprocess.DEVNULL,
+                            stderr=subprocess.PIPE, text=True, check=False)
+        d = json.loads(Path(out).read_text(encoding="utf-8")) if rc.returncode == 0 else None
+    except (OSError, json.JSONDecodeError):
+        d = None
+    finally:
+        Path(out).unlink(missing_ok=True)
+    if not d:
+        err = [l for l in (rc.stderr or "").splitlines() if l.strip() and not l.startswith(("W0", "I0", "INFO"))]
+        print(f"  --fit auto: caras.py falló ({err[-1] if err else '?'}); uso fondo difuminado")
+        return None
+    if d.get("modo") == "sin_caras":
+        return None
+    return d
+
+
+def cam_cx(d: dict, ts: float) -> float:
+    """Centro del encuadre en el segundo `ts` (absoluto): lineal entre muestras, escalón en cortes."""
+    cam, cortes = d["camino"], set(d.get("cortes") or [])
+    if ts <= cam[0][0]:
+        return cam[0][1]
+    for (t0, c0), (t1, c1) in zip(cam, cam[1:]):
+        if t0 <= ts < t1:
+            return c0 if t1 in cortes else c0 + (c1 - c0) * (ts - t0) / max(t1 - t0, 1e-6)
+    return cam[-1][1]
+
+
+def cam_px(cx: float, sw: int) -> int:
+    return int(min(max(round(cx * sw - 540), 0), sw - 1080))
+
+
+def cam_sendcmd(d: dict, start: float, end: float, T, sw: int) -> str:
+    """Comandos de sendcmd para mover crop@cam en el tiempo del clip (respeta --tighten vía T)."""
+    lines, prev, k = [], None, 0
+    while True:
+        ts = start + k / 30.0
+        if ts > end:
+            break
+        x = cam_px(cam_cx(d, ts), sw)
+        if x != prev:
+            lines.append(f"{max(T(ts), 0):.3f} crop@cam x {x};")
+            prev = x
+        k += 1
+    return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------- miniaturas
+
+def thumb_title(clip: dict, segs: list[dict]) -> str:
+    """Titular de la miniatura: `titulo` > `hook` > las primeras palabras del clip."""
+    t = (clip.get("titulo") or clip.get("hook") or "").strip()
+    if t:
+        return t
+    s0 = float(clip["start"])
+    ws = [w["w"] for sg in segs for w in (sg.get("words") or []) if w["start"] >= s0 - 0.05][:7]
+    if not ws:
+        ws = next((sg["text"] for sg in segs if float(sg["end"]) > s0), "").split()[:7]
+    return " ".join(ws).rstrip(",;:")
+
+
+def make_thumb(video: Path, clip: dict, segs: list[dict], out_mp4: Path, vertical: bool,
+               fit: str, crop_x: float, nivel: int, P: dict) -> Path | None:
+    """Miniatura por clip: el cuadro más representativo cerca del gancho + titular con la tipografía
+    de la plantilla → `NN-slug-thumb.jpg` (1080×1920 vertical, 1280×720 horizontal).
+
+    Cuadro: `thumb_t` (segundo absoluto) si el clip lo trae; si hay caras (`caras.py`, mejora del
+    recorte), el de boca más abierta y cara más grande en los primeros 4 s; si no, el filtro
+    `thumbnail` de FFmpeg sobre 16 cuadros de los primeros 4 s (evita parpadeos y transiciones)."""
+    start, end = float(clip["start"]), float(clip["end"])
+    fit = clip.get("fit", fit)
+    crop_x = float(clip.get("crop_x", crop_x))
+    W, H = (1080, 1920) if vertical else (1280, 720)
+    out = out_mp4.with_name(f"{out_mp4.stem}-thumb.jpg")
+    title = thumb_title(clip, segs)
+    win = min(4.0, max(end - start, 0.5))
+    t_at = clip.get("thumb_t")
+    if t_at is None and clip.get("_thumb_t") is not None:
+        t_at = clip["_thumb_t"]
+    with tempfile.TemporaryDirectory(prefix="clipper-t-") as td:
+        td = Path(td)
+        frame = td / "f.png"
+        if t_at is not None:
+            cmd = [FFMPEG, "-y", "-ss", f"{float(t_at):.3f}", "-i", str(video), "-frames:v", "1", str(frame)]
+        else:
+            cmd = [FFMPEG, "-y", "-ss", f"{start:.3f}", "-t", f"{win:.3f}", "-i", str(video),
+                   "-vf", "fps=4,thumbnail=16", "-frames:v", "1", str(frame)]
+        run(cmd)
+        if not frame.exists():
+            return None
+        # encuadre = el del clip
+        if vertical and fit == "auto" and clip.get("_crop_px") is not None:
+            vf = f"scale=-2:1920,crop=1080:1920:{clip['_crop_px']}:0"
+        elif vertical and fit == "crop":
+            cx = min(max(crop_x, 0.0), 1.0)
+            vf = f"scale=-2:1920,crop=1080:1920:(iw-1080)*{cx:.3f}:0"
+        elif vertical:
+            vf = ("split=2[bg][fg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,"
+                  "crop=1080:1920,gblur=sigma=22[bgb];[fg]scale=1080:1920:"
+                  "force_original_aspect_ratio=decrease[fgs];[bgb][fgs]overlay=(W-w)/2:(H-h)/2")
+        else:
+            vf = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H}"
+        if nivel == 2 and P.get("grade"):
+            vf += "," + P["grade"]
+        # legibilidad: sombra arriba, donde va el titular (abajo lo tapa la app)
+        # degradado suave (12 bandas; sin bordes duros) de negro 45 % arriba a 0 en el 55 %
+        vf += "".join(f",drawbox=x=0:y=0:w=iw:h=ih*{0.55 * (k + 1) / 12:.4f}:color=black@0.05:t=fill"
+                      for k in range(12))
+        (td / "t.ass").write_text(thumb_ass(title, W, H, nivel, P), encoding="utf-8")
+        fdir = str(FONTS_DIR).replace("\\", "/").replace(":", "\\:").replace("'", "\\'")
+        vf += f",ass=t.ass:fontsdir={fdir}"
+        rc = subprocess.run([FFMPEG, "-y", "-i", str(frame), "-vf", vf, "-frames:v", "1",
+                             "-q:v", "2", str(out)], cwd=td, stdout=subprocess.DEVNULL,
+                            stderr=subprocess.PIPE, text=True, check=False)
+    if rc.returncode != 0 or not out.exists():
+        print(f"      miniatura: FALLÓ ({(rc.stderr or '').strip().splitlines()[-1:] or ''})")
+        return None
+    return out
+
+
+def thumb_ass(title: str, W: int, H: int, nivel: int, P: dict) -> str:
+    """Titular grande en el tercio superior. Nivel 2: serif + display en acento ("Lo que|nadie te
+    dice"); nivel 1: la fuente del sistema en negrita, blanco con contorno y la última línea amarilla."""
+    vertical = H > W
+    m = int(W * 0.07)
+    top = int(H * (0.12 if vertical else 0.10))
+    if nivel == 2:
+        F = P.get("fuentes") or {}
+        C = P.get("colores") or {}
+        disp, serif = F.get("display", "Clipper Display"), F.get("serif", "Clipper Serif")
+        acc = ass_color(C.get("acento", "#FFD23F"))
+        txt = ass_color(C.get("texto", "#FFFFFF"))
+        big = int((180 if vertical else 120) * (0.82 if len(title) > 24 else 1))
+        small = int(big * 0.62)
+        styles = (f"Style: A,{serif},{small},{txt},{txt},&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,0,3,7,{m},{m},{top},1\n"
+                  f"Style: B,{disp},{big},{acc},{acc},&H00000000,&H64000000,-1,0,0,0,100,100,-1,0,1,0,4,7,{m},{m},{top},1\n")
+        if "|" in title:
+            a, b = title.split("|", 1)
+            text = f"{{\\rA}}{ass_escape(a.strip())}\\N{{\\rB}}{ass_escape(b.strip())}"
+        else:
+            text = f"{{\\rB}}{ass_escape(title)}"
+    else:
+        big = int((118 if vertical else 84) * (0.82 if len(title) > 30 else 1))
+        styles = (f"Style: B,{FONT},{big},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100,0,0,1,9,3,8,{m},{m},{top},1\n")
+        words = title.replace("|", " ").split()
+        cut = max(1, len(words) * 2 // 3) if len(words) > 3 else len(words)
+        head, tail = " ".join(words[:cut]), " ".join(words[cut:])
+        text = ass_escape(head.upper()) + (f"\\N{{\\1c{HIGHLIGHT}}}{ass_escape(tail.upper())}" if tail else "")
+    return (f"[Script Info]\nScriptType: v4.00+\nPlayResX: {W}\nPlayResY: {H}\nWrapStyle: 0\n"
+            "ScaledBorderAndShadow: yes\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, "
+            "SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, "
+            "Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n"
+            f"{styles}\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n"
+            f"Dialogue: 0,0:00:00.00,0:00:05.00,B,,0,0,0,,{text}\n")
+
+
 # ---------------------------------------------------------------- render
 
 def check_platform(dur: float) -> list[str]:
@@ -1004,6 +1182,15 @@ def render_clip(video: Path, segs: list[dict], clip: dict, outdir: Path,
         if keep and len(keep) > 1 else ""
 
     P = P or {}
+    src_w = src_h = 0
+    if vertical and fit == "auto":
+        pr = subprocess.run([FFPROBE, "-v", "error", "-select_streams", "v:0", "-show_entries",
+                             "stream=width,height:stream_side_data=rotation", "-of", "csv=p=0:s=x",
+                             str(video)], capture_output=True, text=True, check=False)
+        try:
+            src_w, src_h = (int(x) for x in pr.stdout.strip().splitlines()[0].split("x")[:2])
+        except (ValueError, IndexError):
+            src_w = src_h = 0
     if vertical:
         W, H = 1080, 1920
     elif out_h:
@@ -1045,7 +1232,26 @@ def render_clip(video: Path, segs: list[dict], clip: dict, outdir: Path,
             pre = "[vc]"
 
         tail = "vo" if not watermark else "vsub"
-        if vertical and fit == "crop":
+        cam = None
+        if vertical and fit == "auto":
+            sw = int(round(src_w * 1920 / src_h / 2)) * 2 if src_h else 0
+            if sw > 1100:
+                cam = camara_auto(video, start, end)
+            if cam:
+                (td / "cam.cmd").write_text(cam_sendcmd(cam, start, end, remap or (lambda t: t - start), sw),
+                                            encoding="utf-8")
+                x0 = cam_px(cam_cx(cam, start), sw)
+                chain.append(f"{pre}scale=-2:1920,sendcmd=f=cam.cmd,crop@cam=1080:1920:{x0}:0[v]")
+                tt = cam.get("thumb_t") if cam.get("thumb_t") is not None else start + min(1.0, (end - start) / 2)
+                clip["_thumb_t"], clip["_crop_px"] = tt, cam_px(cam_cx(cam, tt), sw)
+                cut_note += (f", encuadre auto: {cam['modo']}"
+                             f"{', ' + str(len(cam['cortes'])) + ' cortes de hablante' if cam['cortes'] else ''}")
+            else:
+                fit = "crop" if sw and sw <= 1100 else "blur"   # ya vertical: centro; sin caras: blur
+                crop_x = 0.5
+        if cam:
+            pass
+        elif vertical and fit == "crop":
             # Recorte 9:16 centrado en crop_x (0 = izquierda, 1 = derecha): sin franjas ni borroso.
             cx = min(max(crop_x, 0.0), 1.0)
             chain.append(f"{pre}scale=-2:1920,crop=1080:1920:(iw-1080)*{cx:.3f}:0[v]")
@@ -1245,7 +1451,9 @@ def cmd_render(args) -> int:
     elif fixed:
         print(f"  diccionario: {fixed} correcciones aplicadas")
     if not args.horizontal:
-        print(f"  encuadre: {'recorte 9:16 en x=' + str(args.crop_x) if args.fit == 'crop' else 'fondo difuminado'}")
+        enc = {"crop": f"recorte 9:16 en x={args.crop_x}", "blur": "fondo difuminado",
+               "auto": "auto: sigue la cara / hablante activo (caras.py)"}[args.fit]
+        print(f"  encuadre: {enc}")
     if args.tighten:
         print(f"  silencios: fuera los > {args.tighten}s (nunca dentro de una palabra)")
     if args.cover_subs:
@@ -1273,6 +1481,11 @@ def cmd_render(args) -> int:
                 prop = write_propuesta(c, segs, float(c["start"]), float(c["end"]), video,
                                        r, P, args.cliente)
                 print(f"      propuesta: {prop.name}")
+            if not args.no_thumbs:
+                th = make_thumb(video, c, segs, r, not args.horizontal, args.fit, args.crop_x,
+                                min(nivel, 2), P)
+                if th:
+                    print(f"      miniatura: {th.name}")
 
     print(f"\n{len(made)}/{len(clips)} listos en:\n  {outdir}")
     if made:
@@ -1282,6 +1495,155 @@ def cmd_render(args) -> int:
               "\nsonido), enséñala con 2–3 cuadros de muestra y ESPERA el OK del director."
               "\nCon el OK, se construye con /edit-video a partir del corte limpio.")
     return 0 if made else 1
+
+
+def escribir_candidatos(tdata: dict, tpath: Path, min_s: float = 15, max_s: float = 60,
+                        top: int = 10, quiet: bool = False) -> Path | None:
+    """Rúbrica de clipeabilidad (rubrica.py, references/clipeabilidad.md) → *.candidatos.json.
+
+    Es un pre-filtro: ordena y explica. El humano o el agente leen, ajustan y eligen; nada se
+    renderiza desde aquí."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import rubrica
+    cands = rubrica.candidatos(tdata["segments"], min_s, max_s, top)
+    if not cands:
+        if not quiet:
+            print("  rúbrica: ningún tramo entre "
+                  f"{min_s:.0f} y {max_s:.0f} s (¿video demasiado corto? prueba --min menor)")
+        return None
+    stem = tpath.name.replace(".transcript.json", "").replace(".json", "")
+    out = tpath.with_name(f"{stem}.candidatos.json")
+    out.write_text(json.dumps({"fuente": tdata.get("source"), "rubrica": "references/clipeabilidad.md",
+                               "clips": cands}, ensure_ascii=False, indent=2), encoding="utf-8")
+    if not quiet:
+        print(f"\nrúbrica de clipeabilidad — {len(cands)} candidatos (0–10; G gancho · D dato · "
+              "R remate · A autonomía · E emoción)")
+        for c in cands:
+            print(f"  {c['total']:>2}/10  [{c['start']:7.1f} → {c['end']:7.1f}]  "
+                  f"G{c['gancho']} D{c['dato']} R{c['remate']} A{c['autonomia']} E{c['emocion']}  "
+                  f"«{c['apertura'][:48]}»")
+            print(f"          {c['motivo']}")
+        print(f"\n  {out}\n  Pre-filtro, no decisión: lee los mejores, ajusta cortes y 'hook', y "
+              "copia los elegidos a clips.json.")
+    return out
+
+
+def cmd_candidatos(args) -> int:
+    tpath = Path(args.transcript).expanduser().resolve()
+    if not tpath.exists():
+        die(f"no existe {tpath}")
+    tdata = read_transcript(tpath)
+    return 0 if escribir_candidatos(tdata, tpath, args.min, args.max, args.top) else 1
+
+
+VIDEO_EXT = {".mp4", ".mov", ".m4v", ".mkv", ".webm"}
+
+
+def _transcribir_lote(v: Path, args) -> Path | None:
+    """Transcripción de un video del lote, con caché. Whisper de OpenAI si está (analyze);
+    si no, ingest.sh del skill (whisper.cpp vía HyperFrames, también saca los fotogramas)."""
+    t_clip = v.with_name(f"{v.stem}.transcript.json")
+    t_ing = v.with_suffix(".edit") / "transcript.json"
+    for t in (t_clip, t_ing):
+        if t.exists() and not args.force:
+            return t
+    if shutil.which(WHISPER):
+        ns = argparse.Namespace(video=str(v), out=None, model=args.model, lang=args.lang,
+                                force_lang=False, words=True, force=args.force,
+                                cliente=args.cliente, candidatos=False)
+        cmd_analyze(ns)
+        return t_clip if t_clip.exists() else None
+    ingest = HERE.parent / "scripts" / "ingest.sh"
+    if not ingest.exists():
+        die("no hay whisper ni scripts/ingest.sh para transcribir")
+    rc = subprocess.run(["bash", str(ingest), str(v), args.lang], check=False)
+    return t_ing if rc.returncode == 0 and t_ing.exists() else None
+
+
+def cmd_lote(args) -> int:
+    """Una carpeta de grabaciones → propuestas por video → (OK) → clips + miniaturas.
+
+    Paso 1 (sin --render): transcribe cada video (con caché), corre la rúbrica y deja
+      <video>.clips.json con los candidatos y "aprobado": false, más LOTE.md con el resumen.
+    Paso 2 (--render): renderiza SOLO los videos cuyo .clips.json dice "aprobado": true.
+    El OK del humano entre los dos pasos no se salta: es la regla de clipper."""
+    import time as _t
+    carpeta = Path(args.carpeta).expanduser().resolve()
+    if not carpeta.is_dir():
+        die(f"no es una carpeta: {carpeta}")
+    videos = sorted(p for p in carpeta.iterdir() if p.suffix.lower() in VIDEO_EXT
+                    and not p.name.startswith(".") and p.is_file())
+    if not videos:
+        die(f"no hay videos en {carpeta}")
+    filas, t0 = [], _t.time()
+
+    if not args.render:
+        print(f"lote · {len(videos)} video(s) en {carpeta.name} · paso 1: transcribir y proponer\n")
+        for v in videos:
+            tv = _t.time()
+            print(f"── {v.name}")
+            prop = v.with_name(f"{v.stem}.clips.json")
+            if prop.exists() and not args.force:
+                d = json.loads(prop.read_text(encoding="utf-8"))
+                filas.append((v.name, len(d.get("clips", [])), d.get("aprobado", False), "ya propuesto", 0))
+                print("   propuesta ya existe (--force para rehacer)\n")
+                continue
+            tpath = _transcribir_lote(v, args)
+            if not tpath:
+                filas.append((v.name, 0, False, "FALLÓ la transcripción", _t.time() - tv))
+                continue
+            tdata = read_transcript(tpath)
+            nw = sum(len(sg.get("words") or []) or len(sg["text"].split()) for sg in tdata["segments"])
+            if nw < 40:   # música, b-roll, casi sin voz: no es material de clipper
+                filas.append((v.name, 0, False, f"poca voz ({nw} palabras): no es material de clipper",
+                              _t.time() - tv))
+                print(f"   poca voz ({nw} palabras): sin propuesta\n")
+                continue
+            cpath = escribir_candidatos(tdata, tpath, args.min, args.max, args.top, quiet=True)
+            clips = json.loads(cpath.read_text(encoding="utf-8"))["clips"] if cpath else []
+            prop.write_text(json.dumps({
+                "video": v.name, "transcript": str(tpath.relative_to(carpeta)), "aprobado": False,
+                "nota": "Revisa: quita los que no, ajusta start/end, escribe 'hook' y 'titulo'. "
+                        "Luego \"aprobado\": true y `clipper.py lote <carpeta> --render`.",
+                "clips": clips}, ensure_ascii=False, indent=2), encoding="utf-8")
+            mejor = f"{clips[0]['total']}/10" if clips else "—"
+            filas.append((v.name, len(clips), False, f"mejor {mejor}", _t.time() - tv))
+            print(f"   {len(clips)} candidatos · mejor {mejor} · {_t.time() - tv:.0f} s\n")
+        md = [f"# Lote · {carpeta.name}", "",
+              f"{len(videos)} video(s) · paso 1 en {(_t.time() - t0) / 60:.1f} min", "",
+              "| video | candidatos | aprobado | nota | s |", "|---|---|---|---|---|"]
+        md += [f"| {a} | {b} | {'sí' if c else 'no'} | {d} | {e:.0f} |" for a, b, c, d, e in filas]
+        md += ["", "**Siguiente:** revisar cada `<video>.clips.json` (candidatos de la rúbrica, "
+               "`references/clipeabilidad.md`), poner `\"aprobado\": true` y correr "
+               f"`clipper.py lote {carpeta} --render`."]
+        (carpeta / "LOTE.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+        print(f"listo: {carpeta / 'LOTE.md'}\nNada se renderiza sin aprobación: edita los "
+              "*.clips.json, marca \"aprobado\": true y vuelve con --render.")
+        return 0
+
+    print(f"lote · {len(videos)} video(s) en {carpeta.name} · paso 2: renderizar lo aprobado\n")
+    hechos = 0
+    for v in videos:
+        prop = v.with_name(f"{v.stem}.clips.json")
+        if not prop.exists():
+            print(f"── {v.name}: sin propuesta (corre primero sin --render)")
+            continue
+        d = json.loads(prop.read_text(encoding="utf-8"))
+        if not d.get("aprobado"):
+            print(f"── {v.name}: sin aprobar, lo salto")
+            continue
+        tpath = carpeta / d["transcript"]
+        cmd = [sys.executable, str(Path(__file__).resolve()), "render", str(tpath), str(prop),
+               "--video", str(v), "--outdir", str(carpeta / f"{v.stem}-clips"),
+               "--nivel", str(args.nivel), "--fit", args.fit, "--preset", args.preset]
+        if args.cliente:
+            cmd += ["--cliente", args.cliente]
+        print(f"── {v.name}")
+        rc = subprocess.run(cmd, check=False)
+        hechos += rc.returncode == 0
+    print(f"\n{hechos} video(s) renderizados en {(_t.time() - t0) / 60:.1f} min "
+          "(cada render queda en tiempos.py)")
+    return 0 if hechos else 1
 
 
 def cmd_tighten(args) -> int:
@@ -1340,6 +1702,8 @@ def main() -> int:
                    help="sin tiempos por palabra (más rápido)")
     a.add_argument("--force", action="store_true",
                    help="ignorar la caché y rehacer la transcripción")
+    a.add_argument("--no-candidatos", dest="candidatos", action="store_false",
+                   help="no correr la rúbrica de clipeabilidad al terminar")
     a.set_defaults(func=cmd_analyze, words=True)
 
     r = sub.add_parser("render", help="corta, subtitula y normaliza")
@@ -1368,8 +1732,9 @@ def main() -> int:
                    help="multiplicador del tamano de subtitulo (1.4 = 40%% mas grande)")
     r.add_argument("--no-watermark-shadow", action="store_true",
                    help="sin sombra bajo el logo (logos oscuros no la necesitan)")
-    r.add_argument("--fit", default="blur", choices=["blur", "crop"],
-                   help="vertical: blur = fondo difuminado; crop = recorte 9:16 sin franjas")
+    r.add_argument("--fit", default="blur", choices=["blur", "crop", "auto"],
+                   help="vertical: blur = fondo difuminado; crop = recorte 9:16 sin franjas en --crop-x; "
+                        "auto = sigue la cara y al hablante activo (MediaPipe, entorno aislado)")
     r.add_argument("--crop-x", type=float, default=0.5,
                    help="con --fit crop: centro horizontal del recorte, 0..1 (por clip: crop_x)")
     r.add_argument("--tighten", type=float, default=0.0, metavar="SEG",
@@ -1389,7 +1754,32 @@ def main() -> int:
                    help="solo nivel 3: 1 profesional · 2 dinámico · 3 extremo (por defecto 1)")
     r.add_argument("--enfasis", choices=["recortes", "efectos", "datos"],
                    help="solo nivel 3: dónde se gasta la carga extra")
+    r.add_argument("--no-thumbs", action="store_true",
+                   help="no generar la miniatura NN-slug-thumb.jpg de cada clip")
     r.set_defaults(func=cmd_render)
+
+    c = sub.add_parser("candidatos", help="rúbrica de clipeabilidad: tramos puntuados 0–10 con motivo")
+    c.add_argument("transcript", help="*.transcript.json de analyze o transcript.json de ingest.sh")
+    c.add_argument("--min", type=float, default=15, help="duración mínima del clip (s)")
+    c.add_argument("--max", type=float, default=60, help="duración máxima del clip (s)")
+    c.add_argument("--top", type=int, default=10, help="cuántos candidatos")
+    c.set_defaults(func=cmd_candidatos)
+
+    L = sub.add_parser("lote", help="carpeta de videos → propuestas → (OK) → clips + miniaturas")
+    L.add_argument("carpeta")
+    L.add_argument("--render", action="store_true",
+                   help="paso 2: renderizar los videos cuyo .clips.json dice \"aprobado\": true")
+    L.add_argument("--top", type=int, default=6, help="candidatos por video")
+    L.add_argument("--min", type=float, default=15)
+    L.add_argument("--max", type=float, default=60)
+    L.add_argument("--model", default="base", help="modelo de whisper (si se usa analyze)")
+    L.add_argument("--lang", default="auto")
+    L.add_argument("--cliente")
+    L.add_argument("--nivel", default="1", choices=["1", "2", "3"])
+    L.add_argument("--fit", default="blur", choices=["blur", "crop", "auto"])
+    L.add_argument("--preset", default="veryfast")
+    L.add_argument("--force", action="store_true", help="rehacer transcripciones y propuestas")
+    L.set_defaults(func=cmd_lote)
 
     t = sub.add_parser("tighten", help="tramos sin silencios (JSON) para montar")
     t.add_argument("transcript")

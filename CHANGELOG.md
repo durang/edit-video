@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.9.0 — 2026-09-30
+**clipper: elegir, empaquetar y encuadrar solo** — las 4 mejoras aprobadas, probadas con video real.
+- **Rúbrica de clipeabilidad** (`clipper/rubrica.py`, `references/clipeabilidad.md`): `candidatos`
+  (y al final de `analyze`) puntúa tramos 0–10 en gancho, dato, remate, autonomía y emoción, sin
+  solaparse, en ES y EN → `*.candidatos.json` con motivo. Pre-filtro: el humano decide.
+- **Miniatura por clip**: `NN-slug-thumb.jpg` con titular en la tipografía de la plantilla (nivel 1
+  y 2, `"serif|DISPLAY"`), degradado en 12 bandas (con 2 se veían bordes duros), cuadro por
+  `thumbnail` de FFmpeg o por la cara más expresiva. `--no-thumbs`, `thumb_t`.
+- **Modo lote**: `lote <carpeta>` (transcribe con caché, propone, `LOTE.md`) → OK → `lote --render`.
+  Videos con < 40 palabras salen como "poca voz".
+- **Recorte por cara / hablante activo**: `--fit auto` con `clipper/caras.py` (MediaPipe 0.10.21 en
+  venv aislado; clipper sigue en librería estándar). Detector de rango completo + `jawOpen` por cara,
+  histéresis de 0.8 s, 1 s mínimo entre cortes, encuadre de grupo, cámara suave con corte seco entre
+  hablantes vía `sendcmd`. Resuelve L6.
+- Aprendizajes: mediapipe 1.0.x revienta en macOS ("graph_service: Service is unavailable"); el seek
+  por milisegundos de OpenCV no funciona en .mp4 de iPhone (usar cuadros); una pista vieja en la
+  misma x robaba el "más cercano" y abría pistas nuevas a cada muestra; un margen absoluto de
+  actividad de boca retrasaba 7 s el cambio de hablante en planos abiertos (ahora relativo).
+- `ingest.sh`: avisa si la detección de idioma es dudosa (p < 0.5): era música, no voz.
+- Nota: las versiones 3.4.0–3.8.1 están descritas en sus mensajes de commit.
+
 ## 3.3.1 — 2026-09-30
 - `niveles.md`: Clipper Studio como la puerta sin terminal a los niveles 1–2 (y al corte del 3), y
   cómo mantener al día un Studio que corre como servicio.

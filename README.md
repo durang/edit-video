@@ -16,7 +16,9 @@ Los niveles 1–2 los hace `clipper/` (FFmpeg, sin dependencias); el 3–4, Hype
 
 | Dices… | Pasa esto |
 |---|---|
-| *"sácame clips de esta entrevista, nivel 1"* | clipper corta los mejores momentos con subtítulo y logo, sin preguntas |
+| *"sácame clips de esta entrevista, nivel 1"* | clipper puntúa los momentos (rúbrica de clipeabilidad), te propone los mejores con su motivo y, con tu OK, los corta con subtítulo, logo y **miniatura** |
+| *"sácale clips a toda esta carpeta"* | **Modo lote**: una propuesta por video, apruebas, y renderiza solo lo aprobado |
+| *"hazlo vertical y que siga al que habla"* | `--fit auto`: detecta las caras y corta al hablante activo (MediaPipe, instalado aparte en un entorno aislado) |
 | *"nivel 2"* | Lo mismo con la línea editorial del cliente (su plantilla) |
 | *"nivel 3"* | Propuesta de motion design → **tu OK** → construcción → revisor cuadro a cuadro. Sin decir intensidad, es la **1** |
 | *"nivel 3 · intensidad 2"* | Más cargado: un cambio visual cada 2–4 s, sonido en cada evento, 2–4 recortes de la persona, profundidad 2.5D |

@@ -32,6 +32,7 @@ DET="$(detect_lang || true)"; DL="${DET%% *}"; DP="${DET##* }"
 if [ "$LANG_CODE" = "auto" ]; then
   [ -n "$DL" ] || { echo "✗ No pude detectar el idioma. Pásalo: ingest.sh VIDEO es|en|pt…" >&2; exit 1; }
   LANG_CODE="$DL"; echo "⓪ Idioma detectado: $LANG_CODE (p=$DP)"
+  awk "BEGIN{exit !($DP < 0.5)}" && echo "   ⚠ detección dudosa (p<0.5): ¿casi sin voz, o música? Si hay voz, repite con el idioma: ingest.sh VIDEO es|en…" >&2
 elif [ -n "$DL" ] && [ "$DL" != "$LANG_CODE" ] && awk "BEGIN{exit !($DP >= 0.6)}" && [ -z "${EDIT_VIDEO_FORCE_LANG:-}" ]; then
   echo "✗ Pediste '$LANG_CODE' pero el audio suena a '$DL' (p=$DP). Repite con '$DL', o fuerza con EDIT_VIDEO_FORCE_LANG=1." >&2
   exit 3

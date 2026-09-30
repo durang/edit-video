@@ -62,13 +62,65 @@ Si alguien trae un video largo y pide clips, pregunta **una vez**:
 
 | Pedido | clipper |
 |---|---|
-| Vertical sin fondo borroso | `--fit crop` + `crop_x` por clip (el agente mira los frames y decide) |
+| Vertical que sigue a la persona | `--fit auto`: cara detectada, cámara suave, corte al cambiar de hablante (ver abajo) |
+| Vertical sin fondo borroso, a mano | `--fit crop` + `crop_x` por clip (el agente mira los frames y decide) |
+| Candidatos con puntaje | `candidatos` (y al final de `analyze`): rúbrica 0–10 con motivo → `clipeabilidad.md` |
+| Portada de cada clip | por defecto: `NN-slug-thumb.jpg` con titular (`--no-thumbs` para quitarla) |
+| Una carpeta entera | `lote <carpeta>` → propuestas → OK → `lote <carpeta> --render` |
 | Palabra activa resaltada | por defecto (`--no-highlight` para quitarla) |
 | Subtítulos que no tapa la app y que caben | por defecto: por encima de y=1536 y partidos por caracteres |
 | Tapar subtítulos quemados del original | `--cover-subs 0.2` |
 | Quitar silencios | `--tighten 0.35` (o `tighten` → JSON de tramos) |
 | Gancho arriba los primeros 3 s | `"hook": "…"` en el clip |
 | Idioma | `--lang auto` detecta; si lo pasas, lo verifica |
+
+## Candidatos, miniaturas, lote y recorte automático (3.9)
+
+**Rúbrica de clipeabilidad** — `clipper.py candidatos <transcripción> [--min 15 --max 60 --top 10]`
+(corre sola al final de `analyze`; acepta también la `transcript.json` de `ingest.sh`). Puntúa
+ventanas de frases completas en gancho (0–3), dato (0–2), remate (0–2), autonomía (0–2) y emoción
+(0–1), sin solaparse, y deja `<video>.candidatos.json` en formato `clips.json` con `why` = puntaje +
+motivo. Es un **pre-filtro**: el agente lee, mueve bordes, escribe `hook` y propone; decide el humano.
+Criterio completo: `references/clipeabilidad.md`.
+
+**Miniaturas** — cada `render` deja `NN-slug-thumb.jpg` junto al clip (1080×1920; 1280×720 si es
+horizontal). Titular: `titulo` del clip (acepta `"serif|DISPLAY"` en nivel 2) > `hook` > primeras
+palabras. Cuadro: `thumb_t` si lo das; con `--fit auto`, la cara más grande y expresiva de los primeros
+4 s; si no, el filtro `thumbnail` de FFmpeg (evita parpadeos). Tipografía y paleta de la plantilla del
+nivel/cliente; degradado arriba para leerse. ~1.3 s por miniatura.
+
+**Modo lote** — dos pasos, con el OK en medio (la regla no se salta):
+
+```bash
+python3 clipper/clipper.py lote ~/grabaciones            # 1: transcribe (caché), rúbrica, LOTE.md
+#   → revisar cada <video>.clips.json, ajustar, "aprobado": true
+python3 clipper/clipper.py lote ~/grabaciones --render --nivel 2 --fit auto   # 2: solo lo aprobado
+```
+
+Transcribe con Whisper de OpenAI si está; si no, con `ingest.sh` (whisper.cpp). Videos con < 40
+palabras (música, b-roll) salen como "poca voz" sin propuesta. Cada render queda en `tiempos.py`.
+
+**Recorte por cara / hablante activo** — `--fit auto` (por clip también: `"fit": "auto"`):
+
+- `clipper/caras.py` corre en un **entorno aislado** (clipper sigue siendo solo librería estándar):
+  ```bash
+  /opt/homebrew/bin/python3.11 -m venv ~/.config/edit-video/venv-caras     # o cualquier python 3.9–3.12
+  ~/.config/edit-video/venv-caras/bin/pip install mediapipe==0.10.21
+  ```
+  clipper lo encuentra solo (o `EDIT_VIDEO_CARAS_PY=<python>` en `~/.config/edit-video/config`). El
+  modelo (`face_landmarker.task`, 3.7 MB) se baja la primera vez a `~/.config/edit-video/modelos/`.
+  **mediapipe 1.0.x falla en macOS** ("graph_service: Service is unavailable"): usar 0.10.21.
+- Detector de rango completo (caras chicas de plano abierto) + Face Landmarker sobre cada cara para
+  medir la boca (`jawOpen`). A 6 fps: ~7 s de análisis por 40 s de video en un M-series.
+- **Hablante activo** = la boca que más se mueve (ventana 1.5 s), con histéresis: el otro tiene que
+  llevar ≥ 0.8 s hablando más; 1 s mínimo entre cortes; si el sujeto desaparece < 1.5 s (el detector lo
+  pierde) se sostiene el plano. Si todas las caras caben en el 9:16, encuadre de grupo.
+- Cámara virtual: zona muerta + suavizado dentro de un sujeto; **corte seco** al cambiar de hablante.
+  Se aplica con `sendcmd` sobre `crop` (respeta `--tighten`).
+- Sin entorno o sin caras → cae a `blur` y lo dice. Fuente ya vertical → recorte al centro.
+- **Límite conocido**: una cara de **perfil** no deja ver la boca (el landmarker da `jawOpen` = 0) →
+  nunca "gana" el plano. En entrevistas donde el entrevistador está de perfil, la cámara se queda en
+  el entrevistado (lo normal que se quiere); si hace falta la pregunta, `"fit": "blur"` en ese clip.
 
 ## Silencios: ojo con de dónde salen los tiempos
 

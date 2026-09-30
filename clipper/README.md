@@ -69,6 +69,26 @@ No hay dependencias de Python más allá de la librería estándar.
 
 ## Uso
 
+### Candidatos, miniaturas, lote y recorte automático (3.9)
+
+```bash
+python3 clipper.py candidatos grabacion.transcript.json --top 8   # rúbrica 0–10 con motivo
+python3 clipper.py render t.json clips.json --fit auto            # sigue la cara / al que habla
+python3 clipper.py lote ~/grabaciones                             # paso 1: propuestas + LOTE.md
+python3 clipper.py lote ~/grabaciones --render --nivel 2          # paso 2: solo lo "aprobado": true
+```
+
+- **`candidatos`** (y al final de `analyze`): tramos de frases completas puntuados en gancho, dato,
+  remate, autonomía y emoción → `*.candidatos.json` en formato `clips.json`. Pre-filtro, no decisión
+  (`../references/clipeabilidad.md`).
+- **Miniatura por clip** en cada `render`: `NN-slug-thumb.jpg`, titular (`titulo` > `hook` > primeras
+  palabras) con la tipografía de la plantilla. `--no-thumbs` para quitarla; `thumb_t` para fijar el cuadro.
+- **`lote`**: transcribe con caché (Whisper de OpenAI, o `ingest.sh` si no está), propone, y renderiza
+  solo lo aprobado. Videos casi sin voz se marcan "poca voz".
+- **`--fit auto`**: `caras.py` (MediaPipe, en un venv aislado — ver `../references/clipper.md`) detecta
+  caras, elige al hablante activo por la boca, suaviza la cámara y corta seco al cambiar de hablante.
+  Sin el venv o sin caras, cae a `blur`. `clipper.py` sigue siendo solo librería estándar.
+
 ### Fase 0 — bajar (opcional)
 
 Si el material está en YouTube, Reels, TikTok, X o cualquiera de los ~1800 sitios
@@ -414,11 +434,8 @@ whisper — que en CPU es la parte lenta. Con `--force` la rehace.
 | Mejora | Por qué sirve | Esfuerzo |
 |---|---|---|
 | **Corte por escena** | `ffmpeg` detecta cambios de escena; alinear los cortes ahí evita empezar a media palabra visual. | medio |
-| **Modo lote** | Una carpeta de grabaciones → analizar todas de un tirón. | bajo |
-| **Exportar miniaturas** | Frame representativo por clip, listo para portada. | bajo |
 | **Nivel 2 animado por palabra** | Entradas por letra/palabra más ricas (ASS `\t`) sin llegar a HyperFrames. | medio |
-| **Recorte por cara automático** | Detectar la cara en los frames y fijar `crop_x` solo. Hoy lo decide el agente mirando los frames. | medio |
-| **Recorte por hablante activo** | Con dos personas en cuadro, seguir a quien habla. | alto |
+| **Hablante activo con audio** | Cruzar el movimiento de boca con la energía de la voz para cambiar de hablante sin el retraso de 1–5 s y ver al que habla de perfil. | medio |
 | **Silencios por energía** | Complementar `--tighten` con `silencedetect` cuando los tiempos por palabra vienen pegados. | bajo |
 
 ---
@@ -432,8 +449,9 @@ whisper — que en CPU es la parte lenta. Con `--force` la rehace.
   Para material que se publica, revisa el `.txt` antes de renderizar.
 - El desenfoque de fondo agrega costo de CPU. Con muchos clips, considera
   `--horizontal` y reencuadrar después.
-- Sin detección de escena ni de hablante. `--fit crop` usa un solo `crop_x` por clip: si el clip
-  cambia de plano y la cara se mueve mucho, usa `--fit blur` o parte el clip.
+- Sin detección de escena. `--fit auto` sigue la cara y al hablante activo, pero una cara **de perfil**
+  no deja ver la boca y nunca gana el plano, y el cambio de hablante llega con 1–5 s de retraso.
+  `--fit crop` usa un solo `crop_x` por clip.
 
 ---
 
