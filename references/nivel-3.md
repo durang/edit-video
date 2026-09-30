@@ -33,6 +33,18 @@ llenar huecos: el director vio la primera intensidad 2 "saturada" porque el cong
 los empujes cayeron en frases sin peso. Congelado con palabra detrás (R2): **uno por pieza**, en la
 palabra que resume el mensaje.
 
+**La intensidad es un techo, no una cuota** (criterio del director). La 2 y la 3 *permiten* más
+animación, más detalles, más congelados y técnicas de motion control; **se usan solo si el video lo
+permite**. Antes de la propuesta, el agente decide con estas 5 preguntas y lo escribe en ella:
+1. **¿Cuántas ideas con peso tiene?** Un efecto grande por idea fuerte; las frases de paso, nada.
+2. **¿Hay aire?** Pausas, respiraciones y planos sin texto admiten detalle; una frase atropellada no.
+3. **¿La toma aguanta?** Persona quieta y fondo limpio → recortes y palabra detrás; paneo, pelo al
+   viento o mala luz → no (L1).
+4. **¿Qué pide el tono?** Cercano/testimonial → menos; producto, datos, lanzamiento → más.
+5. **¿Ya se entiende sin el efecto?** Si sí, el efecto tiene que sumar ritmo o memoria, no repetir.
+Si el video no da para la intensidad pedida, se dice en la propuesta ("esto da para una 2 contenida")
+y se explica por qué.
+
 **Pendientes para la intensidad 3** (ver `LIMITACIONES.md`): el recorte en movimiento parpadea
 (L1), no hay generador de SFX (L4) ni música con licencia (L5). Hasta resolverlos, la 3 usa
 congelados con recorte, SFX sintetizados o de biblioteca propia, y sin música salvo que el
