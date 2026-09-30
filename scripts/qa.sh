@@ -38,4 +38,6 @@ TAIL=$(ffmpeg -hide_banner -sseof -0.8 -i "$V" -vn -af volumedetect -f null - 2>
 LUFS=$(ffmpeg -hide_banner -i "$V" -af loudnorm=print_format=summary -vn -f null - 2>&1 | awk '/Input Integrated/{print $3}')
 [ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS < -15.5)}" && echo "⚠ VOLUMEN: $LUFS LUFS (meta −14). Master: highpass 70 · presencia +2.5 dB en 3 kHz · compresor 2.5:1 · loudnorm I=-14:TP=-1 (ver qa.md)"
 [ -n "$LUFS" ] && echo "  volumen integrado: $LUFS LUFS"
+SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of csv=p=0 "$V" 2>/dev/null)
+[ -n "$SR" ] && [ "$SR" != "48000" ] && [ "$SR" != "44100" ] && echo "⚠ AUDIO a $SR Hz: en celular puede no sonar. Re-masteriza con aresample=48000 -ar 48000 (ver qa.md)"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"

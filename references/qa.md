@@ -77,7 +77,7 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
   degradado de 120 px con `mask-image` en el borde superior.
 - **La voz se oía bajita** (−16 LUFS): en el teléfono todo se oye más bajo que en el editor. Entrega
   siempre a **−14 LUFS integrados, −1 dBTP**, con la voz al frente. Master sin re-renderizar el video:
-  `ffmpeg -i in.mp4 -c:v copy -af "highpass=f=70,equalizer=f=3000:t=q:w=1.2:g=2.5,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2,loudnorm=I=-14:TP=-1:LRA=7" -c:a aac -b:a 256k out.mp4`
+  `ffmpeg -i in.mp4 -c:v copy -af "highpass=f=70,equalizer=f=3000:t=q:w=1.2:g=2.5,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2,loudnorm=I=-14:TP=-1:LRA=7,aresample=48000" -ar 48000 -c:a aac -b:a 256k out.mp4`
 - **Cambios encimados al agrupar**: al juntar varios cambios en un solo tiempo, la etiqueta vieja y la
   nueva quedaron visibles a la vez ¼ s. Agrupar = la vieja sale (0.1 s) y la nueva entra justo después.
 - **Demasiados cambios en poco tiempo**: 12 en 8 s se leyó como "destellos". Contar cambios por frase
@@ -93,3 +93,10 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
 - Un contorno de país "dibujándose" que al final eran 7 trozos sueltos (dasharray medido en otra
   escala). Arreglo: `pathLength="1"` y animar de 1 a 0
 - El revisor del propio agente lo dio por bueno: **por eso la revisión la hace otro**
+
+### Errores reales (2026-09-30)
+- **Audio a 96 kHz = "no se escucha" en el celular.** `loudnorm` sube la frecuencia interna; sin `aresample=48000`
+  el AAC sale a 96 kHz y varios reproductores móviles lo dejan mudo. Entrega SIEMPRE a 48 kHz (`qa.sh` avisa).
+- **Subtítulos perdidos en un tramo heredado.** Al subir de intensidad se reconstruyó un tramo y el subtítulo de
+  0–17 s desapareció; el revisor miraba efectos, no subtítulos. Regla: al hacer una versión nueva, comparar cada
+  0.5 s contra la versión aprobada — donde antes había subtítulo, ahora también.
