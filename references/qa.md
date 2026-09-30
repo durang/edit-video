@@ -78,6 +78,10 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
 - **La voz se oía bajita** (−16 LUFS): en el teléfono todo se oye más bajo que en el editor. Entrega
   siempre a **−14 LUFS integrados, −1 dBTP**, con la voz al frente. Master sin re-renderizar el video:
   `ffmpeg -i in.mp4 -c:v copy -af "highpass=f=70,equalizer=f=3000:t=q:w=1.2:g=2.5,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2,loudnorm=I=-14:TP=-1:LRA=7" -c:a aac -b:a 256k out.mp4`
+- **Cambios encimados al agrupar**: al juntar varios cambios en un solo tiempo, la etiqueta vieja y la
+  nueva quedaron visibles a la vez ¼ s. Agrupar = la vieja sale (0.1 s) y la nueva entra justo después.
+- **Demasiados cambios en poco tiempo**: 12 en 8 s se leyó como "destellos". Contar cambios por frase
+  en la hoja de contacto (≤ 1 por frase salvo que la frase lo pida).
 - **Final en silencio digital** (−91 dB): el último sonido tiene que llegar al último cuadro con fade.
 
 - Titular de cierre partido en dos líneas: `COLOMBI` / `A.`
