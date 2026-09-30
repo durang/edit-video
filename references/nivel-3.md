@@ -5,6 +5,32 @@ El nivel 3 no es "el 2 con más cosas". Es lo que entregaría un motion designer
 con las que se consigue en HyperFrames, y lo que ya no se hace. Complementa `motion-design.md`
 (recetas probadas en piezas reales).
 
+## 0 · Intensidad — cuánto se carga (se pide así: "nivel 3 · intensidad 2")
+
+El contrato (§1) es el piso de **todas** las intensidades. La intensidad sube la densidad y la
+complejidad. Sin decirla, es la 1. Se puede añadir un **énfasis**: `recortes`, `efectos` o `datos`
+("nivel 3 · intensidad 2 · énfasis recortes"), que decide dónde se gasta la carga extra.
+
+| | **1 · Profesional** | **2 · Dinámico** | **3 · Extremo** ("¿qué es eso?") |
+|---|---|---|---|
+| Cambio de estado visual | cada 3–8 s (mediana ~5) | cada 2–4 s | cada 1–2 s |
+| Sonido | un SFX por transición o gráfico clave | SFX en cada evento + *riser* antes de los cambios grandes | diseño sonoro denso por capas: evento + ambiente + riser/impacto/sub, sincronizado al cuadro |
+| Recortes de la persona | 1 (cierre, `recetario-3.md` R1) | 2–4 congelados con recorte + 1 momento de texto detrás de ella | **recorte en movimiento** (sigue hablando recortada), gráficos que pasan por delante y por detrás de ella |
+| Profundidad | 1 momento | 2–3 (parallax 2.5D) | continua: 2.5D con mapa de profundidad, cámara 3D, objetos 3D |
+| Cámara | zoom ≤ 1 cada 5 s | punch-ins + rampas de velocidad | rampas, *whip*, sacudida con intención, cortes en coincidencia |
+| Transiciones | motivadas | + máscara con la silueta, estela de desenfoque | todas hechas a medida; glitch ≤ 2 por pieza |
+| Énfasis en subtítulos | **uno solo** (igual en las tres) | uno solo | uno solo |
+| Tiempo relativo | base | ≈ ×1.5–2 | ≈ ×3 |
+| Aprobación | propuesta | propuesta + 2–3 cuadros de muestra | propuesta + **prueba animada de 5–10 s** aprobada antes de hacer el resto |
+
+**Freno de la 3:** la voz se entiende siempre y la idea se puede repetir después de verlo. Si un
+efecto tapa lo que se dice, se quita, aunque sea espectacular.
+
+**Pendientes para la intensidad 3** (ver `LIMITACIONES.md`): el recorte en movimiento parpadea
+(L1), no hay generador de SFX (L4) ni música con licencia (L5). Hasta resolverlos, la 3 usa
+congelados con recorte, SFX sintetizados o de biblioteca propia, y sin música salvo que el
+director pase la pista.
+
 ## 1 · Contrato — el revisor lo comprueba punto por punto
 
 1. **Primer cuadro ya en movimiento.** Nunca se abre en un cuadro quieto: el cerebro registra

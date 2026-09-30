@@ -1,5 +1,13 @@
 {
   "nombre": "Estudio",
   "nivel": 3,
-  "descripcion": "Motion design profesional con /edit-video (HyperFrames) e imágenes generadas (Higgsfield). clipper solo corta limpio y escribe una PROPUESTA por clip; nada se construye hasta que el director la aprueba."
+  "descripcion": "Motion design profesional con /edit-video (HyperFrames) e imágenes generadas (Higgsfield). clipper solo corta limpio y escribe una PROPUESTA por clip; nada se construye hasta que el director la aprueba.",
+  "intensidad": 1,
+  "intensidades": {
+    "1": "Profesional",
+    "2": "Dinámico",
+    "3": "Extremo"
+  },
+  "enfasis": null,
+  "recetario": "references/recetario-3.md"
 }

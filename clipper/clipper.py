@@ -878,6 +878,7 @@ def write_propuesta(clip: dict, segs: list[dict], start: float, end: float, vide
 
 - **Fuente:** `{video.name}` · {start:.2f} → {end:.2f} s
 - **Cliente:** {cliente or '—'} (reglas y kit en el área de clientes)
+- **Intensidad:** {P.get('intensidad', 1)} · {(P.get('intensidades') or {}).get(str(P.get('intensidad', 1)), '')}{(' · énfasis ' + P['enfasis']) if P.get('enfasis') else ''} (tabla en `nivel-3.md` §0; recetas en `recetario-3.md`)
 - **Por qué este momento:** {clip.get('why', '')}
 - **Gancho:** {clip.get('hook', '')}
 
@@ -1133,6 +1134,10 @@ def cmd_render(args) -> int:
 
     nivel = int(args.nivel)
     P = load_plantilla(nivel, args.plantilla, args.cliente)
+    if args.intensidad:
+        P["intensidad"] = int(args.intensidad)
+    if args.enfasis:
+        P["enfasis"] = args.enfasis
     if nivel == 3:
         # Estudio: aquí no se quema nada. Corte limpio en el encuadre original, voz intacta,
         # y una PROPUESTA por clip que el director aprueba antes de construir con /edit-video.
@@ -1303,6 +1308,10 @@ def main() -> int:
                    help="1 recorte · 2 editorial (tipografía, paleta, detalles) · "
                         "3 estudio (corte limpio + propuesta para /edit-video)")
     r.add_argument("--plantilla", help="JSON que se superpone a la plantilla del nivel")
+    r.add_argument("--intensidad", choices=["1", "2", "3"],
+                   help="solo nivel 3: 1 profesional · 2 dinámico · 3 extremo (por defecto 1)")
+    r.add_argument("--enfasis", choices=["recortes", "efectos", "datos"],
+                   help="solo nivel 3: dónde se gasta la carga extra")
     r.set_defaults(func=cmd_render)
 
     t = sub.add_parser("tighten", help="tramos sin silencios (JSON) para montar")

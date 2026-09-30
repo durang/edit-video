@@ -1,8 +1,8 @@
 ---
 name: edit-video
-description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
+description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video into many short clips. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.3.1
+  version: 3.4.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -16,7 +16,7 @@ metadata:
 |---|---|---|---|
 | **1 · Recorte** | Clips limpios: subtítulo, palabra activa, gancho, logo | `clipper/` (FFmpeg) | sale directo |
 | **2 · Editorial** | Tipografía de estudio, paleta, caja en la palabra, rótulo, barra, grade | `clipper/` (FFmpeg) | sale directo |
-| **3 · Estudio** | Motion design avanzado, **siempre** (contrato en `references/nivel-3.md`) | HyperFrames | **propuesta aprobada** antes |
+| **3 · Estudio** | Motion design avanzado, **siempre**, en 3 intensidades: 1 Profesional · 2 Dinámico · 3 Extremo (`references/nivel-3.md` §0) | HyperFrames | **propuesta aprobada** antes |
 | **4 · Director** *(propuesto)* | Lo del 3 + planos generados, 3D, música a la imagen | HyperFrames + Seedance/Higgsfield | tratamiento + animatic + cada inserto |
 
 Detalle, comandos y quién puede correr cada uno: `references/niveles.md`.
@@ -241,6 +241,7 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `references/shotgun.md` | **Cambiar el diseño**: direcciones, cuadros de estilo, tablero, memoria de gusto |
 | `references/niveles.md` | **Los niveles**: motor, línea de diseño, comandos, aprobación |
 | `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
+| `references/recetario-3.md` | **Recetario del nivel 3**: efectos probados con tiempos exactos (R1 cierre congelado con recorte) y ejemplos por probar |
 | `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
 | `clipper/` | Motor de los niveles 1–2 y del corte del 3 (`clipper.py`, `studio.py`, plantillas, fuentes) |
 | `references/clipper.md` | Video largo → muchos clips: cuándo clipper, cuándo aquí, y juntos |
