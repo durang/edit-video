@@ -53,6 +53,44 @@ tiempo la primera vez (las 3 fallas) ya está resuelto aquí.
 
 ---
 
+## R2 · Congelado con palabra detrás ("freeze + text-behind")
+
+**Qué es.** En la palabra clave, la imagen se congela 0.7 s como un golpe; aparece la palabra enorme
+**detrás** de la persona (su pelo tapa el pie de las letras) y al soltar, corte seco al video en
+movimiento y la palabra baja a su pastilla. El audio nunca se detiene.
+
+**Cuándo.** Una o dos veces por pieza, en las palabras que resumen el mensaje. **Intensidad mínima:** 2.
+
+**Tiempos (probados, 9:16):**
+
+| t | Evento | Duración · curva |
+|---|---|---|
+| T | Congelado del cuadro (asentado: después de cualquier transición de encuadre) + golpe | corte |
+| T | Header sale (la palabra ocupa esa franja) | 0.12 s · OUT |
+| T+0.05 | Palabra grande entra detrás de ella (color de acento, dentro de márgenes 64 px) | IN |
+| T+0.55 | Palabra grande sale hacia arriba y **termina en el cuadro del corte** | 0.15 s · OUT |
+| T+0.70 | **Corte seco** al video en movimiento (nunca fundido) · header vuelve | corte · IN |
+| T+0.72 | La palabra chica (pastilla) entra, por encima del video | IN |
+
+**Activos.**
+- Placa limpia del cuadro T: la composición con **todo gráfico oculto** (header, subtítulos, pie) en
+  ese instante, no un cuadro del render final.
+- Recorte: `npx hyperframes remove-background` (local) o Higgsfield; limpiar alfa a mano (manchas
+  sueltas, borde inferior bajo el pie). Copia `.bak.png`.
+- Capas: placa congelada → palabra grande → recorte → header/subtítulos/pie.
+
+**Fallas conocidas → arreglo** (todas vistas en la primera pieza).
+- La palabra choca con el header → el header sale durante el congelado.
+- Palabra de borde a borde → márgenes 64 px.
+- **Doble exposición al soltar** (dos cabezas) → corte seco, nunca fundido del recorte sobre el video.
+- La pastilla chica asoma **detrás** de ella → entra solo después del corte, z sobre el video.
+- Dos copias de la palabra a la vez → la grande termina en el cuadro del corte, la chica entra después.
+- Si el pelo tapa > 30 % de las letras → subir la palabra o achicarla.
+
+**Costo.** Placa + recorte ~5 min por congelado; construcción de una pasada con esta receta.
+
+---
+
 ## Por probar
 
 Ejemplos que al director le encantaron y aún no son receta. Formato:

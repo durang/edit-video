@@ -15,7 +15,7 @@ complejidad. Sin decirla, es la 1. Se puede añadir un **énfasis**: `recortes`,
 |---|---|---|---|
 | Cambio de estado visual | cada 3–8 s (mediana ~5) | cada 2–4 s | cada 1–2 s |
 | Sonido | un SFX por transición o gráfico clave | SFX en cada evento + *riser* antes de los cambios grandes | diseño sonoro denso por capas: evento + ambiente + riser/impacto/sub, sincronizado al cuadro |
-| Recortes de la persona | 1 (cierre, `recetario-3.md` R1) | 2–4 congelados con recorte + 1 momento de texto detrás de ella | **recorte en movimiento** (sigue hablando recortada), gráficos que pasan por delante y por detrás de ella |
+| Recortes de la persona | 1 (cierre, `recetario-3.md` R1) | 2–4 congelados con recorte + texto detrás de ella (R2) | **recorte en movimiento** (sigue hablando recortada), gráficos que pasan por delante y por detrás de ella |
 | Profundidad | 1 momento | 2–3 (parallax 2.5D) | continua: 2.5D con mapa de profundidad, cámara 3D, objetos 3D |
 | Cámara | zoom ≤ 1 cada 5 s | punch-ins + rampas de velocidad | rampas, *whip*, sacudida con intención, cortes en coincidencia |
 | Transiciones | motivadas | + máscara con la silueta, estela de desenfoque | todas hechas a medida; glitch ≤ 2 por pieza |
