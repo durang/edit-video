@@ -37,6 +37,11 @@ sin ver el código: solo el video. Es lo que más errores caza.
 **Recortes de la persona (cierre R1 y congelados)**
 - [ ] La silueta solo puede cortarla el **borde inferior** del cuadro; nunca un lado a media altura
       (brazo o mano cortados en seco = rechazo). Revisar cada 0.1 s todo el cierre a tamaño completo
+- [ ] **Ojos abiertos en todo congelado/recorte**: el cuadro del congelado se elige midiendo `eyeBlink` con
+      FaceLandmarker (venv de caras) en los últimos 3–5 s y tomando el de ojos abiertos (blink < 0.2) más cercano al
+      final — nunca "el último cuadro" a ciegas (error real: cierre congelado a mitad de parpadeo)
+- [ ] Texto "detrás de la persona" (R2 o recorte en movimiento): **todas** sus letras, también las etiquetas
+      pequeñas, se leen; si la persona tapa algo que no sea la palabra grande (≤ 30 %), el bloque va delante
 - [ ] Si una versión anterior de la misma pieza ya tiene un cierre aprobado, se **reutiliza ese recorte y
       esa posición** en lugar de rehacerlo
 
