@@ -43,6 +43,20 @@ python3 SKILL_DIR/clipper/studio.py                              # lo mismo con 
 Nivel 3 sobre un video que ya es corto (no hay que cortar): directo al Paso 3 de `SKILL.md`, con la
 propuesta de `nivel-3.md`.
 
+## Clipper Studio — los niveles sin terminal
+
+`clipper/studio.py` es la interfaz web de 6 pasos (subir → transcribir → corregir con diccionario →
+marcar momentos → elegir nivel, encuadre y formatos → descargar). Es la puerta para quien **no es
+técnico** (un cliente, un editor, alguien del equipo):
+
+- **Nivel 1 y 2**: completos desde Studio (selector de nivel, encuadre, tapar subtítulos del original).
+- **Nivel 3**: Studio entrega el corte limpio y la `PROPUESTA.md`; la construcción sigue con el agente.
+- Solo librería estándar de Python; escucha en `127.0.0.1` (se expone con Tailscale serve si hace falta).
+
+**Si Studio corre como servicio** (p. ej. systemd en un servidor), su `ExecStart` debe apuntar a
+`<clon de edit-video>/clipper/studio.py`, y ese clon se actualiza con `git pull` (o el aviso de
+versión de `check.sh`). Un servicio apuntando a una copia vieja diverge en silencio.
+
 ## Quién puede correr cada nivel
 
 | | Agente solo | Necesita |

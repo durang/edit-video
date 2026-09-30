@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.1 — 2026-09-30
+- `niveles.md`: Clipper Studio como la puerta sin terminal a los niveles 1–2 (y al corte del 3), y
+  cómo mantener al día un Studio que corre como servicio.
+
 ## 3.3.0 — 2026-09-29
 **Shotgun de estilo: cambiar el diseño eligiendo, no adivinando** (método de /design-shotgun de
 gstack, adaptado a video).
