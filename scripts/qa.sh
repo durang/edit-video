@@ -34,4 +34,8 @@ if [ -n "$BF" ]; then
 fi
 TAIL=$(ffmpeg -hide_banner -sseof -0.8 -i "$V" -vn -af volumedetect -f null - 2>&1 | sed -n 's/.*max_volume: \([-0-9.]*\) dB.*/\1/p')
 [ -n "$TAIL" ] && awk "BEGIN{exit !($TAIL < -60)}" && echo "⚠ SILENCIO: los últimos 0.8 s están en silencio digital ($TAIL dB). ¿Muere en seco?"
+# Volumen de entrega: redes = −14 LUFS integrados, pico −1 dBTP. Más bajo → "la voz se oye bajita".
+LUFS=$(ffmpeg -hide_banner -i "$V" -af loudnorm=print_format=summary -vn -f null - 2>&1 | awk '/Input Integrated/{print $3}')
+[ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS < -15.5)}" && echo "⚠ VOLUMEN: $LUFS LUFS (meta −14). Master: highpass 70 · presencia +2.5 dB en 3 kHz · compresor 2.5:1 · loudnorm I=-14:TP=-1 (ver qa.md)"
+[ -n "$LUFS" ] && echo "  volumen integrado: $LUFS LUFS"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"

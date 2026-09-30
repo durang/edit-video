@@ -59,7 +59,7 @@ tiempo la primera vez (las 3 fallas) ya está resuelto aquí.
 **detrás** de la persona (su pelo tapa el pie de las letras) y al soltar, corte seco al video en
 movimiento y la palabra baja a su pastilla. El audio nunca se detiene.
 
-**Cuándo.** Una o dos veces por pieza, en las palabras que resumen el mensaje. **Intensidad mínima:** 2.
+**Cuándo.** **Una vez por pieza**, en la palabra que resume el mensaje (dos se sintió saturado). **Intensidad mínima:** 2.
 
 **Tiempos (probados, 9:16):**
 

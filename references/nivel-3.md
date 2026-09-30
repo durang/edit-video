@@ -26,6 +26,13 @@ complejidad. Sin decirla, es la 1. Se puede añadir un **énfasis**: `recortes`,
 **Freno de la 3:** la voz se entiende siempre y la idea se puede repetir después de verlo. Si un
 efecto tapa lo que se dice, se quita, aunque sea espectacular.
 
+**Cada efecto necesita un motivo en lo que se dice** (sobre todo en la 2 y la 3). Antes de poner uno,
+responder *"¿qué palabra o idea lo justifica?"*. Si es una muletilla o una transición de frase
+("like if we", "so those are things"), no lleva nada. Más intensidad = más efectos **con sentido**, no
+llenar huecos: el director vio la primera intensidad 2 "saturada" porque el congelado, el barrido y
+los empujes cayeron en frases sin peso. Congelado con palabra detrás (R2): **uno por pieza**, en la
+palabra que resume el mensaje.
+
 **Pendientes para la intensidad 3** (ver `LIMITACIONES.md`): el recorte en movimiento parpadea
 (L1), no hay generador de SFX (L4) ni música con licencia (L5). Hasta resolverlos, la 3 usa
 congelados con recorte, SFX sintetizados o de biblioteca propia, y sin música salvo que el
@@ -46,7 +53,7 @@ director pase la pista.
    diagrama). Nada de gráficos de stock genéricos.
 7. **Transiciones motivadas**: por velocidad (la salida y la entrada comparten dirección y rapidez),
    por máscara, por escala o por corte en coincidencia. Nunca un corte plano entre dos bloques gráficos.
-8. **Diseño sonoro completo**: un sonido por evento visual con intención, cama musical con ducking si
+8. **Diseño sonoro completo** y **entrega a −14 LUFS, −1 dBTP** (la voz al frente): un sonido por evento visual con intención, cama musical con ducking si
    hay música con licencia, y un cierre sonoro. La voz manda (SFX ≤ −16 dBFS).
 9. **Grade de color** que case el metraje con la paleta.
 10. **Cierre firma** con movimiento hasta el último cuadro (personaje recortado, emblema, logo).

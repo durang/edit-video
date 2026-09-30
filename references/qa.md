@@ -75,6 +75,9 @@ vuelve a revisar entero.** Solo una pasada completa limpia autoriza decir "listo
   piel en el centro, un cuadro. La capa se desvanece mientras se encoge (`recetario-3.md` R1).
 - **Borde recto arriba de un fondo recortado** (paisaje que sube): línea horizontal visible →
   degradado de 120 px con `mask-image` en el borde superior.
+- **La voz se oía bajita** (−16 LUFS): en el teléfono todo se oye más bajo que en el editor. Entrega
+  siempre a **−14 LUFS integrados, −1 dBTP**, con la voz al frente. Master sin re-renderizar el video:
+  `ffmpeg -i in.mp4 -c:v copy -af "highpass=f=70,equalizer=f=3000:t=q:w=1.2:g=2.5,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2,loudnorm=I=-14:TP=-1:LRA=7" -c:a aac -b:a 256k out.mp4`
 - **Final en silencio digital** (−91 dB): el último sonido tiene que llegar al último cuadro con fade.
 
 - Titular de cierre partido en dos líneas: `COLOMBI` / `A.`
