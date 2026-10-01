@@ -48,8 +48,9 @@ diferencia entre un clip que funciona y uno que no.
 Requisitos:
 
 - `ffmpeg` compilado con **libass** (para quemar subtítulos). **macOS:** el ffmpeg de Homebrew core
-  ya no lo trae; usa `brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg`.
-  `clipper.py render` lo comprueba al empezar y te dice cómo arreglarlo.
+  ya no lo trae; sin tocar el del sistema: `conda create -y -n edit-video-ffmpeg -c conda-forge ffmpeg`
+  y `EDIT_VIDEO_FFMPEG=<env>/bin/ffmpeg` (+ `EDIT_VIDEO_FFPROBE`) en `~/.config/edit-video/config`
+  (o `CLIPPER_FFMPEG`). `clipper.py render` lo comprueba al empezar y te dice cómo arreglarlo.
 - `whisper` de OpenAI (`pip install -U openai-whisper`)
 - `yt-dlp` — opcional, solo para `fetch` (`pip install -U yt-dlp`)
 - Python 3.9+
@@ -324,7 +325,8 @@ cualquiera y el resultado se ve mal sin avisar.
 
 Cada clip pasa por `loudnorm=I=-16:TP=-1.5:LRA=11` (EBU R128, el objetivo
 estándar de redes). Sin esto, unos clips salen susurrando y otros gritando.
-Se desactiva con `--no-normalize`.
+Se desactiva con `--no-normalize`. El audio sale **siempre a 48 kHz** (`aresample=48000`): `loudnorm`
+sube la frecuencia interna y el AAC salía a 96 kHz, que en varios reproductores del celular no suena.
 
 ---
 

@@ -1286,10 +1286,12 @@ def render_clip(video: Path, segs: list[dict], clip: dict, outdir: Path,
             af.append(f"aselect='{asel}',asetpts=N/SR/TB")
         if normalize:
             af.append("loudnorm=I=-16:TP=-1.5:LRA=11")
-        if af:
-            cmd += ["-af", ",".join(af)]
+        # loudnorm sube la frecuencia interna a 192 kHz y el AAC salía a 96 kHz: en varios
+        # reproductores del celular no suena. Siempre se entrega a 48 kHz (qa.md, qa.sh avisa).
+        af.append("aresample=48000")
+        cmd += ["-af", ",".join(af)]
         cmd += ["-c:v", "libx264", "-preset", preset, "-crf", str(crf),
-                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+                "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-b:a", "192k",
                 "-movflags", "+faststart", str(out)]
 
         rc = subprocess.run(cmd, cwd=td, stdout=subprocess.DEVNULL,

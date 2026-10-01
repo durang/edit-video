@@ -31,8 +31,10 @@ Ninguno duplica al otro:
 La plantilla del cliente para clipper vive en `edit-video-clients/clients/<slug>/clipper.json`
 (colores, rótulos, logo) y se aplica con `--cliente <slug>`.
 
-**macOS:** el ffmpeg de Homebrew core ya no trae libass; clipper lo detecta y da el comando
-(`brew tap homebrew-ffmpeg/ffmpeg && brew install homebrew-ffmpeg/ffmpeg/ffmpeg`). El nivel 3 no lo necesita.
+**macOS:** el ffmpeg de Homebrew core ya no trae libass; clipper lo detecta y da el comando. Lo
+recomendado (no toca el ffmpeg del sistema): `conda create -y -n edit-video-ffmpeg -c conda-forge ffmpeg`
+y `EDIT_VIDEO_FFMPEG=<env>/bin/ffmpeg` (+ `EDIT_VIDEO_FFPROBE`) en `~/.config/edit-video/config`;
+clipper y `check.sh` lo usan solos (`LIMITACIONES.md`, L3 resuelta). El nivel 3 no lo necesita.
 
 ## Cómo decidir — una pregunta al empezar
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.11.1 — 2026-10-01 (radar quincenal)
+- **clipper (niveles 1–2) ya entrega el audio a 48 kHz.** `loudnorm` sin re-muestreo dejaba el AAC a 96 kHz
+  (en algunos celulares no suena). `aresample=48000` + `-ar 48000`; probado con un clip real.
+- **`qa.sh`: 4 alarmas nuevas** — audio ≠ 48 kHz (también 44.1), pico real > −1 dBTP, volumen alto
+  (> −12.5 LUFS) y arranque quieto (contrato del nivel 3 §1). Probado sin falsos positivos en piezas reales.
+- **Master a `TP=-1.5`** (`qa.md`): el AAC sube el pico 0.3–0.5 dB; con `TP=-1` una pieza salió a −0.7 dBTP.
+- `motion-design.md` §7: primero la biblioteca de 19 SFX de `/media-use` (offline, licencia Pixabay
+  comercial), después síntesis con FFmpeg. L4 con avance.
+- `clipper.md` y `clipper/README.md`: libass en macOS con el entorno conda + `EDIT_VIDEO_FFMPEG` (L3).
+- `LIMITACIONES.md` y `radar.md`: entrada del radar con propuestas (−14 LUFS en clipper, catálogo de HeyGen,
+  Parakeet, safe zone superior/derecha en píxeles, OCR para la cobertura N/N).
+
 ## 3.11.0 — 2026-09-30
 - **La guía siempre visible y al día.** `scripts/guia.py` saca de `GUIA.md` la "Guía rápida" arriba
   del README (mapa quiero → uso → tiempo + link), la descripción del repo en GitHub (versión, qué hace y

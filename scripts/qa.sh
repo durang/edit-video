@@ -35,9 +35,16 @@ fi
 TAIL=$(ffmpeg -hide_banner -sseof -0.8 -i "$V" -vn -af volumedetect -f null - 2>&1 | sed -n 's/.*max_volume: \([-0-9.]*\) dB.*/\1/p')
 [ -n "$TAIL" ] && awk "BEGIN{exit !($TAIL < -60)}" && echo "⚠ SILENCIO: los últimos 0.8 s están en silencio digital ($TAIL dB). ¿Muere en seco?"
 # Volumen de entrega: redes = −14 LUFS integrados, pico −1 dBTP. Más bajo → "la voz se oye bajita".
-LUFS=$(ffmpeg -hide_banner -i "$V" -af loudnorm=print_format=summary -vn -f null - 2>&1 | awk '/Input Integrated/{print $3}')
-[ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS < -15.5)}" && echo "⚠ VOLUMEN: $LUFS LUFS (meta −14). Master: highpass 70 · presencia +2.5 dB en 3 kHz · compresor 2.5:1 · loudnorm I=-14:TP=-1 (ver qa.md)"
-[ -n "$LUFS" ] && echo "  volumen integrado: $LUFS LUFS"
+LN=$(ffmpeg -hide_banner -i "$V" -af loudnorm=print_format=summary -vn -f null - 2>&1)
+LUFS=$(printf '%s\n' "$LN" | awk '/Input Integrated/{print $3}')
+TP=$(printf '%s\n' "$LN" | awk '/Input True Peak/{print $4}')
+[ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS < -15.5)}" && echo "⚠ VOLUMEN: $LUFS LUFS (meta −14). Master: highpass 70 · presencia +2.5 dB en 3 kHz · compresor 2.5:1 · loudnorm I=-14:TP=-1.5 (ver qa.md)"
+[ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS > -12.5)}" && echo "⚠ VOLUMEN ALTO: $LUFS LUFS (meta −14): las apps lo bajan y la voz pierde punch. Re-masteriza con loudnorm I=-14 (ver qa.md)"
+[ -n "$TP" ] && awk "BEGIN{exit !($TP > -1.0)}" && echo "⚠ PICO: $TP dBTP (máx −1). El AAC sube el pico ~0.3–0.5 dB: masteriza con loudnorm …:TP=-1.5 (ver qa.md)"
+[ -n "$LUFS" ] && echo "  volumen integrado: $LUFS LUFS · pico real: ${TP:-?} dBTP"
 SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of csv=p=0 "$V" 2>/dev/null)
-[ -n "$SR" ] && [ "$SR" != "48000" ] && [ "$SR" != "44100" ] && echo "⚠ AUDIO a $SR Hz: en celular puede no sonar. Re-masteriza con aresample=48000 -ar 48000 (ver qa.md)"
+[ -n "$SR" ] && [ "$SR" != "48000" ] && echo "⚠ AUDIO a $SR Hz (se entrega SIEMPRE a 48 kHz; a 96 kHz en celular puede no sonar). Re-masteriza con aresample=48000 -ar 48000 (ver qa.md)"
+# Primer cuadro quieto (contrato del nivel 3 §1: el video abre ya en movimiento)
+FZ=$(ffmpeg -hide_banner -t 3 -i "$V" -an -vf "freezedetect=n=-60dB:d=0.4" -f null - 2>&1 | awk '/freeze_start:/ && !f {sub(/.*freeze_start: /, ""); print; f = 1}')
+[ -n "$FZ" ] && awk "BEGIN{exit !($FZ < 0.05)}" && echo "⚠ ARRANQUE QUIETO: el video abre con ≥ 0.4 s sin movimiento. En nivel 3 el primer cuadro ya se mueve (nivel-3.md §1)"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"

@@ -89,9 +89,17 @@ El último plano es el que se recuerda. Receta probada:
 Cada transición y cada elemento que entra con intención tiene un sonido. Sin sonido, el motion se
 siente "de plantilla".
 
-- **Fuente**: primero `/media-use` de HyperFrames. Si no hay, **sintetiza con FFmpeg** (ruido
-  filtrado para papel y whoosh, barridos de paso banda, clics de seno, golpes graves con caída) y
-  guárdalos en `assets/sfx/`.
+- **Fuente**, en este orden:
+  1. **Biblioteca de `/media-use`, sin conexión y gratis**: 19 SFX en
+     `<skills>/media-use/audio/assets/sfx/` (`manifest.json` con duración y dónde ponerlo): `whoosh`,
+     `whoosh-short`, `whoosh-cinematic` (5.5 s), `riser` (10.03 s: dispararlo en *clímax − 10.03 s*),
+     `impact-bass-1/2`, `pop`, `click`, `click-soft`, `ping`, `chime`, `sparkle`, `glitch-1/2/3`,
+     `typing`, `key-press`, `notification`, `error`. Licencia Pixabay (uso comercial, sin atribución;
+     `CREDITS.md`). Se copian a `assets/sfx/` del proyecto. Vienen a 44.1/48 kHz: el master final
+     re-muestrea a 48 kHz (`qa.md`).
+  2. Si falta el sonido (papel, lápiz, sello, obturador, aire), **sintetiza con FFmpeg** (ruido
+     filtrado para papel y whoosh, barridos de paso banda, clics de seno, golpes graves con caída) y
+     guárdalos en `assets/sfx/`.
 - **Higgsfield `generate_audio` solo genera voz**: no sirve para SFX ni música.
 - **La voz manda**: picos de SFX nunca por encima de **−16 dBFS**; la mayoría entre −28 y −22.
 - **Nunca el mismo sonido dos veces seguidas**: varía tono ±2 semitonos o la muestra.
