@@ -27,6 +27,14 @@ sin ver el código: solo el video. Es lo que más errores caza.
 - [ ] Todo legible a tamaño de teléfono: **nada por debajo de 26 px sobre metraje**; las etiquetas
       secundarias van en pastilla sólida, nunca finas sobre video
 
+**Logo motion — lockup contra el original (BLOQUEANTE)**
+- [ ] **El lockup final de cualquier logo motion se valida contra el archivo original del logo**
+      (overlay/diff del cuadro final del lockup sobre el PNG oficial escalado): mismo espaciado,
+      mismas proporciones, **cero encimados** (el wordmark nunca toca el isotipo). Si el isotipo se
+      arma por piezas, haz crossfade a la imagen real en el *snap* para que el lockup sea pixel-idéntico.
+- [ ] Hojas de contacto cada **0.25 s** en el tramo del lockup y del destejido: en ningún cuadro
+      se cruzan texto y pieza/logo. Receta completa: `logo-motion-tejido.md`.
+
 **Subtítulos (BLOQUEANTE — el director los considera lo más importante)**
 - [ ] **Cobertura N/N**: por CADA palabra de `transcript.json`/`words.json` se extrae el cuadro en su tiempo
       medio y el subtítulo está visible y legible. El QA escribe "N/N palabras con subtítulo". Menos de N/N = rechazo.

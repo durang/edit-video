@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.12.0 — 2026-10-01
+- **Nueva receta `references/logo-motion-tejido.md`** — logo motion desde cero para marcas cuyo
+  isotipo se compone de piezas: hilos → piezas reales del isotipo segmentado (pieslice por ángulo)
+  → snap con brillo en el golpe → **crossfade al logo real** → wordmark → tagline → destejido →
+  cierre "powered by" con logos de partners en tarjetas. Nace de una pieza real (16:9 + 9:16).
+- **`qa.md`: regla nueva (bloqueante) — validación de lockup contra el original.** El lockup final de
+  cualquier logo motion se valida con overlay/diff contra el PNG oficial: mismo espaciado, mismas
+  proporciones, cero encimados (el wordmark nunca toca el isotipo). Hojas cada 0.25 s en lockup y
+  destejido. Salió de feedback real: el wordmark se encimaba al isotipo y el tagline cruzaba las piezas.
+- **Detalles de lockup y tagline** en la receta: reproducir el `gap` y la proporción wordmark/icono
+  EXACTOS del archivo (no "a ojo"); en vertical, lockup horizontal (no apilar); tagline con nbsp +
+  `flex-shrink:0` (si no, los espacios colapsan en flex); el texto se desvanece ANTES de que las piezas
+  pasen por encima (salida con `overwrite:"auto"` para que no queden letras rezagadas).
+
 ## 3.11.1 — 2026-10-01 (radar quincenal)
 - **clipper (niveles 1–2) ya entrega el audio a 48 kHz.** `loudnorm` sin re-muestreo dejaba el AAC a 96 kHz
   (en algunos celulares no suena). `aresample=48000` + `-ar 48000`; probado con un clip real.
