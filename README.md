@@ -2,7 +2,7 @@
 
 <!-- GUIA:inicio -->
 <!-- generado por scripts/guia.py desde GUIA.md: no editar a mano -->
-## Guía rápida · v3.13.0
+## Guía rápida · v3.13.1
 
 Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con descripción, frases de ejemplo, qué recibes, tiempo y comando: [GUIA.md](GUIA.md)
 

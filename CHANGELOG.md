@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.13.1 — 2026-10-06
+- `pintado-a-mano.md`: 2 trampas nuevas de la segunda película — un objeto que sale del cuadro para siempre debe
+  quedar en el ROI de todos los dibujos siguientes (si no, la base lo vuelve a pintar), y la luz en modo "light"
+  ya no se recorta en el borde.
+- `composite_frames.py`: modo `"light"` sin máscara de píxeles válidos (costura brillante cuando la lámpara toca el borde).
+
 ## 3.13.0 — 2026-10-06
 - **Nueva receta de nivel 4: `references/pintado-a-mano.md`** — película con personaje pintado (gouache + crayón)
   que actúa cuadro a cuadro: guion y voz primero (cortes por la envolvente, sin `...` en el TTS), hoja de modelo,

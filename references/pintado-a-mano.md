@@ -166,7 +166,12 @@ Arquitectura que funcionó:
    revisar los bordes a tamaño completo (en miniatura no se ven).
 8. **Saltos grandes = diapositiva.** Más dibujos por acción (un paso intermedio de "levanta el teléfono un
    cuarto") y 3–4 intercalados por par se leen como animación.
-9. **JS incrustado**: HyperFrames puede incrustar los `.js` dentro del HTML; un comentario que contenga la
+9. **Todo se pega sobre la base**: si un dibujo quita algo para siempre (los audífonos dejan la mesa, el
+   teléfono pasa al buró), ese hueco tiene que estar en el `--roi` de **todos** los dibujos siguientes; si no,
+   la base vuelve a pintar el objeto y aparece duplicado (en la cabeza y en la mesa).
+10. **Luz que toca el borde**: en modo `"light"` no se recorta la luz en el borde de la alineación (dejaba una
+   costura brillante cuando la lámpara está pegada al marco).
+11. **JS incrustado**: HyperFrames puede incrustar los `.js` dentro del HTML; un comentario que contenga la
    etiqueta de cierre de script rompe la página entera ("Invalid or unexpected token").
 
 ## Revisor (obligatorio, además de `qa.md`)

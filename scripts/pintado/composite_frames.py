@@ -265,7 +265,9 @@ def composite(base_p: Path, draws: list[Path], out: Path, thresh=16.0, feather=9
             # Aditivo (no multiplicativo): una luz cálida sobre un azul oscuro SUMA color; multiplicar el azul
             # da amarillo verdoso. Diferencia suavizada (1 % del lado) entre el dibujo nuevo y el anterior.
             r = max(4.0, min(base.shape[:2]) * 0.01)
-            light = (blur(al, r) - blur(prev_al, r)) * valid_mask(base.shape, M)[..., None]
+            # sin máscara de válidos: los dos dibujos están alineados casi igual, así que en el borde reflejado la
+            # diferencia sigue siendo luz; cortarla dejaba una costura brillante si la lámpara toca el borde
+            light = blur(al, r) - blur(prev_al, r)
             al = np.clip(prev_res + light, 0, 255)
             alpha = np.ones(base.shape[:2], np.float32)
             m = np.full(base.shape[:2], 255, np.uint8)
