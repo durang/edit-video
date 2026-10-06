@@ -2,7 +2,7 @@
 name: edit-video
 description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video (or a whole folder) into many short clips, ranked by a clipability rubric, with a thumbnail per clip and automatic face and active-speaker vertical reframing. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "los mejores momentos", "toda esta carpeta", "sigue al que habla", "miniaturas", "hazme un video desde cero", "anima este audio", "promo de mi producto", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.12.0
+  version: 3.13.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -119,6 +119,18 @@ carpeta del área privada **antes del beat sheet**: `CLIENTE.md`, `APRENDIZAJES.
 mandan sobre los valores por defecto, y se parte de su `kit/plantilla.html` si existe. Cliente nuevo:
 `sync.sh new-client <slug>`. Sin área de clientes instalada, dilo en una línea y sigue.
 Detalle: `references/aprendizaje.md`.
+
+### Dónde viven los videos — regla fija
+
+- **Nunca dentro de un repositorio de código** (pesa en git, se sube a GitHub, frena los deploys). En el
+  repo de una marca solo va una línea que dice dónde están sus videos.
+- Cada marca tiene **su carpeta de videos**, escrita en su `CLIENTE.md` como `carpeta_videos:`. Por
+  defecto: `~/Desktop/IA VIDEO/<Marca>/`. Dentro:
+  - `FINALES/` — solo lo listo para subir, con nombres claros (`<Marca>-<pieza>-<formato>.mp4`).
+  - `<AAAA-MM> <proyecto>/` — el proyecto de edición: clips, transcripciones, versiones, entregas.
+- Si el `CLIENTE.md` no tiene `carpeta_videos`, se pregunta **una vez** y se guarda ahí.
+- Al cerrar una versión, las carpetas de trabajo de versiones superadas (renders, frames, `reel_vN`
+  viejos) se borran; se quedan los MP4 finales. El disco se llena rápido.
 
 ## Paso 3 · Oídos y ojos
 
@@ -271,6 +283,8 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `references/logo-motion-tejido.md` | **Logo motion "Tejido"**: isotipo segmentado en piezas → tejido → snap con brillo → crossfade al logo real → wordmark → tagline → destejido → cierre "powered by"; lockup validado contra el PNG original |
 | `scripts/tiempos.py` | Tiempos reales: estimar con trabajos parecidos, avance en %, registrar al terminar |
 | `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
+| `references/pintado-a-mano.md` | **Película con personaje pintado** (gouache + crayón, nivel 4): hoja de modelo, una base por plano, animar editando la pintura, fijar dibujos, hoja de exposición, intercalados, prompts exactos, costos, trampas y revisor |
+| `scripts/pintado/` | `composite_frames.py` (fijar dibujos), `flow_inbetween.py` (intercalados), `exposure_sheet.js` (hoja de exposición + boil) |
 | `clipper/` | Motor de los niveles 1–2 y del corte del 3 (`clipper.py`, `studio.py`, plantillas, fuentes) |
 | `references/clipper.md` | Video largo → muchos clips: cuándo clipper, cuándo aquí, y juntos; lote, miniaturas y `--fit auto` |
 | `references/clipeabilidad.md` | **Qué momento merece ser clip**: rúbrica 0–10 (gancho, dato, remate, autonomía, emoción) y lo que el agente hace encima |

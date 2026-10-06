@@ -95,3 +95,15 @@ movimiento y la palabra baja a su pastilla. El audio nunca se detiene.
 
 Ejemplos que al director le encantaron y aún no son receta. Formato:
 `- [nombre](enlace) — qué tiene de bueno — intensidad sugerida`
+
+- **Placa única pre-renderizada** (pieza vertical de ~31 s, 6 tomas + 3 escenas gráficas; pendiente de
+  aprobación del director) — todo el metraje (cortes, reencuadre que sigue a la persona, rampas de
+  velocidad, push-in, congelado, grade y grano) se pre-renderiza con FFmpeg en **un solo** `footage.mp4`
+  1:1 sobre la línea de tiempo final, con **colas de 0.4 s** del plano saliente bajo cada barrido
+  gráfico y negro donde manda el gráfico. La composición lleva un único `<video>` y todo lo demás
+  encima. Render local de 31 s en ~1.5 min con 2 workers en una máquina de 8 GB. Intensidad 1–2.
+- **R2 con el congelado "asentado después de la palabra"** — si en la palabra clave la persona
+  todavía se mueve (brazo hacia la cámara, desenfoque), se salta al primer cuadro quieto de después
+  y se congela **ese** (salto + pausa); el audio sigue, y al soltar el video continúa desde ese cuadro.
+  El recorte se saca del cuadro graduado de la placa (coincide al píxel; sólo cambia el grano).
+

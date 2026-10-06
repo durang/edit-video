@@ -39,3 +39,13 @@ Describe qué ves y cuándo, o pega el error.
 | "Está hecho, seguro que se ve bien" | Si no has mirado el frame, no lo sabes. Snapshot y mirar |
 | "Le meto un efecto más y queda mejor" | Más de un zoom cada cinco segundos cansa. Lo raro es lo que impacta |
 | "Grabo y ya veré si hace falta el clean plate" | Sin él, la mitad de los efectos buenos quedan fuera |
+
+## Aprendido en piezas reales (2026-10-03)
+
+| Defecto | Arreglo |
+|---|---|
+| Whisper pone tiempos falsos al inicio gritado o susurrado (dice que una palabra empieza en 0.0 s y el audio está mudo hasta 1.2 s) | Antes de cortar o subtitular, mirar la envolvente de 50 ms: `ffmpeg -ss A -t D -i toma.mp4 -vn -af "aresample=16000,asetnsamples=800,astats=metadata=1:reset=1,ametadata=print:key=lavfi.astats.Overall.RMS_level:file=-" -f null -` — los valles (< −35 dB) son los límites reales |
+| Un clip de nivel raíz de HyperFrames aparece pegado arriba a la izquierda | El runtime fuerza `top:0; left:0` en los hijos directos con `data-start`: posicionarlos con `margin`, no con `top`/`left` |
+| Tras pasar escenas a sub-composiciones, en el snapshot desaparecen TODOS los textos | Una llamada del script principal a una función que se movió al sub-archivo lanza un error y la línea de tiempo principal nunca se registra. Snapshot después de cada cambio estructural |
+| El subtítulo tapa el elemento protagonista del plano (el círculo rojo en la pantalla de un teléfono) | Mover la franja de subtítulos durante ese plano a la zona libre (arriba, bajo la pastilla); nunca encima del protagonista |
+| `"dwell"`/`fromTo` repetidos sobre el mismo elemento sin línea base (`gsap_repeated_fromto_without_baseline`) | `immediateRender: false` en todos menos el primero |

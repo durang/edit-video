@@ -24,6 +24,7 @@ No hace falta nombrar el skill: el agente reconoce el pedido. Si quieres forzarl
 | Esos clips con la línea gráfica de una marca | **Nivel 2** (clipper) | minutos |
 | Una pieza de estudio con motion design sobre mi video | **Nivel 3** (HyperFrames) | horas |
 | Lo del 3 + planos generados con IA, 3D, música | **Nivel 4** (propuesto) | días |
+| Un anuncio con un **personaje pintado a mano** que actúa (gouache + crayón) | **Pintado a mano** (§4.1) | 4–6 h por idioma |
 | Un video **sin grabar nada**: desde un audio, un guion o una idea | **Desde cero** (§5) | 10–60 min |
 | Clips de una **carpeta entera** de grabaciones | **Modo lote** (§6.3) | minutos por video |
 | Pasar una entrevista horizontal a vertical siguiendo al que habla | **`--fit auto`** (§6.4) | + segundos |
@@ -142,6 +143,37 @@ imagen, 2–3 versiones del gancho y másters recompuestos en 9:16, 4:5 y 16:9.
 
 **Qué recibes.** Tres aprobaciones en lugar de una: **tratamiento**, **animatic** y **cada inserto
 generado**. Gasta créditos. Detalle en `references/nivel-4.md`.
+
+### 4.1 · Pintado a mano — personaje en gouache y crayón
+
+**Qué es.** Una película corta (45–60 s) donde un personaje inventado, pintado en gouache y crayón de cera,
+actúa cuadro a cuadro: cada dibujo es la pintura anterior con **un** cambio (un brazo, los ojos, una lámpara
+que se enciende). Los dibujos se fijan para que el cuarto no tiemble, se animan con una hoja de exposición
+y se suavizan con intercalados. Lo que es información o efecto (rótulos de papel, una nube de pensamientos,
+partículas, tarjetas, el cierre) se dibuja en código con el mismo crayón, y el sonido se sintetiza en las
+mismas señales.
+
+**Cómo se pide.**
+- *"Hazme un anuncio pintado a mano, estilo gouache y crayón, con este guion."*
+- *"Como el de 'Why do we procrastinate?': un personaje que actúa, 9:16, 55 s, voz en inglés y español."*
+- *"Otro pintado, mismo estilo, otro personaje y otro lugar."*
+
+**Qué recibes.**
+1. **Hoja de modelo + primera pintura base** para aprobar el estilo antes de seguir (≈ 8 créditos).
+2. El video con voz, subtítulos palabra por palabra y cierre; la versión en otro idioma reutiliza las
+   pinturas (solo cambian voz, subtítulos y rótulos).
+3. Revisor completo: hojas de contacto, consistencia del personaje, nada que parpadee, nada quieto.
+
+**Costo y tiempo.** Nano Banana Pro cuesta 2 créditos por imagen; una pieza de ~55 s con 2 planos usa
+≈ 45–55 imágenes (≈ 90–110 créditos). 4–6 h la primera versión; ~1 h cada idioma extra.
+
+**Comandos** (los corre el agente; receta completa en `references/pintado-a-mano.md`):
+```bash
+PY=~/.config/edit-video/venv-caras/bin/python
+$PY scripts/pintado/composite_frames.py plano1 --chain --roi 0.55,0.62,0.97,0.90   # fijar dibujos
+$PY scripts/pintado/flow_inbetween.py plano1/steady plano1/flow --n 4             # intercalados
+#   en la composición: ExposureSheet.sheetDraw("s1", [[0, 0], [2.5, 1]], t)         # hoja de exposición
+```
 
 ---
 

@@ -770,7 +770,7 @@ def build_ass_editorial(segs: list[dict], start: float, end: float, W: int, H: i
         ss, ds = g.get("serif", 96) * k, g.get("display", 150) * k
         while ds > 40 and text_w(disp_t, D, ds) > W - 2 * M:
             ds -= 4
-        y = (300 if vertical else 170) * k
+        y = g.get("y", 300 if vertical else 170) * k   # gancho.y: subirlo/bajarlo si choca con la cabeza
         fade = "\\fad(200,250)"
         centro = g.get("alineacion", "izquierda") == "centro"
         hx = lambda w_: (W - w_) / 2 if centro else M

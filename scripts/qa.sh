@@ -7,8 +7,8 @@
 set -euo pipefail
 V="${1:?Uso: qa.sh VIDEO [fps] [tiempos...]}"; FPS="${2:-2}"; shift $(( $# >= 2 ? 2 : 1 ))
 OUT="${V%.*}.qa"; rm -rf "$OUT"; mkdir -p "$OUT/f"
-W=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of csv=p=0 "$V" | head -1)
-H=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of csv=p=0 "$V" | head -1)
+W=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$V" | head -1)
+H=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$V" | head -1)
 DUR=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$V")
 # miniatura de 216 px de ancho, conservando proporción
 TW=216; TH=$(( H * TW / W )); TH=$(( TH - TH % 2 ))
@@ -42,7 +42,7 @@ TP=$(printf '%s\n' "$LN" | awk '/Input True Peak/{print $4}')
 [ -n "$LUFS" ] && awk "BEGIN{exit !($LUFS > -12.5)}" && echo "⚠ VOLUMEN ALTO: $LUFS LUFS (meta −14): las apps lo bajan y la voz pierde punch. Re-masteriza con loudnorm I=-14 (ver qa.md)"
 [ -n "$TP" ] && awk "BEGIN{exit !($TP > -1.0)}" && echo "⚠ PICO: $TP dBTP (máx −1). El AAC sube el pico ~0.3–0.5 dB: masteriza con loudnorm …:TP=-1.5 (ver qa.md)"
 [ -n "$LUFS" ] && echo "  volumen integrado: $LUFS LUFS · pico real: ${TP:-?} dBTP"
-SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of csv=p=0 "$V" 2>/dev/null)
+SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of default=nw=1:nk=1 "$V" 2>/dev/null)
 [ -n "$SR" ] && [ "$SR" != "48000" ] && echo "⚠ AUDIO a $SR Hz (se entrega SIEMPRE a 48 kHz; a 96 kHz en celular puede no sonar). Re-masteriza con aresample=48000 -ar 48000 (ver qa.md)"
 # Primer cuadro quieto (contrato del nivel 3 §1: el video abre ya en movimiento)
 FZ=$(ffmpeg -hide_banner -t 3 -i "$V" -an -vf "freezedetect=n=-60dB:d=0.4" -f null - 2>&1 | awk '/freeze_start:/ && !f {sub(/.*freeze_start: /, ""); print; f = 1}')

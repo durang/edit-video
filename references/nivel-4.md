@@ -16,6 +16,7 @@ versiones del gancho. Es donde se juntan los dos repos: `seedance2_5` (generar) 
 | **Objetos 3D** (producto, logo, globo) | Imagen → GLB → escena | Higgsfield `generate_3d` + adaptador `three` de HyperFrames |
 | **Música a la imagen** | Pista con licencia; cortes y golpes gráficos en el beat | `music-to-video`, `hyperframes-audio` |
 | **Versiones del gancho** | 2–3 aperturas distintas del mismo cuerpo, para probar | la misma composición, otra escena inicial |
+| **Personaje pintado que actúa** (gouache + crayón, cuadro a cuadro) | Hoja de modelo → una base por plano → editar la pintura un cambio a la vez → fijar → hoja de exposición. Receta completa: `pintado-a-mano.md` | Nano Banana Pro (Higgsfield, 2 créditos/imagen) + `scripts/pintado/` |
 | **Másters por formato** | 9:16, 4:5 y 16:9 **recompuestos**, no recortados | la misma composición con tres lienzos |
 
 ## Puertas de aprobación (tres, no una)

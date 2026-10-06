@@ -2,7 +2,7 @@
 
 <!-- GUIA:inicio -->
 <!-- generado por scripts/guia.py desde GUIA.md: no editar a mano -->
-## Guía rápida · v3.11.1
+## Guía rápida · v3.13.0
 
 Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con descripción, frases de ejemplo, qué recibes, tiempo y comando: [GUIA.md](GUIA.md)
 
@@ -12,6 +12,7 @@ Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con desc
 | Esos clips con la línea gráfica de una marca | **Nivel 2** (clipper) | minutos |
 | Una pieza de estudio con motion design sobre mi video | **Nivel 3** (HyperFrames) | horas |
 | Lo del 3 + planos generados con IA, 3D, música | **Nivel 4** (propuesto) | días |
+| Un anuncio con un **personaje pintado a mano** que actúa (gouache + crayón) | **Pintado a mano** (§4.1) | 4–6 h por idioma |
 | Un video **sin grabar nada**: desde un audio, un guion o una idea | **Desde cero** (§5) | 10–60 min |
 | Clips de una **carpeta entera** de grabaciones | **Modo lote** (§6.3) | minutos por video |
 | Pasar una entrevista horizontal a vertical siguiendo al que habla | **`--fit auto`** (§6.4) | + segundos |

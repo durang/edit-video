@@ -9,7 +9,7 @@ de aprobación**.
 | **1** | **Recorte** | `clipper/` (FFmpeg + libass) | Blanco con contorno, palabra activa en amarillo, gancho arriba, logo | minutos | ninguna: sale |
 | **2** | **Editorial** | `clipper/` (FFmpeg + libass) | Tipografía de estudio (Inter Tight · Instrument Serif · JetBrains Mono), paleta tinta/papel/acento, palabra activa sobre caja, rótulo, barra de progreso, gancho en dos líneas, grade | minutos | ninguna: sale |
 | **3** | **Estudio** | HyperFrames (este skill) | Motion design de estudio: ver `nivel-3.md` — **siempre avanzado**, intensidad 1 · 2 · 3 (§0) y recetas en `recetario-3.md` | horas | **propuesta aprobada** antes de construir |
-| **4** | **Director** *(propuesto)* | HyperFrames + generativos (Seedance, Higgsfield) | Pieza de autor: insertos generados, cámara 2.5D/3D, música a medida — ver `nivel-4.md` | días | **tratamiento aprobado** + aprobación de cada inserto |
+| **4** | **Director** *(propuesto)* | HyperFrames + generativos (Seedance, Higgsfield) | Pieza de autor: insertos generados, cámara 2.5D/3D, música a medida, personaje pintado a mano (`pintado-a-mano.md`) — ver `nivel-4.md` | días | **tratamiento aprobado** + aprobación de cada inserto |
 
 ## Cómo se elige
 

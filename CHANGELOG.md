@@ -1,5 +1,41 @@
 # Changelog
 
+## 3.13.0 — 2026-10-06
+- **Nueva receta de nivel 4: `references/pintado-a-mano.md`** — película con personaje pintado (gouache + crayón)
+  que actúa cuadro a cuadro: guion y voz primero (cortes por la envolvente, sin `...` en el TTS), hoja de modelo,
+  una base por plano, animar editando la pintura un cambio a la vez, fijar dibujos, hoja de exposición con fundido
+  de 1 cuadro y boil a 12 fps, intercalados por flujo óptico, pase en blanco para mover al personaje, gráficos y
+  sonido en código en las mismas señales. Prompts exactos (hoja de modelo, base, edición, cambio de luz, pase en
+  blanco), costos (2 créditos por imagen), 9 trampas reales y el revisor propio. Enlazada desde `SKILL.md`,
+  `nivel-4.md`, `niveles.md` y `GUIA.md` (§4.1).
+- **Herramientas nuevas en `scripts/pintado/`**, con autopruebas:
+  - `composite_frames.py` — alinea cada dibujo con la base usando solo el fondo (ORB + RANSAC, afinado ECC; sin
+    OpenCV, correlación de fase), iguala color en lo que no cambió, máscara de cambio (diferencia suavizada antes
+    del umbral, sin islas), pega solo el cambio. `--chain` para cadenas largas de ediciones (el encuadre deriva),
+    `--roi` / `rois.json` para pegar solo la zona pedida, modo `"light"` para encender una luz sin mover nada,
+    máscara de píxeles válidos para no pegar el borde inventado por la alineación.
+  - `flow_inbetween.py` — intercalados Farneback entre pares de dibujos, con corte a la mitad donde el flujo no
+    sigue la forma (sin fantasmas); `map.json` con dónde quedó cada original.
+  - `exposure_sheet.js` — `sheetDraw(id, [[t, dibujo], …], t)` para HyperFrames: fundido de 1 cuadro por cambio
+    (o propio: `[t, dibujo, cuadros]`), boil determinista a 12 fps (`boilT` lo congela), `loop()` para bucles.
+
+## 3.12.2 — 2026-10-03
+- **Recetario, por probar:** "placa única pre-renderizada" (todo el metraje en un `footage.mp4` 1:1 con
+  colas bajo los barridos; un solo `<video>`, render ligero en máquinas de 8 GB) y la variante de R2
+  "congelado asentado después de la palabra".
+- **`troubleshooting.md`:** tiempos falsos de Whisper en arranques gritados/susurrados (verificar con la
+  envolvente de 50 ms), clips raíz de HyperFrames anclados a 0,0 (usar `margin`), error silencioso que
+  deja sin registrar la línea de tiempo tras pasar escenas a sub-composiciones, subtítulo que se aparta
+  del elemento protagonista del plano.
+
+## 3.12.1 — 2026-10-02
+- **`qa.sh`: arreglo con ffprobe 9** — `csv=p=0` devolvía `1920,` (coma final) y rompía el cálculo de
+  miniaturas (`syntax error: operand expected`). Ahora `default=nw=1:nk=1` para ancho, alto y sample rate.
+- **clipper: `gancho.y` en la plantilla** — posición vertical del gancho (default 300 en 9:16 / 170 en
+  16:9). Para cuando la persona está sentada alta y el gancho le pisa la cabeza: bajarlo al pecho (~1000).
+- Nota de encuadre: en planos fijos a dos, `--fit auto` puede quedarse en un hablante; Whisper estira la
+  última palabra hasta la siguiente, así que el corte de hablante va ~0.5 s antes de su `end`.
+
 ## 3.12.0 — 2026-10-01
 - **Nueva receta `references/logo-motion-tejido.md`** — logo motion desde cero para marcas cuyo
   isotipo se compone de piezas: hilos → piezas reales del isotipo segmentado (pieslice por ángulo)

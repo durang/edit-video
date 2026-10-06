@@ -12,6 +12,7 @@ resuelve cada una.** Cuando una se resuelve, se mueve abajo con la fecha y cómo
 | L9 | **Hablante activo**: una cara de perfil no deja ver la boca (nunca gana el plano) y el cambio de hablante llega con 1–5 s de retraso | 1–2 | `"fit": "blur"` en ese clip, o `crop_x` a mano | Cruzar movimiento de boca con la energía de la voz (o diarización) |
 | L7 | **whisper.cpp pega los tiempos** entre palabras → quitar silencios por huecos no funciona | todos | `silencedetect` por energía | Tiempos por palabra con huecos reales en el motor de HyperFrames. **Pista (2026-10-01):** HyperFrames ya corre Parakeet-TDT (`npx hyperframes models install parakeet`, ~640 MB; español incluido; mejor WER que whisper.cpp) — por aprobar e instalar; probar si deja huecos reales |
 | L8 | **El constructor se revisa a sí mismo y se le escapan defectos** grandes | 3 | Revisor independiente + alarmas de `qa.sh` | Más alarmas automáticas (cara tapada, texto cortado, bordes rectos en recortes). **Avance (2026-10-01, 3.11.1):** `qa.sh` avisa también de arranque quieto, pico > −1 dBTP, volumen alto y audio ≠ 48 kHz. Propuesto: cobertura de subtítulos N/N con el OCR de macOS (Vision) |
+| L10 | **Metraje de baja resolución** (416×752, o 720p recortado a 9:16 = 405 px de ancho) se ve blando al subirlo a 1080×1920 | 1–3 | Lanczos + grano fino; usarlo en planos de "recuerdo" o con push-in corto | Escalador local (Real-ESRGAN / video upscaler) en el pipeline de placas, o `upscale_video` en la nube (créditos) con aprobación |
 
 ## Resueltas
 
