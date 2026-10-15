@@ -77,6 +77,7 @@ sin ver el código: solo el video. Es lo que más errores caza.
 
 **Técnico**
 - [ ] Duración, resolución y fps correctos · audio presente y en sincronía
+- [ ] Ninguna franja negra en un borde (`qa.sh` avisa de la de 8 px a la derecha: HyperFrames < 0.8.155, `troubleshooting.md`)
 
 ## 3 · Si falla algo
 

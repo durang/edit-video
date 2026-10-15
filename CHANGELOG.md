@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.13.2 — 2026-10-15 (radar quincenal)
+- **`qa.sh`: alarma nueva `⚠ BORDE DERECHO NEGRO`** — HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 tiraba a negro las
+  8 columnas de la derecha en MP4 de 1080 de ancho (#5559); la alarma de NEGRO (≥ 10 % del cuadro) no lo ve.
+  Mide 1 cuadro/s la franja de 8 px contra la de al lado. Probado: caza un video con la franja (5 de 5 s) y no da
+  falsos positivos en un video limpio, uno casi todo negro ni en dos piezas reales entregadas (9:16 y 16:9).
+- **`troubleshooting.md`: versión de HyperFrames** — los proyectos fijan `hyperframes@<versión>` en su
+  `package.json` y no suben solos; la franja de 8 px y el congelado de grabaciones de pantalla (VFR) con FFmpeg 8+
+  (arreglado en 0.8.156, #5572), con el arreglo a mano para versiones viejas (pasar a CFR; probado) y cómo
+  detectar VFR con `ffprobe`.
+- `qa.md` (Técnico): ninguna franja negra en un borde.
+- `radar.md` y `LIMITACIONES.md`: entrada del radar con avances en L1, L4, L5, L7 y L10 y propuestas.
+
 ## 3.13.1 — 2026-10-06
 - `pintado-a-mano.md`: 2 trampas nuevas de la segunda película — un objeto que sale del cuadro para siempre debe
   quedar en el ROI de todos los dibujos siguientes (si no, la base lo vuelve a pintar), y la luz en modo "light"

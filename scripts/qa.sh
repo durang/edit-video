@@ -47,4 +47,14 @@ SR=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of d
 # Primer cuadro quieto (contrato del nivel 3 §1: el video abre ya en movimiento)
 FZ=$(ffmpeg -hide_banner -t 3 -i "$V" -an -vf "freezedetect=n=-60dB:d=0.4" -f null - 2>&1 | awk '/freeze_start:/ && !f {sub(/.*freeze_start: /, ""); print; f = 1}')
 [ -n "$FZ" ] && awk "BEGIN{exit !($FZ < 0.05)}" && echo "⚠ ARRANQUE QUIETO: el video abre con ≥ 0.4 s sin movimiento. En nivel 3 el primer cuadro ya se mueve (nivel-3.md §1)"
+# Borde derecho negro: HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 tiraba a negro las 8 columnas de la derecha
+# cuando el ancho es múltiplo de 16 + 8 (1080). 8 px no llegan al 10 % de la alarma de NEGRO: se mide aparte,
+# 1 cuadro/s, la franja de 8 px contra la de 16 px de al lado.
+ffmpeg -hide_banner -v error -i "$V" -an -filter_complex \
+  "[0:v]fps=1,split[a][b];[a]crop=8:ih:iw-8:0,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=$OUT/edge_a.txt[oa];[b]crop=16:ih:iw-24:0,signalstats,metadata=print:key=lavfi.signalstats.YAVG:file=$OUT/edge_b.txt[ob]" \
+  -map "[oa]" -f null - -map "[ob]" -f null - 2>/dev/null || true
+EDGE=$(paste <(grep -o 'YAVG=[0-9.]*' "$OUT/edge_a.txt" 2>/dev/null | cut -d= -f2) \
+             <(grep -o 'YAVG=[0-9.]*' "$OUT/edge_b.txt" 2>/dev/null | cut -d= -f2) \
+  | awk '$1 != "" && $2 != "" {n++; if ($1 < 20 && $2 - $1 > 15) k++} END{if (n > 0 && k * 2 >= n) printf "%d de %d s", k, n}')
+[ -n "$EDGE" ] && echo "⚠ BORDE DERECHO NEGRO: las 8 columnas de la derecha salen negras ($EDGE). Bug de HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 a 1080 de ancho: re-renderiza con HyperFrames ≥ 0.8.155 (revisa la versión fijada en el package.json del proyecto; ver troubleshooting.md)"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"
