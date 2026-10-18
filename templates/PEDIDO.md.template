@@ -1,0 +1,24 @@
+# PEDIDO · {{proyecto}}
+cliente: {{cliente_slug}} · skill: /edit-video ({{modo: documental | nivel N}}) · render: {{vm | local | local-externo}}
+fecha: {{AAAA-MM-DD}} · pedido por: {{agente orquestador}}
+
+## Entradas (todas en esta carpeta)
+- beatsheet.md — APROBADO por el director el {{fecha}}
+- guion.md · fuentes.md (fuente + licencia de cada toma)
+- vo/ (voz + words.json con tiempos por palabra) · footage/ · inserts/ · music/
+
+## Qué hacer
+1. `sync.sh pull` · leer `clients/{{cliente_slug}}/` (CLIENTE.md, APRENDIZAJES.md, kit/; kit/motor/README.md si existe).
+2. Paso 1b: `destino.sh check` + `eval "$(destino.sh env …)"`. Si falla: estado BLOQUEADO con el motivo, y parar.
+3. Construir según el beat sheet (HyperFrames o el motor del kit), con {{N}} workers, por trozos reanudables, en primer plano.
+4. QA {{completo | muestreo}} (qa.md), UNA pasada: alarmas de qa.sh en 0 · subtítulos N/N (subcov.py) ·
+   cuadros completos en: {{tiempos clave}}. Arreglar todo junto; re-revisar solo lo tocado.
+5. Salidas: out/{{final}}.mp4 · out/preview_720p.mp4 (≤ 100 MB) · out/qa/RESUMEN.md.
+6. `tiempos.py registrar --tipo {{nuevo | largo}}` · HISTORIAL/APRENDIZAJES del cliente · `sync.sh push`.
+
+## Criterios de aceptación
+- Duración ≈ {{mm:ss}} · {{1920×1080 | 1080×1920}} {{fps}} fps · −14 LUFS · ≤ −1.5 dBTP · 48 kHz
+- Safe zone del formato · cada efecto en su palabra · {{reglas del cliente: etiquetas, créditos…}}
+
+## No hacer
+- No publicar ni subir a servicios externos. No escribir fuera de esta carpeta (ni temporales en el disco interno).

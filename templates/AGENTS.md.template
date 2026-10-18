@@ -6,6 +6,10 @@
 ### Cliente
 - **cliente:** {{cliente_slug}}   ← carpeta en `edit-video-clients/clients/` (vacío si es propio)
 
+### Render (Paso 1b)
+- **render:** {{vm | local | local-externo}}   ← vacío = lo que diga el CLIENTE.md del cliente
+- **carpeta del proyecto / entregas:** {{ruta}}   ← con local-externo, dentro del disco externo
+
 ### Identidad
 - **Nombre:** {{nombre}}
 - **Handle:** {{handle}}
@@ -21,7 +25,7 @@ Estos nombres se corrigen **siempre** en la transcripción y en los subtítulos.
 
 ### Formato
 - **Relación de aspecto por defecto:** {{aspecto}}
-- **Safe zone:** nada de texto en el 20% inferior ni pegado al borde derecho
+- **Safe zone:** 9:16 → nada de texto en el 20% inferior ni pegado al borde derecho · 16:9 YouTube → nada importante en el 10% inferior, esquina de la marca de agua libre, hueco para la pantalla final en los últimos 5–20 s
 - **Subtítulos:** 2–3 palabras a la vez, a la altura del 65% de la pantalla
 
 ### Marca
@@ -34,7 +38,7 @@ Estos nombres se corrigen **siempre** en la transcripción y en los subtítulos.
 ### Audio
 - **Música:** {{ruta_musica}} — volumen bajo, bajando más mientras hablo
 - **Efectos:** {{carpeta_sfx}}
-- **Mi voz nunca se sustituye ni se re-sintetiza.**
+- **Mi voz nunca se sustituye ni se re-sintetiza.** (Si la narración es TTS por decisión del canal: `voz: tts <proveedor/voz>`.)
 
 ### Ritmo
 - Pausas de más de 0.3 s fuera, nunca dentro de una palabra

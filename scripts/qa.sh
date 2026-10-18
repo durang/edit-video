@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # edit-video · revisor final. Saca el video entero en hojas de contacto para revisarlo cuadro a cuadro.
-# Uso: bash scripts/qa.sh final.mp4 [fps] [tiempos_a_tamaño_completo...]
-#   fps por defecto 2 (un fotograma cada 0.5 s)
+# Uso: bash scripts/qa.sh [--muestreo] final.mp4 [fps] [tiempos_a_tamaño_completo...]
+#   fps por defecto 2 (un fotograma cada 0.5 s); con --muestreo, 0.5 (uno cada 2 s; qa.md §1b, piezas largas)
 #   ej.: bash scripts/qa.sh final.mp4 2 1 3 9.5 18.8 46.4
+#        bash scripts/qa.sh --muestreo episodio.mp4 0.5 0 9 300 486
 # Deja en final.qa/ : sheet_01.jpg, sheet_02.jpg… (30 cuadros cada una, con su tiempo) y full_<t>.jpg
 set -euo pipefail
-V="${1:?Uso: qa.sh VIDEO [fps] [tiempos...]}"; FPS="${2:-2}"; shift $(( $# >= 2 ? 2 : 1 ))
+MUESTREO=0; [ "${1:-}" = "--muestreo" ] && { MUESTREO=1; shift; }
+V="${1:?Uso: qa.sh [--muestreo] VIDEO [fps] [tiempos...]}"; FPS="${2:-}"; shift $(( $# >= 2 ? 2 : 1 ))
+[ -n "$FPS" ] || { [ "$MUESTREO" = 1 ] && FPS=0.5 || FPS=2; }
 OUT="${V%.*}.qa"; rm -rf "$OUT"; mkdir -p "$OUT/f"
 W=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 "$V" | head -1)
 H=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 "$V" | head -1)
@@ -13,7 +16,8 @@ DUR=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$V")
 # miniatura de 216 px de ancho, conservando proporción
 TW=216; TH=$(( H * TW / W )); TH=$(( TH - TH % 2 ))
 ffmpeg -v error -i "$V" -vf "fps=$FPS,scale=$TW:$TH" -q:v 3 "$OUT/f/%04d.jpg"
-N=$(ls "$OUT/f" | wc -l | tr -d ' ')
+# Contar solo los cuadros reales: en discos exFAT/FAT macOS crea "._0001.jpg" al lado de cada archivo
+N=$(find "$OUT/f" -maxdepth 1 -type f -name '[0-9]*.jpg' | wc -l | tr -d ' ')
 PER=30; S=1; K=1
 while [ $S -le $N ]; do
   ffmpeg -v error -y -start_number $S -i "$OUT/f/%04d.jpg" -frames:v 1 \
@@ -58,3 +62,4 @@ EDGE=$(paste <(grep -o 'YAVG=[0-9.]*' "$OUT/edge_a.txt" 2>/dev/null | cut -d= -f
   | awk '$1 != "" && $2 != "" {n++; if ($1 < 20 && $2 - $1 > 15) k++} END{if (n > 0 && k * 2 >= n) printf "%d de %d s", k, n}')
 [ -n "$EDGE" ] && echo "⚠ BORDE DERECHO NEGRO: las 8 columnas de la derecha salen negras ($EDGE). Bug de HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 a 1080 de ancho: re-renderiza con HyperFrames ≥ 0.8.155 (revisa la versión fijada en el package.json del proyecto; ver troubleshooting.md)"
 echo "✅ $N cuadros de $DUR s en $OUT/  — ahora MÍRALOS con la lista de references/qa.md"
+if [ "$MUESTREO" = 1 ]; then echo "   modo muestreo (qa.md §1b): + subtítulos N/N por código (scripts/subcov.py) y cuadros completos en los tiempos clave; una sola pasada"; fi

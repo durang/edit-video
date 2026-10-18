@@ -5,7 +5,7 @@ Ningún agente se acuerda de un video al siguiente. **Aprende porque lo escribe*
 | Repo | Qué guarda | Visibilidad |
 |---|---|---|
 | **`edit-video`** (este) | Método, referencias, errores reales, recetas — lo que sirve para **cualquier** video | Público |
-| **`edit-video-clients`** | Por cliente: `CLIENTE.md` (reglas), `APRENDIZAJES.md`, `HISTORIAL.md`, `kit/` | **Privado** |
+| **`edit-video-clients`** | Por cliente: `CLIENTE.md` (reglas, `render:` por defecto), `APRENDIZAJES.md`, `HISTORIAL.md`, `kit/` (incluido `kit/motor/` si el cliente tiene motor propio) · `REGLAS-PRIVADAS.md`: reglas del usuario que tocan sus cuentas, sesiones o proveedores | **Privado** |
 
 Rutas en `~/.config/edit-video/config` (las escribe `sync.sh init`). Mismas para todos los agentes
 de la máquina.
@@ -51,7 +51,9 @@ Luego reinstala el skill para que todos los agentes de la máquina lean la versi
 
 1. **Las correcciones del director mandan** sobre cualquier otra señal. Siempre se apuntan.
 2. **Un aprendizaje, un sitio.** Si es general, no se duplica en el cliente.
-3. **Nunca datos de cliente en el público.** Ante la duda, al privado.
+3. **Nunca datos de cliente en el público** — tampoco cuentas, correos, rutas de discos personales ni sesiones
+   del usuario. Ante la duda, al privado. `sync.sh push` además se niega a subir video, secretos, cachés y
+   archivos > 5 MB.
 4. **No se aprende de lo que no se verificó.** Solo entra lo que pasó el revisor final o lo que dijo el director.
 5. **Lo viejo que se contradice se corrige**, no se apila: se edita la línea y se anota la fecha.
 6. Sin permiso de escritura en `edit-video` (otra persona usando el skill), los aprendizajes

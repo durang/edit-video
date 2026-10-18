@@ -6,6 +6,11 @@
 #   sync.sh pull                           al EMPEZAR un video: trae lo último de los dos
 #   sync.sh new-client <slug>              crea clients/<slug>/ desde la plantilla
 #   sync.sh push "qué aprendimos"          al ENTREGAR: commit + push de los dos (con guardia)
+#   sync.sh config KEY VALOR               guarda una clave en ~/.config/edit-video/config sin borrar las demás
+#
+# El push NO sube cualquier cosa: antes de commit revisa los archivos. Video, secretos (.env, llaves, tokens),
+# __pycache__, .DS_Store, ._* de macOS, o cualquier archivo > 5 MB (y audio en el repo público) → aborta y
+# dice cuáles. Arreglo: muévelos, añádelos al .gitignore, o haz el commit a mano si de verdad van.
 #
 # Dos repos:
 #   edit-video (público)          método + aprendizajes que sirven para CUALQUIER video
@@ -21,9 +26,44 @@ SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 say(){ printf '%s\n' "$*"; }
 isrepo(){ [ -n "$1" ] && git -C "$1" rev-parse --git-dir >/dev/null 2>&1; }
 
+set_conf(){  # $1 clave, $2 valor — reemplaza o añade esa clave y CONSERVA las demás (p. ej. EDIT_VIDEO_FFMPEG)
+  local k="$1" v="$2" tmp
+  mkdir -p "$(dirname "$CONF")"; touch "$CONF"
+  tmp="$(mktemp "${CONF}.XXXXXX")" || return 1
+  grep -v "^${k}=" "$CONF" > "$tmp" || true
+  printf '%s="%s"\n' "$k" "$v" >> "$tmp"
+  mv "$tmp" "$CONF"
+}
+
 save_conf(){
-  mkdir -p "$(dirname "$CONF")"
-  printf 'EDIT_VIDEO_CLIENTS="%s"\nEDIT_VIDEO_SRC="%s"\n' "$CLIENTS" "$SRC" > "$CONF"
+  set_conf EDIT_VIDEO_CLIENTS "$CLIENTS"
+  set_conf EDIT_VIDEO_SRC "$SRC"
+}
+
+check_files(){  # $1 repo, $2 público?(1/0). Sale 1 si hay archivos que no deben versionarse.
+  local r="$1" pub="$2" f sz bad=""
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    case "$f" in
+      *.mp4|*.MP4|*.mov|*.MOV|*.webm|*.mkv|*.mxf|*.avi|*.zip|*.tgz|*.tar|*.gz|*.7z)
+        bad="$bad"$'\n'"    $f  (video o archivo comprimido)"; continue;;
+      *__pycache__*|*.pyc|.DS_Store|*/.DS_Store|._*|*/._*|.env|*/.env|*.env|*.pem|*.key|*.p12|*credentials*|*secret*|*token*.json)
+        bad="$bad"$'\n'"    $f  (no se versiona: caché, basura de macOS o secreto)"; continue;;
+    esac
+    if [ "$pub" = 1 ]; then
+      case "$f" in *.wav|*.mp3|*.m4a|*.aif|*.aiff|*.flac) bad="$bad"$'\n'"    $f  (audio en el repo público)"; continue;; esac
+    fi
+    if [ -f "$r/$f" ]; then
+      sz=$(wc -c < "$r/$f" | tr -d ' ')
+      [ "${sz:-0}" -gt 5242880 ] && bad="$bad"$'\n'"    $f  ($((sz / 1048576)) MB > 5 MB)"
+    fi
+  done < <(git -C "$r" ls-files --others --exclude-standard; git -C "$r" diff --name-only)
+  if [ -n "$bad" ]; then
+    say "  ✗ $(basename "$r"): archivos que no deben subirse:$bad"
+    say "    Muévelos o añádelos al .gitignore (o commit a mano si de verdad van). No se subió nada de este repo."
+    return 1
+  fi
+  return 0
 }
 
 guard(){  # $1 = repo público, $2 = mensaje del commit. Sale 1 si se cuela algo privado.
@@ -45,8 +85,10 @@ guard(){  # $1 = repo público, $2 = mensaje del commit. Sale 1 si se cuela algo
 commit_push(){  # $1 repo, $2 mensaje, $3 público?(1/0)
   local r="$1" m="$2" pub="$3"
   isrepo "$r" || return 0
+  check_files "$r" "$pub" || return 1
   git -C "$r" add -A
   if git -C "$r" diff --cached --quiet; then say "  = $(basename "$r"): nada nuevo"; return 0; fi
+  say "  · $(basename "$r") — lo que se va a subir:"; git -C "$r" diff --cached --stat | sed 's/^/      /'
   if [ "$pub" = 1 ] && ! guard "$r" "$m"; then
     git -C "$r" reset -q; say "  ✗ $(basename "$r"): NO se subió. Mueve eso al repo de clientes."; return 1
   fi
@@ -75,6 +117,7 @@ case "${1:-status}" in
     changed=0
     for r in "$SRC" "$CLIENTS"; do
       isrepo "$r" || continue
+      [ -n "$(git -C "$r" status --porcelain --untracked-files=no)" ] && say "  ! $(basename "$r"): hay cambios sin commit (git -C \"$r\" status); el pull puede fallar"
       before=$(git -C "$r" rev-parse HEAD); git -C "$r" pull -q --ff-only || say "  ! $(basename "$r"): no pude hacer pull"
       [ "$before" != "$(git -C "$r" rev-parse HEAD)" ] && { say "  ↓ $(basename "$r") actualizado"; [ "$r" = "$SRC" ] && changed=1; }
     done
@@ -103,5 +146,10 @@ case "${1:-status}" in
     fi
     exit $rc
     ;;
-  *) sed -n 2,14p "$0";;
+  config)
+    k="${2:?uso: sync.sh config KEY VALOR}"; v="${3-}"
+    case "$k" in EDIT_VIDEO_[A-Z_]*) ;; *) say "Solo claves EDIT_VIDEO_*"; exit 1;; esac
+    set_conf "$k" "$v" && say "✓ $k=\"$v\" en $CONF (las demás claves se conservan)"
+    ;;
+  *) sed -n 2,20p "$0";;
 esac

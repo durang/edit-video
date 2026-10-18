@@ -2,7 +2,7 @@
 
 <!-- GUIA:inicio -->
 <!-- generado por scripts/guia.py desde GUIA.md: no editar a mano -->
-## Guía rápida · v3.13.2
+## Guía rápida · v3.14.0
 
 Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con descripción, frases de ejemplo, qué recibes, tiempo y comando: [GUIA.md](GUIA.md)
 
@@ -19,8 +19,10 @@ Qué pedir y qué usar. **Guía completa** — cada nivel y herramienta con desc
 | Que me proponga los mejores momentos con puntaje | **Rúbrica** (§6.1) | segundos |
 | Cambiar el diseño / cliente nuevo sin línea gráfica | **Shotgun de estilo** (§7) | 15–30 min |
 | Saber cuánto va a tardar o cómo va | **Tiempos** (§8) | al momento |
+| Un **documental narrado** (guion + material de archivo + voz/TTS), largo 16:9 y Shorts | **Documental** (§11) | horas |
+| Elegir **dónde se renderiza** (VM, mi computadora, mi computadora + disco externo) o pasarle el trabajo a otra máquina | **Dónde renderizar** (§12) | al momento |
 
-Contenido: §0 Mapa rápido · §1 Nivel 1 Recorte · §2 Nivel 2 Editorial · §3 Nivel 3 Estudio · §4 Nivel 4 Director · §5 Desde cero · §6 Herramientas de clipper · §7 Shotgun de estilo · §8 Tiempos · §9 Corregir · §10 Problemas comunes
+Contenido: §0 Mapa rápido · §1 Nivel 1 Recorte · §2 Nivel 2 Editorial · §3 Nivel 3 Estudio · §4 Nivel 4 Director · §5 Desde cero · §6 Herramientas de clipper · §7 Shotgun de estilo · §8 Tiempos · §9 Corregir · §10 Problemas comunes · §11 Documental narrado · §12 Dónde renderizar y pasar el trabajo
 <!-- GUIA:fin -->
 
 **Una máquina de edición profesional, con cualquier agente.** Cuatro niveles:

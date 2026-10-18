@@ -17,6 +17,25 @@ bash <SKILL_DIR>/scripts/qa.sh final.mp4 2  1 3 <tiempos clave…>
 Si el entorno permite subagentes, la revisión la hace **otro agente** con este archivo y las hojas,
 sin ver el código: solo el video. Es lo que más errores caza.
 
+## 1b · Modo muestreo — mismo estándar, menos ojos de modelo
+
+Para `qa: muestreo` en el `CLIENTE.md`, o cualquier pieza de más de 3 min (mirar 2 cuadros por segundo de un
+video de 8 min son ~1,000 cuadros: caro y poco fiable para un agente cansado).
+
+1. **Máquina primero (gratis):** todas las alarmas de `qa.sh` en 0 (negro, silencio, volumen, pico, 48 kHz,
+   arranque quieto, borde negro).
+2. **Subtítulos N/N por código:** `python3 SKILL_DIR/scripts/subcov.py words.json subtitulos.json --salida out/qa/subcov.txt`
+   (cada palabra dicha contra lo que el motor pinta). Menos de N/N = rechazo, sin mirar cuadro a cuadro. Si el
+   motor no puede exportar sus subtítulos, OCR local (en macOS, Vision) sobre el cuadro de cada palabra.
+3. **Hojas a 0.5 fps:** `bash SKILL_DIR/scripts/qa.sh --muestreo final.mp4 0.5 <tiempos clave>`, y cuadros
+   completos **solo** en: primer y último cuadro, cada momento de impacto, la entrada y salida de cada inserto,
+   cada cambio de sección del beat sheet, y cada recorte/congelado.
+4. **Una sola pasada:** se anotan TODOS los defectos en `SNAPSHOTS.md` / `out/qa/RESUMEN.md`, se arreglan juntos,
+   se re-renderizan solo los trozos afectados, y se re-revisan esos tramos + las alarmas. Una segunda pasada
+   completa solo si cambió la estructura.
+5. Lo corre la **máquina que renderiza** (el constructor + un revisor independiente si hay subagentes), no el
+   agente que orquesta: éste lee el resumen y mira unos pocos cuadros.
+
 ## 2 · Checklist, cuadro por cuadro
 
 **Texto**

@@ -1,0 +1,15 @@
+# ESTADO · {{proyecto}}
+estado: PEDIDO          <!-- PEDIDO → EN_CURSO → QA → LISTO_REVISION → APROBADO → PUBLICADO → ARCHIVADO · BLOQUEADO -->
+actualizado: {{AAAA-MM-DD HH:MM zona}}
+fase: {{leyendo | activos | construyendo | render | QA | listo}} · avance: {{%}}
+bloqueo: {{— | motivo y qué hace falta}}
+
+## Salidas
+- final: {{ruta}} · preview: {{ruta}} · qa: out/qa/RESUMEN.md
+
+## QA (una pasada)
+- alarmas qa.sh: {{0 | lista}} · subtítulos: {{N/N}}
+- defectos y arreglos: {{tiempo · defecto · arreglo}}
+
+## Bitácora
+- {{hora}} · {{qué pasó}}

@@ -1,5 +1,40 @@
 # Changelog
 
+## 3.14.0 — 2026-10-18
+- **Paso 1b nuevo · ¿dónde se renderiza?** — una pregunta (VM/servidor del agente · tu computadora · tu
+  computadora con disco externo), recordada por cliente (`render:` en `CLIENTE.md`), por proyecto (`AGENTS.md`)
+  o por máquina (`EDIT_VIDEO_RENDER`). Regla dura 16: nunca se renderiza donde el usuario no eligió ni se borra
+  trabajo sin copia verificada. Plan B si la máquina elegida no está: no se renderiza en otro lado, no se borra.
+  `references/donde-renderizar.md`.
+- **`scripts/destino.sh`** — `check`: disco externo montado de verdad (compara el punto de montaje: en macOS
+  `/Volumes/<DISCO>` sin disco es una carpeta del interno), escribible y con espacio; `env`: `TMPDIR`, cachés de
+  npm/rembg/Hugging Face/pip/puppeteer al destino y `EDIT_VIDEO_WORKERS` según la RAM (≤ 8 GB → 2).
+- **Orquestador + renderizador: `PEDIDO.md` / `ESTADO.md`** (`references/pedido.md`, `templates/`) — un agente
+  prepara (guion, voz, clips, publica) y Claude Code en la máquina elegida edita, renderiza y revisa, con estados
+  y log stream-json para `tiempos.py avance`.
+- **Modo documental narrado** (`references/documental.md`, fila nueva del Paso 0, GUIA §11) — guion + archivo +
+  voz; tiempos por palabra desde la alineación del TTS (sin Whisper); fuentes y licencias en el beat sheet;
+  estructura de pieza larga; insertos generados siempre etiquetados; **motor propio del cliente** permitido
+  (`kit/motor/README.md`, `check.sh --motor`); safe zone 16:9 de YouTube (regla dura 6 por formato).
+- **QA modo muestreo** (`qa.md` §1b, `qa.sh --muestreo`, `scripts/subcov.py`) — alarmas automáticas, subtítulos
+  N/N verificados por código, hojas a 0.5 fps + cuadros clave, una sola pasada; lo corre la máquina que renderiza.
+- **`tiempos.py`**: tipo `largo` (escala ~lineal, exp 0.85, para piezas > 3 min) y aviso de estimación
+  extrapolada cuando la pieza dura > 3× sus referencias. Las piezas cortas estiman igual que antes.
+- **`sync.sh`**: `save_conf` ya no sobrescribe `~/.config/edit-video/config` (antes borraba `EDIT_VIDEO_FFMPEG`,
+  el arreglo de libass); `sync.sh config KEY VALOR`; antes de cada commit revisa los archivos y **aborta** si hay
+  video, secretos, cachés (`__pycache__`), basura de macOS (`.DS_Store`, `._*`), archivos > 5 MB o audio en el
+  público, y enseña el `--stat` de lo que sube; avisa si hay cambios sin commit antes del pull.
+- **`qa.sh` / `ingest.sh`**: cuentan solo los cuadros reales (los `._*` de discos exFAT duplicaban el conteo).
+- `.gitignore` en la raíz; fuera del repo el `.pyc` que se había versionado.
+- Reglas duras renumeradas 1–16 en orden. Regla 10: "la voz **de una persona**…" (narración TTS declarada en el
+  `CLIENTE.md` permitida). Regla 14 (respaldo de imágenes) genérica: el proveedor de respaldo y cómo se accede
+  viven en las reglas privadas del usuario. Regla 15: animación dentro de la ilustración con imagen a video;
+  cámara y gráficos en código.
+- `pintado-a-mano.md`: sección "Movimiento real con IA (Grok, inicio + fin)" (inicio y fin con el mismo encuadre,
+  alinear el cuadro 0 con ECC, estirar encendidos de luz, intercalados de brazo con dibujo intermedio).
+- `aprendizaje.md`: `REGLAS-PRIVADAS.md` y `kit/motor/` en el repo privado; nada de cuentas ni rutas personales
+  en el público. `AGENTS.md.template`: `render:` y safe zone por formato.
+
 ## 3.13.2 — 2026-10-15 (radar quincenal)
 - **`qa.sh`: alarma nueva `⚠ BORDE DERECHO NEGRO`** — HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 tiraba a negro las
   8 columnas de la derecha en MP4 de 1080 de ancho (#5559); la alarma de NEGRO (≥ 10 % del cuadro) no lo ve.

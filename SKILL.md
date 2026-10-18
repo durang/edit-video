@@ -1,8 +1,8 @@
 ---
 name: edit-video
-description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video (or a whole folder) into many short clips, ranked by a clipability rubric, with a thumbnail per clip and automatic face and active-speaker vertical reframing. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "los mejores momentos", "toda esta carpeta", "sigue al que habla", "miniaturas", "hazme un video desde cero", "anima este audio", "promo de mi producto", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
+description: Professional editing machine for video that ALREADY EXISTS, in levels — 1 Recorte (fast clean clips with captions and logo), 2 Editorial (studio typography, palette, details), 3 Estudio (advanced motion design with an approved proposal), 4 Director (proposed — generated inserts, 3D, music). Includes clipper to turn a long video (or a whole folder) into many short clips, ranked by a clipability rubric, with a thumbnail per clip and automatic face and active-speaker vertical reframing. Captions, cutting dead air, punch-in zooms, title cards, lower thirds, graphic overlays, pop-ups, music and SFX, 16:9 to 9:16 reframing, background removal, 3D objects, a named style (movie trailer, Vox explainer), or assembling several clips (for example shots generated with Seedance, Grok, Veo or Kling) into one finished MP4. Works in any agent that reads SKILL.md (Claude Code, OpenClaw, Hermes Agent, Codex, Cursor…) on top of the HyperFrames skills. Triggers on /edit-video, "edita mi video", "shotgun de estilo", "cambio de diseño", "explora direcciones", "sácame clips", "clips de esta entrevista", "los mejores momentos", "toda esta carpeta", "sigue al que habla", "miniaturas", "hazme un video desde cero", "anima este audio", "promo de mi producto", "nivel 1/2/3", "nivel 3 intensidad 2", "cárgalo más de efectos", "recetario", "ponle subtítulos", "córtale los silencios", "hazlo vertical para Reels", "monta estos clips", "edit my video", "add captions", "cut the pauses", or a video file plus an edit request. Also builds narrated documentaries from a script plus archive footage (word timings from the TTS voice, the client's own render engine allowed, render on the machine the user picks). NOT for generating new footage from a text prompt, and NOT for re-filming one take from new camera angles.
 metadata:
-  version: 3.13.2
+  version: 3.14.0
   author: Sergio Duran
   method: "Let Claude Edit Your Videos — @pauloshimas / The Creator Stack"
   engine: heygen-com/hyperframes
@@ -43,7 +43,7 @@ director pide uno por su nombre, se construye con esa receta. Al cerrar un video
 nuevo que funcionó se añade como receta.
 
 **Tiempos reales, siempre.** Antes de lanzar un trabajo: `python3 scripts/tiempos.py estimar --nivel N
---intensidad I --tipo nuevo|subida|ronda|detalles --duracion S` y se le dice al director *"estimado
+--intensidad I --tipo nuevo|largo|subida|ronda|detalles --duracion S` y se le dice al director *"estimado
 X–Y min; referencias: …"* (los 2–3 trabajos parecidos más recientes, con lo que tardaron). Si pregunta
 cómo va: `tiempos.py avance --log <stream-json del constructor> …` (fase, %, hora estimada de fin).
 Al terminar: `tiempos.py registrar …` (clipper registra solo). Sin historia parecida se dice que es la
@@ -71,6 +71,7 @@ Este skill **no reimplementa HyperFrames**: pone el método, las reglas y el idi
 | **Una carpeta de grabaciones** | `clipper.py lote <carpeta>` → propuesta por video → **OK** → `lote <carpeta> --render` |
 | Entrevista horizontal que va a vertical | `--fit auto`: sigue la cara y al hablante activo (MediaPipe en entorno aislado; sin él, `blur`) |
 | Un video corto que quiere **nivel 3** | Propuesta según `references/nivel-3.md` → **PARADA** → Pasos 3–9 |
+| Un **guion** + **material de archivo** (dominio público, CC, propio) + **narración** (grabada o TTS) → pieza larga 16:9 y Shorts | **Documental narrado** (`references/documental.md`): guion → fuentes y licencias → voz → beat sheet → **OK** → construir con el kit del cliente (HyperFrames o su motor propio) → QA |
 
 Si no está claro, **una** pregunta de una línea.
 
@@ -99,6 +100,26 @@ si hay una nueva, **díselo al usuario** con lo que cambió (CHANGELOG) y actual
 (`npx skills update edit-video -g -y`) antes de empezar. Mejoras que sirvan a todos y no seas el dueño
 del repo: issue o PR (`CONTRIBUTING.md`).
 
+## Paso 1b · ¿Dónde se renderiza? — una pregunta, se recuerda
+
+Antes de construir nada, busca `render:` en el `AGENTS.md` del proyecto → en el `CLIENTE.md` del
+cliente → en `~/.config/edit-video/config` (`EDIT_VIDEO_RENDER`). Si no está en ninguno, pregunta **una**
+vez y guárdalo en el `CLIENTE.md` (o en el `AGENTS.md` si no hay cliente):
+
+> ¿Dónde lo renderizo?
+> 1) **Servidor / VM del agente**: rápido, pero gasta la cuota del agente y una VM puede borrar archivos grandes
+> 2) **Tu computadora**: gratis; tiene que estar prendida
+> 3) **Tu computadora con disco externo**: todo, incluidos temporales y cachés, en el disco
+> (Se guarda para este cliente; se cambia diciendo "esta vez en la 2".)
+
+`render: vm | local | local-externo`; con la 3, además `disco_externo: /Volumes/<DISCO>` y `carpeta_videos`
+dentro del disco. **Con la 3, antes de cada render** (si algo falla: PARA y avisa; nunca caigas al disco interno):
+`bash SKILL_DIR/scripts/destino.sh check <carpeta_del_proyecto>` — disco montado y escribible, espacio
+suficiente, y te da los `export` de `TMPDIR`, npm, rembg y caches para que nada caiga en el disco interno.
+Si el agente que orquesta no es la máquina que renderiza, le pasa el trabajo con **`PEDIDO.md`**
+(`references/pedido.md`); si esa máquina no está conectada: **no se renderiza en otro lado ni se borra nada**,
+se espera y se reintenta. Detalle: `references/donde-renderizar.md`.
+
 ## Paso 2 · Reglas del proyecto — onboarding la primera vez
 
 Busca en la carpeta del video un `AGENTS.md` (o `CLAUDE.md`) con una sección `## edit-video`.
@@ -125,7 +146,8 @@ Detalle: `references/aprendizaje.md`.
 - **Nunca dentro de un repositorio de código** (pesa en git, se sube a GitHub, frena los deploys). En el
   repo de una marca solo va una línea que dice dónde están sus videos.
 - Cada marca tiene **su carpeta de videos**, escrita en su `CLIENTE.md` como `carpeta_videos:`. Por
-  defecto: `~/Desktop/IA VIDEO/<Marca>/`. Dentro:
+  defecto: `~/Desktop/IA VIDEO/<Marca>/`; con `render: local-externo`, **dentro del disco externo**
+  (p. ej. `/Volumes/<DISCO>/<ruta>/<Marca>/`), nunca en el disco interno. Dentro:
   - `FINALES/` — solo lo listo para subir, con nombres claros (`<Marca>-<pieza>-<formato>.mp4`).
   - `<AAAA-MM> <proyecto>/` — el proyecto de edición: clips, transcripciones, versiones, entregas.
 - Si el `CLIENTE.md` no tiene `carpeta_videos`, se pregunta **una vez** y se guarda ahí.
@@ -179,6 +201,10 @@ corto antes de cada remate. Reporta la duración nueva. Efectos, después.
 | Recorte de fondo, TTS, SFX, música, imágenes | `/media-use` |
 | No está claro | `/hyperframes` — la puerta de entrada de HyperFrames |
 
+> **Motor propio del cliente.** Si `clients/<slug>/kit/motor/README.md` existe, se construye con ese motor
+> (su README dice comandos, dependencias y workers) en lugar de HyperFrames. Beat sheet, anclaje a la palabra,
+> QA y aprendizaje no cambian. `bash SKILL_DIR/scripts/check.sh --motor <kit/motor>` valida sus dependencias.
+
 Al skill de HyperFrames le pasas: **el beat sheet aprobado, el `transcript.json` corregido, las
 reglas del proyecto y el formato**. Él construye; tú vigilas que se cumpla cada regla.
 Detalle: `references/routing.md`.
@@ -208,6 +234,10 @@ checklist de `references/qa.md`: ninguna palabra partida o cortada, nada sobre l
 la safe zone, nada ilegible en el teléfono, nada del original asomando, coherencia de movimiento.
 Si el entorno permite subagentes, que la revisión la haga **otro agente** que solo vea el video.
 Cada defecto: anotar en `SNAPSHOTS.md`, arreglar, re-renderizar, **re-revisar entero**.
+
+**Modo muestreo** (`qa: muestreo` en el `CLIENTE.md`, o piezas de más de 3 min): mismo estándar, menos ojos
+de modelo — alarmas de `qa.sh` en 0, subtítulos N/N **por código**, hojas a 0.5 fps + cuadros completos solo
+en los tiempos clave, **una sola pasada** de arreglos. Lo corre la máquina que renderiza. `qa.md` §1b.
 
 ## Paso 9 · Aprender — obligatorio al entregar
 
@@ -240,14 +270,17 @@ hacer). Detalle: `references/mejora-continua.md`.
 3. **Nunca cortar dentro de una palabra.**
 4. **El idioma se detecta o se verifica** antes de transcribir. Nunca el modelo `.en` por defecto si no es inglés.
 5. **Nombres propios corregidos**, y cada corrección nueva **al diccionario**: el mismo error no se corrige dos veces.
-6. **Safe zone**: nada de texto en el 20% inferior ni pegado al borde derecho (botones de la app).
+6. **Safe zone** según formato: en 9:16 nada de texto en el 20% inferior ni pegado al borde derecho (botones de la app); en 16:9 de YouTube, nada importante en el 10% inferior (barra del reproductor), esquina de la marca de agua libre, y los últimos 5–20 s con hueco para la pantalla final.
 7. **Una nota = un cambio**, con el tiempo. Qué, dónde, cuándo — nunca cómo.
 8. **Versionar** antes de cada ronda.
-9. **Revisor final antes de decir "listo"** (Paso 8): el MP4 entero, cuadro cada 0.5 s. Decir "listo" sin haberlo revisado es mentir.
-13. **Cada entrega deja aprendizaje** (Paso 9): lo general al público, lo del cliente al privado. Nunca datos de un cliente en `edit-video`.
-10. **La voz del usuario nunca se sustituye ni se re-sintetiza.**
+9. **Revisor final antes de decir "listo"** (Paso 8): el MP4 entero, cuadro cada 0.5 s (o modo muestreo §1b de `qa.md`). Decir "listo" sin haberlo revisado es mentir.
+10. **La voz de una persona nunca se sustituye ni se re-sintetiza.** Si el `CLIENTE.md` declara `voz: tts <proveedor/voz>`, esa narración sintética ES la voz del canal y se usa tal cual.
 11. **Máximo un zoom cada cinco segundos.** Lo raro es lo que impacta.
 12. **El director es el usuario.** El gusto no se delega.
+13. **Cada entrega deja aprendizaje** (Paso 9): lo general al público, lo del cliente al privado. Nunca datos de un cliente en `edit-video`.
+14. **Imágenes fijas: orden de respaldo, nunca quedarse sin imágenes.** (1) El generador conectado (revisar saldo antes; tope por pieza en `CREDITS.md`) → (2) el respaldo que el usuario haya aprobado (cuál y cómo, en sus reglas privadas: `edit-video-clients/REGLAS-PRIVADAS.md` o el `CLIENTE.md`) → (3) si todo falla, seguir buscando cómo resolverlo. Nunca escribir, guardar ni imprimir contraseñas o llaves. El origen de cada imagen va en `CREDITS.md`.
+15. **Animación de personajes y detalles dentro de una ilustración: un generador de imagen a video (p. ej. Grok Imagine), nunca imagen fija. Motion graphics y cámara: HyperFrames/GSAP.** El generador anima lo que vive dentro de la pintura (gestos, respiración, manos, pelo, objetos); texto, tarjetas, contadores, cámara, transiciones y UI van en código. Las imágenes de partida van en el estilo aprobado del cliente, con sus referencias y en el formato de la pieza. Si la herramienta está ocupada, otra instancia u otro agente con acceso; nunca se omite.
+16. **Nunca se renderiza donde el usuario no eligió** (Paso 1b), y nunca se borra trabajo que no esté copiado y verificado en su destino.
 
 ## Dónde corre
 
@@ -257,7 +290,11 @@ hacer). Detalle: `references/mejora-continua.md`.
   estar prendido**.
 - Agente en un servidor (OpenClaw o Hermes en un VPS, hablándole por Telegram o WhatsApp) → corre
   en el servidor; **tu ordenador puede estar apagado**. `setup.sh` funciona igual en Linux.
-- El render pesado puede irse a la nube de HeyGen con `npx hyperframes cloud render`.
+- El render pesado puede irse a la nube de HeyGen con `npx hyperframes cloud render` (solo si el usuario lo elige).
+- **Orquestador + renderizador** (p. ej. un agente en la nube que prepara guion, voz y clips, y Claude Code en la
+  computadora del usuario que edita, renderiza y revisa): el primero escribe `PEDIDO.md` en la carpeta del
+  proyecto y el segundo lo ejecuta y actualiza `ESTADO.md` (`references/pedido.md`). Así el trabajo pesado gasta
+  la cuota de la máquina elegida, no la del orquestador.
 - Un chat sin terminal ni disco (una app de chat en la nube) no puede correrlo.
 
 ## Referencias
@@ -267,6 +304,9 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `scripts/guia.py` | Resumen de la guía (`resumen`), bloque del README y descripción de GitHub desde GUIA.md (`todo`, `check`) |
 | `GUIA.md` | **Guía de uso**: cada nivel y herramienta con descripción → cómo se pide (ejemplos) → qué recibes, tiempo y comando; desde cero; notas de corrección |
 | `references/onboarding.md` | Primera vez en una carpeta: las seis preguntas |
+| `references/donde-renderizar.md` · `scripts/destino.sh` | **Dónde se renderiza** (VM / computadora / computadora + disco externo), checks de disco y espacio, temporales y cachés al destino, plan B |
+| `references/pedido.md` · `templates/PEDIDO.md.template` · `templates/ESTADO.md.template` | **Pasar trabajo** de un agente orquestador a la máquina que renderiza |
+| `references/documental.md` | **Documental narrado**: guion + archivo + voz (TTS con tiempos por palabra), pieza larga 16:9 y Shorts, motor propio del cliente |
 | `references/setup.md` | Instalación en cualquier agente |
 | `references/routing.md` | Qué skill de HyperFrames construye cada cosa |
 | `references/pipeline.md` | Combinar con modelos generativos: generar → montar |
@@ -281,7 +321,8 @@ hacer). Detalle: `references/mejora-continua.md`.
 | `references/nivel-3.md` | **Contrato del nivel 3** (siempre avanzado), tiempos, técnicas de HyperFrames, lo que ya no se hace |
 | `references/recetario-3.md` | **Recetario del nivel 3**: efectos probados con tiempos exactos (R1 cierre congelado con recorte) y ejemplos por probar |
 | `references/logo-motion-tejido.md` | **Logo motion "Tejido"**: isotipo segmentado en piezas → tejido → snap con brillo → crossfade al logo real → wordmark → tagline → destejido → cierre "powered by"; lockup validado contra el PNG original |
-| `scripts/tiempos.py` | Tiempos reales: estimar con trabajos parecidos, avance en %, registrar al terminar |
+| `scripts/tiempos.py` | Tiempos reales: estimar con trabajos parecidos (`--tipo largo` para piezas > 3 min), avance en %, registrar al terminar |
+| `scripts/subcov.py` | Subtítulos N/N por código: cada palabra dicha contra lo que el motor pinta (QA modo muestreo) |
 | `references/nivel-4.md` | Nivel 4 · Director (propuesto) |
 | `references/pintado-a-mano.md` | **Película con personaje pintado** (gouache + crayón, nivel 4): hoja de modelo, una base por plano, animar editando la pintura, fijar dibujos, hoja de exposición, intercalados, prompts exactos, costos, trampas y revisor |
 | `scripts/pintado/` | `composite_frames.py` (fijar dibujos), `flow_inbetween.py` (intercalados), `exposure_sheet.js` (hoja de exposición + boil) |

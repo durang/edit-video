@@ -1,0 +1,8 @@
+# basura de sistema y cachés (sync.sh se niega a subirlos)
+__pycache__/
+*.pyc
+.DS_Store
+._*
+node_modules/
+*.mp4
+*.mov

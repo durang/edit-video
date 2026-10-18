@@ -187,3 +187,23 @@ Arquitectura que funcionó:
 - **Subtítulos**: cobertura N/N, fuera del 20 % inferior, un solo énfasis.
 - **Sin texto pintado**: si el modelo metió letras, números o logos en una pintura, se regenera ese paso.
 - Pintura generada = ficción: nunca se presenta como una persona o un hecho real.
+
+## Movimiento real con IA (Grok, inicio + fin) — probado en una película de ~50 s
+
+- **grok.com con imagen de inicio y de fin funciona**: conserva el gouache y el crayón, la cara y la ropa; el
+  movimiento (manos, brazo, ponerse audífonos, encender una lámpara) se ve natural, sin manos deformes a 24 fps.
+- **Inicio y fin con el MISMO encuadre**, o el clip salta en sus últimos ~0.5 s (pasó con s2-base-a → s2-hp3-a:
+  otro encuadre → se cortó en el cuadro 130). Usar siempre los cuadros **fijados** (`steady`) del mismo plano,
+  recortados a 9:16 exacto: así el clip cae sobre la pintura al píxel.
+- Grok entrega 720p a 24 fps, más suave que la pintura a 2K: escalar con Lanczos al tamaño de la pintura,
+  **alinear el cuadro 0 con la pintura fija** (ECC; salió −23/−13 px y ×1.037) y aplicar la misma matriz a todo el
+  clip, más un **grano de papel fijo** (no ruido de video).
+- **La luz se enciende en 0.4 s**: estirar esos cuadros a ≥ 1 s con fundidos (regla de fotosensibilidad).
+- Deriva de lógica: tras encender la lámpara volvió a "teclear" sobre la laptop cerrada. Revisar la acción, no
+  solo el estilo.
+- Montaje sin `<video>`: el clip se pasa a cuadros JPG en coordenadas de la pintura y se toca con la misma hoja de
+  exposición. Cámara, boil, partículas, subtítulos y cierre quedan igual (y no choca con el lint
+  `video_nested_in_timed_element`).
+- Cuadro a cuadro: los intercalados por flujo de un **brazo entero** dejan fantasma (dos manos). Hace falta un dibujo
+  de medio camino (Nano Banana, 2 cr) y quedarse solo con los intercalados limpios. Para ojos (parpadeo, cerrar)
+  y luz, el flujo basta.

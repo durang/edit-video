@@ -31,6 +31,8 @@ No hace falta nombrar el skill: el agente reconoce el pedido. Si quieres forzarl
 | Que me proponga los mejores momentos con puntaje | **Rúbrica** (§6.1) | segundos |
 | Cambiar el diseño / cliente nuevo sin línea gráfica | **Shotgun de estilo** (§7) | 15–30 min |
 | Saber cuánto va a tardar o cómo va | **Tiempos** (§8) | al momento |
+| Un **documental narrado** (guion + material de archivo + voz/TTS), largo 16:9 y Shorts | **Documental** (§11) | horas |
+| Elegir **dónde se renderiza** (VM, mi computadora, mi computadora + disco externo) o pasarle el trabajo a otra máquina | **Dónde renderizar** (§12) | al momento |
 
 Si no dices el nivel, el agente pregunta **una** vez: *"¿Nivel 1, 2 o 3? ¿O todos en 1–2 y los
 mejores en 3?"*
@@ -373,3 +375,35 @@ Cada ronda se versiona (v1, v2…) y se re-renderiza solo lo que cambió.
 | El vertical no sigue a la persona | `--fit auto`; si está de perfil, `crop_x` a mano |
 
 Más: `references/troubleshooting.md`.
+
+---
+
+## 11 · Documental narrado — guion + archivo + voz
+
+**Qué es.** Una pieza que no parte de un video grabado: un guion, material de archivo con licencia (dominio
+público, CC, propio) y una narración grabada o TTS. Videos de YouTube de 8–12 min y sus Shorts.
+
+**Cómo se pide.**
+- *"Documental de 9 min, 16:9, con este guion y este archivo; voz TTS del canal."*
+- *"Saca 3 Shorts en loop de este episodio."*
+
+**Qué recibes.** Beat sheet con fuente y licencia de cada toma → tu OK → la pieza, con el QA en modo muestreo
+(alarmas + subtítulos N/N por código + cuadros clave) y el resumen del QA. Si el cliente tiene motor propio
+en su kit, se usa ese. Detalle: `references/documental.md`.
+
+**Tiempo.** Horas; `tiempos.py estimar --tipo largo --duracion S` (la primera vez sale extrapolado).
+
+---
+
+## 12 · Dónde renderizar y pasar el trabajo
+
+**Qué es.** Antes de construir, el agente sabe (o pregunta una vez) dónde se renderiza: **1** VM/servidor del
+agente · **2** tu computadora · **3** tu computadora con disco externo. Se recuerda por cliente.
+
+**Cómo se pide.** *"Renderiza siempre en mi Mac con el disco externo"* · *"Esta vez en la VM"*.
+
+**Qué recibes.** Con la 3, antes de cada render se comprueba que el disco esté montado, que se pueda escribir y
+que haya espacio; temporales y cachés van al disco (`scripts/destino.sh`). Si un agente prepara y otro
+renderiza, se pasan el trabajo con `PEDIDO.md` / `ESTADO.md` (`references/pedido.md`). Si la máquina elegida no
+está: no se renderiza en otro lado y no se borra nada. Detalle: `references/donde-renderizar.md`.
+

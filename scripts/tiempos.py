@@ -13,7 +13,10 @@ puede decir en qué fase va, qué % lleva y a qué hora termina.
 
 Tipos: nuevo (pieza desde cero) · subida (añadir mucho a una pieza hecha: otra intensidad, otra
 sección) · ronda (correcciones del director) · detalles (2–5 arreglos chicos) · bug (problema
-técnico; no cuenta para estimar) · clipper (niveles 1–2, lo registra clipper solo).
+técnico; no cuenta para estimar) · clipper (niveles 1–2, lo registra clipper solo) · largo (pieza
+de más de 3 min: documental, video de YouTube; escala casi lineal con la duración).
+
+Si la pieza dura más de 3× que las referencias, la estimación se marca como extrapolada.
 
 El registro vive en el área privada de clientes (`_general/tiempos.jsonl`) si existe, o en
 `~/.config/edit-video/tiempos.jsonl`. Solo librería estándar.
@@ -131,16 +134,28 @@ def _ts(r):
         return 0
 
 
+EXTRAPOLADO = {"x": 0.0}   # cuántas veces más larga que la referencia más parecida (0 = no aplica)
+
+
 def estimar(nivel, intensidad, tipo, duracion=None):
     ref = parecidos(nivel, intensidad, tipo)
+    EXTRAPOLADO["x"] = 0.0
     if not ref:
         return None, []
     base = []
     for r in ref:
         m = r["minutos"]
         if duracion and r.get("duracion_video_s"):  # el trabajo escala suave con la duración
-            exp = 1.0 if tipo == "clipper" else 0.5   # clipper escala lineal con los segundos
-            m *= (duracion / r["duracion_video_s"]) ** exp
+            ratio = duracion / r["duracion_video_s"]
+            if tipo == "clipper":
+                exp = 1.0                             # clipper escala lineal con los segundos
+            elif tipo == "largo" or duracion > 180:
+                exp = 0.85                            # pieza larga: render y QA crecen casi lineal
+            else:
+                exp = 0.5
+            if ratio > 3 and duracion > 180 and r.get("tipo") != "largo":
+                EXTRAPOLADO["x"] = max(EXTRAPOLADO["x"], ratio)
+            m *= ratio ** exp
         # cada punto de intensidad por encima de la referencia ≈ +35 % (tabla de nivel-3.md §0)
         m *= 1 + 0.35 * max(0, (intensidad or 1) - (r.get("intensidad") or 1))
         base.append(m)
@@ -161,7 +176,7 @@ def _fmt_ref(r):
 def otras(nivel, tipo, ya, n=3):
     rows = [r for r in leer() if r.get("nivel") == nivel and r.get("minutos") and r not in ya
             and r.get("tipo") not in ("bug", "investigacion", tipo)]
-    rank = {"nuevo": 0, "subida": 1, "ronda": 2, "detalles": 3, "clipper": 4}
+    rank = {"nuevo": 0, "largo": 0, "subida": 1, "ronda": 2, "detalles": 3, "clipper": 4}
     return sorted(rows, key=lambda r: (rank.get(r.get("tipo"), 9), -_ts(r)))[: max(0, n - len(ya))]
 
 
@@ -171,6 +186,9 @@ def cmd_estimar(a):
         print("Sin historia parecida todavía: primera vez de este tipo. Se registra al terminar.")
         return 0
     print(f"Estimado: {_dur(rng[0])} – {_dur(rng[1])}  (nivel {a.nivel}, intensidad {a.intensidad or '-'}, {a.tipo})")
+    if EXTRAPOLADO["x"]:
+        print(f"⚠ Extrapolado desde piezas ~{EXTRAPOLADO['x']:.0f}× más cortas: tómalo como orden de magnitud y "
+              "registra el tiempo real con --tipo largo para que la próxima estimación sea buena.")
     print("Referencias:")
     for r in ref:
         print(_fmt_ref(r))
@@ -239,7 +257,7 @@ def main():
         p.add_argument("--nivel", type=int, required=True)
         p.add_argument("--intensidad", type=int)
         p.add_argument("--tipo", required=True,
-                       choices=["nuevo", "subida", "ronda", "detalles", "bug", "clipper", "investigacion"])
+                       choices=["nuevo", "largo", "subida", "ronda", "detalles", "bug", "clipper", "investigacion"])
         p.add_argument("--duracion", type=float, help="segundos del video")
         if name in ("avance", "registrar"):
             p.add_argument("--log", required=(name == "avance"), help="stream-json del agente constructor")

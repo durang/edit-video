@@ -86,7 +86,7 @@ PY
 echo "④ Fotogramas"
 if awk "BEGIN{exit !($DUR <= 10)}"; then RATE=2; else RATE=1; fi
 ffmpeg -y -v error -i "$VIDEO" -vf "fps=$RATE,scale=960:-2" -q:v 3 "$OUT/frames/f_%04d.jpg"
-N=$(ls "$OUT/frames" | wc -l | tr -d ' ')
+N=$(find "$OUT/frames" -maxdepth 1 -type f -name 'f_*.jpg' | wc -l | tr -d ' ')   # sin los ._* de discos exFAT
 echo "   $N frames a $RATE fps (frame n = segundo $( [ $RATE = 2 ] && echo '(n-1)/2' || echo 'n-1'))"
 
 echo "✅ Listo en $OUT/"

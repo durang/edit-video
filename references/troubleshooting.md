@@ -61,3 +61,13 @@ avisa (skill `hyperframes-studio`). Antes de renderizar un proyecto retomado:
 |---|---|
 | **Franja negra de 8 px en el borde derecho** de un MP4 de 1080 de ancho (no la caza la alarma de NEGRO: es < 1 % del cuadro) | Bug de HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 cuando el ancho es múltiplo de 16 + 8 (heygen-com/hyperframes#5559). Re-renderizar con ≥ 0.8.155. `qa.sh` avisa (`⚠ BORDE DERECHO NEGRO`) |
 | **Grabación de pantalla que se congela a medio render** (un cuadro se queda y los demás se pierden), con FFmpeg 8 o posterior | Video de frecuencia variable (VFR): FFmpeg 8 respeta la duración de cada cuadro. Arreglado en HyperFrames 0.8.156 (#5572). Con una versión fijada más vieja, pasar el clip a frecuencia constante antes: `ffmpeg -i in.mp4 -fps_mode cfr -r 30 -c:v libx264 -crf 14 -c:a copy cfr.mp4`. Cómo saber si es VFR: `ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate -of csv=p=0 in.mp4` — si los dos números no coinciden, lo es (probado: `30/1,600/59` → tras convertir `30/1,30/1`) |
+
+## Disco externo (macOS)
+
+- **Se llenó el disco interno aunque el proyecto estaba en el externo**: el disco no estaba montado y
+  `/Volumes/<DISCO>/…` se creó como carpeta normal del interno; o `TMPDIR`/cachés seguían en el interno.
+  → `scripts/destino.sh check` antes de renderizar y `eval "$(destino.sh env <carpeta>)"`.
+- **Conteos o listas de cuadros al doble en un disco exFAT**: macOS crea `._archivo` al lado de cada archivo.
+  → contar con `find … -name '[!.]*'`; `COPYFILE_DISABLE=1` al empaquetar. `qa.sh` e `ingest.sh` ya lo hacen.
+- **Render lento o la Mac se congela con 8 GB**: demasiados workers → swap (que además escribe en el interno).
+  → 2 workers (`EDIT_VIDEO_WORKERS`), placa única pre-renderizada.
