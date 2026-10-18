@@ -400,7 +400,9 @@ en su kit, se usa ese. Detalle: `references/documental.md`.
 **Qué es.** Antes de construir, el agente sabe (o pregunta una vez) dónde se renderiza: **1** VM/servidor del
 agente · **2** tu computadora · **3** tu computadora con disco externo. Se recuerda por cliente.
 
-**Cómo se pide.** *"Renderiza siempre en mi Mac con el disco externo"* · *"Esta vez en la VM"*.
+**Cómo se pide.** *"¿Dónde estamos editando?"* · *"Where are we editing?"* · *"Renderiza siempre en mi Mac con el disco externo"* · *"Esta vez en la VM"*.
+
+La respuesta es una tarjeta corta (modo, máquina, rutas, espacio, conexión comprobada en vivo) y la pregunta *"¿Cambio algo?"* con opciones de un toque; el cambio se guarda solo (`destino.sh set`).
 
 **Qué recibes.** Con la 3, antes de cada render se comprueba que el disco esté montado, que se pueda escribir y
 que haya espacio; temporales y cachés van al disco (`scripts/destino.sh`). Si un agente prepara y otro

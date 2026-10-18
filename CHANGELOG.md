@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.14.1 — 2026-10-18
+- **"¿Dónde estamos editando?"** — `destino.sh estado <cliente|proyecto>`: tarjeta de 6 líneas comprobada en vivo
+  (modo de render, máquina, ruta del proyecto y de entregas, espacio libre, disco montado o no, venv del motor si
+  existe) + "¿Cambio algo?" con opciones de un toque (mantener · VM · computadora · disco externo/ruta). Se muestra
+  al dar de alta o pedir una marca, al empezar un proyecto, o cuando el usuario lo pregunta. Disparadores nuevos
+  en la descripción.
+- **`destino.sh set <cliente|proyecto> <vm|local|externo> [ruta]`** — cambia dónde se renderiza sin editar a mano:
+  escribe `render:`/`disco_externo:`/`carpeta_videos:` en el frontmatter del `CLIENTE.md` (commit + push del
+  repo privado, solo ese archivo) o en la sección Render del `AGENTS.md` del proyecto; con `externo` exige una ruta
+  en `/Volumes/<DISCO>/…` y avisa si el disco no está montado.
+- `donde-renderizar.md` y GUIA §12: la tarjeta, las opciones y sus comandos.
+- `check.sh --motor … --python <ruta>` (o `EDIT_VIDEO_PYTHON`): valida el venv del motor, no el Python del sistema;
+  entiende extras como `rembg[cpu]`.
+
 ## 3.14.0 — 2026-10-18
 - **Paso 1b nuevo · ¿dónde se renderiza?** — una pregunta (VM/servidor del agente · tu computadora · tu
   computadora con disco externo), recordada por cliente (`render:` en `CLIENTE.md`), por proyecto (`AGENTS.md`)

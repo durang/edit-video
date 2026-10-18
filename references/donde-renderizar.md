@@ -25,6 +25,33 @@ disco_externo: /Volumes/<DISCO>
 carpeta_videos: /Volumes/<DISCO>/<ruta>/<Marca>
 ```
 
+## "¿Dónde estamos editando?" — ver y cambiar en un toque
+
+Cuándo: al dar de alta o pedir una marca, al empezar un proyecto, o cuando el usuario lo pregunta.
+
+```bash
+bash SKILL_DIR/scripts/destino.sh estado <cliente|carpeta_proyecto>
+```
+```
+🎬 ¿Dónde estamos editando? · <cliente> (cliente)
+• Render: computadora + disco externo  [render: local-externo]
+• Máquina: <nombre> · Darwin · RAM 8 GB · 2 workers · conectada ✓ (comprobado ahora)
+• Proyecto: /Volumes/<DISCO>/<ruta>/<Marca>/<proyecto>
+• Entregas: /Volumes/<DISCO>/<ruta>/<Marca>/FINALES/
+• Disco: /Volumes/<DISCO> montado ✓ · 600 GB libres de 2000 GB
+¿Cambio algo? mantener · VM · computadora · disco externo/ruta
+```
+La tarjeta corre **en la máquina que renderiza** (así "conectada" es real). Si el agente que pregunta no llega a
+esa máquina, la tarjeta dice "✗ sin conexión" en la línea de la máquina — no se inventa.
+
+Opciones de un toque → comando (guarda en `CLIENTE.md` del privado con commit + push, o en `AGENTS.md` del proyecto):
+| opción | comando |
+|---|---|
+| mantener | — |
+| cambiar a VM | `destino.sh set <x> vm` |
+| cambiar a computadora | `destino.sh set <x> local [carpeta_videos]` |
+| cambiar disco externo o ruta | `destino.sh set <x> externo /Volumes/<DISCO>/<ruta>/<Marca>` |
+
 ## Antes de cada render (`local-externo`)
 
 ```bash

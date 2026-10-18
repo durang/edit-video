@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # edit-video · preflight. Comprueba todo lo que hace falta y dice exactamente qué falta.
 # Uso: bash scripts/check.sh            Sale con 0 si está todo, 1 si falta algo.
-#      bash scripts/check.sh --motor <kit/motor>   solo el motor propio de un cliente (Python + FFmpeg)
+#      bash scripts/check.sh --motor <kit/motor> [--python <ruta>]   solo el motor propio de un cliente (Python + FFmpeg)
+#      (el Python del motor: --python, o EDIT_VIDEO_PYTHON, o python3)
 set -u
 ok=0; warn=0
 g(){ printf '  \033[32m✓\033[0m %s\n' "$1"; }
@@ -12,16 +13,16 @@ OS="$(uname -s)"
 
 # Motor propio del cliente (SKILL.md Paso 6): Python 3, FFmpeg y los módulos de su requirements.txt
 if [ "${1:-}" = "--motor" ]; then
-  M="${2:?uso: check.sh --motor <carpeta kit/motor>}"
+  M="${2:?uso: check.sh --motor <carpeta kit/motor> [--python <ruta>]}"; PYM="${EDIT_VIDEO_PYTHON:-python3}"; [ "${3:-}" = "--python" ] && PYM="${4:?falta la ruta del python}"
   echo "── edit-video · motor del cliente: $M ──"
-  command -v python3 >/dev/null 2>&1 && g "Python $(python3 --version 2>&1 | awk '{print $2}')" || b "Python 3 no está" "instálalo con permiso del usuario"
+  command -v "$PYM" >/dev/null 2>&1 && g "Python $("$PYM" --version 2>&1 | awk '{print $2}') ($PYM)" || b "Python no está: $PYM" "instálalo con permiso del usuario"
   command -v ffmpeg >/dev/null 2>&1 && g "FFmpeg" || b "FFmpeg no está" "$( [ "$OS" = Darwin ] && echo 'brew install ffmpeg' || echo 'sudo apt-get install -y ffmpeg')"
   if [ -f "$M/requirements.txt" ]; then
     while IFS= read -r line; do
-      pkg="$(printf '%s' "$line" | sed 's/[<>=!~ ;#].*//')"; [ -n "$pkg" ] || continue
+      pkg="$(printf '%s' "$line" | sed 's/[][<>=!~ ;#].*//')"; [ -n "$pkg" ] || continue
       mod="$(grep -E "^# *import-as: *$pkg *= *" "$M/requirements.txt" | sed 's/.*= *//' | head -1)"
       [ -n "$mod" ] || case "$pkg" in opencv-python*|opencv-contrib*) mod=cv2;; pillow|Pillow) mod=PIL;; *) mod="$(printf '%s' "$pkg" | tr '-' '_')";; esac
-      if python3 -c "import $mod" 2>/dev/null; then g "python: $pkg"; else b "python: falta $pkg" "python3 -m pip install -r \"$M/requirements.txt\"   (con permiso; ideal en un venv del disco de trabajo)"; fi
+      if "$PYM" -W ignore -c "import $mod" 2>/dev/null; then g "python: $pkg"; else b "python: falta $pkg" "$PYM -m pip install -r \"$M/requirements.txt\"   (con permiso; ideal en un venv del disco de trabajo)"; fi
     done < <(grep -vE '^[[:space:]]*(#|$)' "$M/requirements.txt")
   else w "El motor no trae requirements.txt" "añádelo al kit para poder validarlo"; fi
   [ -f "$M/README.md" ] && g "README del motor: $M/README.md" || w "El motor no trae README.md" "documenta comandos y workers en $M/README.md"
