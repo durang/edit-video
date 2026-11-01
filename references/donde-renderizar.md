@@ -75,7 +75,7 @@ en tus propias listas (concat, conteos) usa `find … -name '[!.]*'`, y `COPYFIL
 
 ## Paralelismo en máquinas de 8 GB
 
-- HyperFrames: con ≤ 8 GB activa solo `--low-memory-mode` (1 worker, captura por screenshot); si la pieza es ligera y no hay swap, `--workers 2` (o `EDIT_VIDEO_WORKERS`). La "placa única pre-renderizada" (`recetario-3.md`) ayuda.
+- HyperFrames: con ≤ 8 GB activa solo `--low-memory-mode` (1 worker, captura por screenshot); si la pieza es ligera y no hay swap, `--workers 2` (o `EDIT_VIDEO_WORKERS`). Con HyperFrames < 0.8.216, más de un worker puede dar tirones donde dos animaciones del mismo elemento se pisan (`troubleshooting.md`): ahí, 1 worker o subir de versión. La "placa única pre-renderizada" (`recetario-3.md`) ayuda.
 - Motores propios por trozos: 2 procesos a la vez. El swap de macOS escribe en el disco interno: si la memoria
   se acaba, baja a 1 worker en lugar de subir trozos.
 - Render **reanudable** por trozos (un `.ok` por trozo terminado) y en primer plano (`qa.md`, render cancelado).

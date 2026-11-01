@@ -9,6 +9,63 @@ Una entrada por radar, la más nueva arriba. Formato:
 - Decisión de Sergio: pendiente | sí | no
 ```
 
+## 2026-11-01 · radar quincenal
+
+Issues y PRs abiertos en `durang/edit-video`: **ninguno**. Desde el último radar entraron 3.14.0 y 3.14.1 (dónde
+renderizar + `destino.sh`, `PEDIDO.md`/`ESTADO.md`, documental narrado, QA por muestreo + `subcov.py`); el WIP del
+13-oct ya está subido y la sección de Grok de `pintado-a-mano.md` ya no está duplicada. Fuentes: HyperFrames
+0.8.162 → **0.8.226** (69 versiones; en la Mac el caché de `npx` ya no tiene ninguna: el próximo `ingest.sh` baja
+la última). whisper.cpp sigue en 1.9.5, openai-whisper sin versión nueva, GSAP 3.15.0, skill de motion de
+LottieFiles y MatAnyone 2 sin commits nuevos. FFmpeg local 9.0.2.
+
+**Implementado (3.14.2, probado):**
+- **`sync.sh` avisa si `EDIT_VIDEO_SRC` no es un repo** y usa el clon desde el que corre. El 31-oct el repo se movió
+  otra vez (`~/clawd/projects/edit-video` → `~/clawd/projects/Edit Video/…`) y `sync.sh pull` del radar dijo
+  "✓ al día" sin tocar el repo público (comprobado a mano con `git fetch`: estaba al día). 4 casos probados.
+- Dato corregido en la Mac (no en el repo): `EDIT_VIDEO_SRC` → la ruta real del clon
+  (`sync.sh config`, copia de la config anterior en `~/.config/edit-video/config.antes-radar-2026-11-01`).
+- **`troubleshooting.md` + `qa.md` + `donde-renderizar.md`** · trampas de HyperFrames por versión (de sus notas de
+  versión, sin probar aquí: requiere subir): tirón cada 8 cuadros con varios workers o por tramos cuando dos tweens
+  escriben la misma propiedad (< 0.8.216, #6707 — toca a `EDIT_VIDEO_WORKERS=2` y al render por tramos), snapshot
+  negro en silencio (< 0.8.197), grade en blanco en GPU (< 0.8.211), español devuelto en inglés con Parakeet
+  (< 0.8.177), `render --start/--end` (≥ 0.8.222).
+
+**Novedades que tocan limitaciones (sin adoptar):**
+- **L8** · `hyperframes check` ≥ 0.8.220 marca como error cada palabra de subtítulo tapada por un recorte (antes
+  6 de 7 salían como "info", #6770) y juzga el texto detrás de un video transparente por su alfa real (#5657).
+- **L7** · `hyperframes audio --read` lee pausas, picos de efectos y voz contra música (#6546), y `beats` analiza un
+  archivo directo (#6812). Nada nuevo en whisper.cpp.
+- **L4** · Mirelo SFX 2.0 (14-oct, video → diseño sonoro, quita la música que metió el generador, conserva el
+  diálogo) con API y MCP propios; un catálogo lo marca "comercial restringido" sin detalle. ElevenLabs y ACE Studio
+  se anuncian como SFX libres de regalías (artículo de Sonilo, competidor). Licencias por leer.
+- **L5** · Sonilo-MCP ya va en la 0.27 (PyPI); sus términos siguen por leer. **L1, L2, L9, L10**: nada nuevo
+  (SeedVR2 MLX sigue igual; MatAnyone 2 sin commits; ningún issue de `clip-path` en HyperFrames).
+- Seedance 2.5 en Higgsfield (desde ago): 30 s por toma con audio nativo (ambiente, foley) sincronizado → para
+  insertos de nivel 4 trae su propio sonido; no resuelve L4 sobre metraje real.
+
+**Propuestas (decide Sergio):**
+- **Subir HyperFrames a ≥ 0.8.226 y `npx hyperframes skills update`** (con permiso): trae lo de arriba, sobre todo
+  #6707 (render multi-worker correcto) y `check` de subtítulos tapados (L8). Prueba: render de una pieza de nivel 3
+  vieja con 2 workers en la versión nueva + `qa.sh`; `check` sobre un proyecto con R2.
+- **`ingest.sh` con `--engine whisper` fijo** (ya propuesto el 1-oct junto a Parakeet): hoy la transcripción usa la
+  versión de HyperFrames que baje `npx` y el motor que esa versión elija. Prueba: una toma en español y comparar.
+- **Tarea programada del radar**: su texto dice `~/clawd/projects/edit-video`, que ya no existe. Cambiarlo a
+  `~/clawd/projects/Edit Video/edit-video` (o recrear el enlace). Esta corrida encontró el repo buscándolo.
+- Safe zones (adaptlypost, act. 20-oct-2026): Reels arriba 210 / abajo 310 / derecha 84 px; TikTok 108 / 320 /
+  120 px; zona segura común 900×1400 centrada → la regla del 20 % inferior (384 px) cubre; **refuerza la propuesta
+  pendiente** de rótulo en y ≥ 230 y margen derecho ≥ 120 px.
+- Siguen pendientes las propuestas del 1-oct y del 15-oct (clipper a −14 LUFS, catálogo HeyGen, Parakeet, safe zone,
+  OCR N/N, Mirelo/Sonilo, MatAnyone 2, SeedVR2).
+- **WIP sin subir en el repo de clientes** (`_general/tiempos.jsonl`, `APRENDIZAJES.md` de dos clientes y un
+  `kit/ESTILO.md`): el radar lo apartó con `git stash` para no subirlo y lo devolvió al terminar.
+
+**Niveles 2 y 3:** sin datos nuevos de peso. Lo más citado sigue siendo OpusClip (78.6 % de clips con subtítulo
+animado vs 1.6 % estático) → línea del nivel 2 vigente. Tendencias de motion 2026 (autoae): "autenticidad sobre
+pulido" — grano, analógico, recortes de papel/collage → encaja con la vida ambiente del contrato del nivel 3 y con
+el "quizá" de papel rasgado del 15-oct; no cambia el contrato.
+
+- Decisión de Sergio: pendiente
+
 ## 2026-10-15 · radar quincenal
 
 Issues y PRs abiertos en `durang/edit-video`: **ninguno**. Fuentes: HyperFrames 0.8.105 → **0.8.162** (57

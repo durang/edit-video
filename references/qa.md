@@ -93,6 +93,10 @@ video de 8 min son ~1,000 cuadros: caro y poco fiable para un agente cansado).
 - [ ] Mismas curvas y duraciones de entrada/salida en todos los bloques del mismo tipo
 - [ ] Cada efecto cae en su palabra (comparar con `transcript.json`)
 - [ ] Transiciones sin saltos, sin cuadros negros, sin parpadeos
+- [ ] **Render con varios workers o por tramos en HyperFrames < 0.8.216**: revisar **cuadro a cuadro** (no a
+      0.5 s) cada punch-in o zoom que se cruce con un corte o con otro movimiento del mismo elemento — ahí el
+      fondo puede saltar de zoom en 3 de cada 8 cuadros, o un tramo saltar en su primer cuadro, aunque el
+      preview esté limpio (`troubleshooting.md`, versión de HyperFrames)
 
 **Técnico**
 - [ ] Duración, resolución y fps correctos · audio presente y en sincronía

@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.14.2 — 2026-11-01 (radar quincenal)
+- **`sync.sh` ya no salta el repo público en silencio** cuando `EDIT_VIDEO_SRC` apunta a una carpeta que dejó de
+  ser el clon (el repo se movió dos veces: 1-oct y 31-oct). Avisa con el arreglo (`sync.sh config EDIT_VIDEO_SRC
+  …`) y, si el script corre desde un clon de `edit-video`, usa ese clon en esa corrida. Probado: config vieja desde
+  el clon (avisa y lo usa), copia fuera de un repo (solo avisa), config correcta y sin `EDIT_VIDEO_SRC` (sin aviso,
+  igual que antes); el patrón del remoto no confunde `edit-video-clients`.
+- **`troubleshooting.md` · HyperFrames 0.8.162 → 0.8.226** (según sus notas de versión): tirón cada 8 cuadros en
+  renders con varios workers o por tramos cuando dos tweens se pisan (< 0.8.216, #6707), snapshot negro en silencio
+  si no puede leer un clip (< 0.8.197), clip con grade en blanco en GPU (< 0.8.211), español devuelto en inglés con
+  Parakeet instalado (< 0.8.177), y `render --start/--end` para re-renderizar solo un tramo (≥ 0.8.222).
+- `qa.md` (Movimiento): con varios workers y HyperFrames < 0.8.216, revisar cuadro a cuadro los punch-ins que se
+  cruzan con un corte. `donde-renderizar.md`: 1 worker en ese caso.
+- `radar.md` y `LIMITACIONES.md`: pistas nuevas en L4 (Mirelo SFX 2.0) y L8 (`hyperframes check` ≥ 0.8.220 marca
+  subtítulos tapados por un recorte).
+
 ## 3.14.1 — 2026-10-18
 - **"¿Dónde estamos editando?"** — `destino.sh estado <cliente|proyecto>`: tarjeta de 6 líneas comprobada en vivo
   (modo de render, máquina, ruta del proyecto y de entregas, espacio libre, disco montado o no, venv del motor si

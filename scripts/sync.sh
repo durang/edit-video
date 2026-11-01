@@ -26,6 +26,17 @@ SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 say(){ printf '%s\n' "$*"; }
 isrepo(){ [ -n "$1" ] && git -C "$1" rev-parse --git-dir >/dev/null 2>&1; }
 
+# EDIT_VIDEO_SRC apuntando a una carpeta que ya no es el clon (se movió el repo) hacía que pull/push
+# saltaran el repo público EN SILENCIO (pasó dos veces). Ahora avisa y, si este script corre desde un clon
+# de edit-video, usa ese clon para esta corrida.
+if [ -n "$SRC" ] && ! isrepo "$SRC"; then
+  say "  ⚠ EDIT_VIDEO_SRC=\"$SRC\" no es un repo (¿se movió el clon?): el repo público no se sincronizaría."
+  if isrepo "$SKILL_DIR" && git -C "$SKILL_DIR" remote get-url origin 2>/dev/null | grep -Eq '/edit-video(\.git)?$'; then
+    SRC="$SKILL_DIR"; say "    Uso el clon desde el que corre este script: $SRC"
+  fi
+  say "    Arreglo permanente: bash \"$SKILL_DIR/scripts/sync.sh\" config EDIT_VIDEO_SRC \"<ruta del clon>\""
+fi
+
 set_conf(){  # $1 clave, $2 valor — reemplaza o añade esa clave y CONSERVA las demás (p. ej. EDIT_VIDEO_FFMPEG)
   local k="$1" v="$2" tmp
   mkdir -p "$(dirname "$CONF")"; touch "$CONF"

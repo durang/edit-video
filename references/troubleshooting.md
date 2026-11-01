@@ -62,6 +62,16 @@ avisa (skill `hyperframes-studio`). Antes de renderizar un proyecto retomado:
 | **Franja negra de 8 px en el borde derecho** de un MP4 de 1080 de ancho (no la caza la alarma de NEGRO: es < 1 % del cuadro) | Bug de HyperFrames < 0.8.155 con FFmpeg 7.1/8.0 cuando el ancho es múltiplo de 16 + 8 (heygen-com/hyperframes#5559). Re-renderizar con ≥ 0.8.155. `qa.sh` avisa (`⚠ BORDE DERECHO NEGRO`) |
 | **Grabación de pantalla que se congela a medio render** (un cuadro se queda y los demás se pierden), con FFmpeg 8 o posterior | Video de frecuencia variable (VFR): FFmpeg 8 respeta la duración de cada cuadro. Arreglado en HyperFrames 0.8.156 (#5572). Con una versión fijada más vieja, pasar el clip a frecuencia constante antes: `ffmpeg -i in.mp4 -fps_mode cfr -r 30 -c:v libx264 -crf 14 -c:a copy cfr.mp4`. Cómo saber si es VFR: `ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate -of csv=p=0 in.mp4` — si los dos números no coinciden, lo es (probado: `30/1,600/59` → tras convertir `30/1,30/1`) |
 
+### Radar 2026-11-01 (HyperFrames 0.8.162 → 0.8.226; según sus notas de versión, sin probar aquí)
+
+| Defecto | Arreglo |
+|---|---|
+| **Tirón periódico en el render** (el fondo cambia de zoom/encuadre en 3 de cada 8 cuadros durante ~1 s) o **salto en el primer cuadro de un tramo**, y el preview se ve limpio | Render con varios workers (o por tramos) donde dos tweens escriben la misma propiedad a la vez (p. ej. un punch-in que sigue corriendo cuando un corte hace `set` del zoom). Arreglado en **0.8.216** (#6707). Con una versión fijada más vieja: render con 1 worker (el render en orden siempre fue correcto) o que los tweens del mismo elemento no se pisen. Las hojas a 0.5 s no lo ven: cuadro a cuadro en esos tramos (`qa.md`) |
+| **Snapshot negro** de un clip que en el preview sí se ve | Antes de **0.8.197** el snapshot guardaba un cuadro negro en silencio cuando no podía leer el clip (#6274); desde 0.8.212 avisa si un video en pantalla no tiene fuente (#6656). Con versión vieja: un snapshot negro puede ser un fallo de lectura, no del render → comprobar con `ffprobe` el archivo del clip antes de rehacer nada |
+| **Clip con grade sale en blanco** en una GPU real (no en el headless) | Arreglado en **0.8.211** (#6615) |
+| **Español transcrito en inglés** por `hyperframes transcribe` | Con Parakeet instalado y HyperFrames < **0.8.177**, `-l es` podía correr Parakeet (elige su idioma solo) y devolver inglés; desde 0.8.177 un idioma no inglés va a whisper si está instalado (#5892). Revisar el `transcribe.log` de `ingest.sh` y leer las primeras líneas del `transcript.txt` antes de seguir |
+| Re-renderizar **solo un tramo** (QA de una sola pasada, `qa.md` §1b) | Desde **0.8.222**: `npx hyperframes render --start A --end B -o tramo.mp4` saca ese tramo como su propio MP4 (#6834). Con < 0.8.216 un tramo que empieza dentro de dos tweens solapados salta en su primer cuadro (fila de arriba) |
+
 ## Disco externo (macOS)
 
 - **Se llenó el disco interno aunque el proyecto estaba en el externo**: el disco no estaba montado y
