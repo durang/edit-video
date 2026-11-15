@@ -72,6 +72,24 @@ avisa (skill `hyperframes-studio`). Antes de renderizar un proyecto retomado:
 | **Español transcrito en inglés** por `hyperframes transcribe` | Con Parakeet instalado y HyperFrames < **0.8.177**, `-l es` podía correr Parakeet (elige su idioma solo) y devolver inglés; desde 0.8.177 un idioma no inglés va a whisper si está instalado (#5892). Revisar el `transcribe.log` de `ingest.sh` y leer las primeras líneas del `transcript.txt` antes de seguir |
 | Re-renderizar **solo un tramo** (QA de una sola pasada, `qa.md` §1b) | Desde **0.8.222**: `npx hyperframes render --start A --end B -o tramo.mp4` saca ese tramo como su propio MP4 (#6834). Con < 0.8.216 un tramo que empieza dentro de dos tweens solapados salta en su primer cuadro (fila de arriba) |
 
+### Radar 2026-11-15 (HyperFrames 0.8.226 → 0.9.52; según sus notas de versión, sin probar aquí)
+
+**0.9 no cambia el render local.** Lo único que rompe la 0.9.0 es el render distribuido en AWS Lambda / Cloud Run
+(protocolo Plan v1 fuera, #6970). Desde **0.9.9** el CLI instalado ya no se actualiza solo de una 0.x menor a otra
+(0.8 → 0.9) e instala los skills de su misma versión; `npx hyperframes update --check` (≥ 0.9.11) dice si el CLI o
+los skills están viejos. `ingest.sh` y `check.sh` usan `npx -y hyperframes` → bajan la última; los proyectos
+siguen en la versión fijada en su `package.json`.
+
+| Defecto | Arreglo |
+|---|---|
+| **Una voz o música se oye dos veces** (eco/doblada) en el export, y en el preview suena bien | El archivo tiene **espacio o acento** en el nombre (`voz final.wav`, `canción.mp3`): antes de **0.9.47** se mezclaba dos veces (#7747). Medios del proyecto con nombres ASCII sin espacios (`voz-final.wav`). Buscarlos: `LC_ALL=C find . -type f ! -name '._*' -not -path './node_modules/*' \( -name '* *' -o -name "*[! -~]*" \)` en la carpeta del proyecto (vacío = bien; probado). En la nube, los acentos guardados por macOS (NFD) no se encontraban antes de 0.9.26 |
+| **Algo sale en blanco o distinto en el render** y en el preview se ve bien, justo donde un `set` (o un corte) interrumpe un tween que sigue corriendo en el mismo elemento | Arreglado en **0.9.19–0.9.20** para cualquier número de workers (#7318, #7231; sigue a #6707 de 0.8.216). Desde **0.9.7** el lint `overlapping_gsap_tweens` también marca ese `set` → `npx hyperframes check` antes de renderizar y leer sus avisos de lint. Con versión vieja: que los tweens y `set` del mismo elemento y propiedad no se pisen |
+| **Á, é, ñ en otra letra o en otro peso** que el resto de la palabra (fuente empaquetada) | Desde **0.9.20** las letras latinas acentuadas se dibujan con la familia y los pesos empaquetados (#7299). Con versión vieja: snapshot de un rótulo con acentos y mirarlo a tamaño completo |
+| **Snapshot negro** (ver fila de 0.8.197) | Desde **0.9.4** el snapshot **falla** si no puede leer el cuadro de un video en pantalla (#7011), en vez de terminar en negro: un snapshot que falla ahí es un problema de lectura del clip, no de la composición |
+| **El render baja el volumen de toda la mezcla** por un solo pico | Desde **0.8.228** solo limita los picos y **avisa** si tuvo que bajar toda la mezcla (#6940, #6938). Si avisa: los SFX van demasiado altos (≤ −16 dBFS, `motion-design.md` §7). El master a −14 LUFS se sigue haciendo con FFmpeg (`qa.md`) |
+| **Render largo que llena el disco** (metraje 4K en una pieza 1080p, máquina de 8 GB o disco externo justo) | Desde **0.9.40** el render local extrae cada video al tamaño en que se ve; con captura por tramos, `HF_VIDEO_FRAME_WINDOW=true` (≥ 0.9.17) extrae solo los cuadros de cada tramo y los borra al acabarlo. Desde **0.9.13** un render que se atasca cargando reintenta con menos workers en vez de colgarse |
+| Texto fuera de la safe zone de 9:16 | Desde **0.9.44** `npx hyperframes check` avisa (`outside_safe_zone`, no falla) del texto —subtítulos incluidos— fuera de las zonas seguras de TikTok, Reels y Shorts (#7680); `--safe-zone tiktok\|reels\|shorts\|standard\|off`. No sustituye la regla dura 6 ni la revisión: la complementa (L8) |
+
 ## Disco externo (macOS)
 
 - **Se llenó el disco interno aunque el proyecto estaba en el externo**: el disco no estaba montado y

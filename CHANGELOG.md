@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.14.3 — 2026-11-15 (radar quincenal)
+- **`troubleshooting.md` · HyperFrames 0.8.226 → 0.9.52** (según sus notas de versión): la 0.9 solo rompe el render
+  distribuido (Lambda/Cloud Run), no el local; desde 0.9.9 el CLI ya no salta solo de 0.8 a 0.9
+  (`npx hyperframes update --check`); **audio mezclado dos veces si el nombre del archivo lleva espacio o acento**
+  (< 0.9.47, #7747); render en blanco donde un `set` corta un tween (< 0.9.20, #7318); acentos con otra fuente o
+  peso (< 0.9.20, #7299); snapshot que falla en vez de salir negro (≥ 0.9.4); el render limita picos y avisa si
+  baja toda la mezcla (≥ 0.8.228); renders largos con menos disco (`HF_VIDEO_FRAME_WINDOW`, ≥ 0.9.17; ≥ 0.9.40);
+  `check` avisa del texto fuera de las safe zones de 9:16 (≥ 0.9.44, #7680).
+- **`qa.md` (Técnico):** medios del proyecto sin espacios ni acentos, con el comando para encontrarlos (probado: caza
+  `voz final.wav` y `canción.mp3`, ignora los `._*`; 0 falsos positivos en 5 proyectos reales de HyperFrames), y
+  avisos `outside_safe_zone` en 0 o justificados con HyperFrames ≥ 0.9.44. (Movimiento): `set` que corta un tween
+  con < 0.9.20, cuadro a cuadro.
+- `donde-renderizar.md`: disco justo con HyperFrames ≥ 0.9.17/0.9.40.
+- `LIMITACIONES.md` y `radar.md`: términos de Sonilo leídos (L5), VideoMaMa++ descartado (L1), pistas en L2, L8 y L10.
+
 ## 3.14.2 — 2026-11-01 (radar quincenal)
 - **`sync.sh` ya no salta el repo público en silencio** cuando `EDIT_VIDEO_SRC` apunta a una carpeta que dejó de
   ser el clon (el repo se movió dos veces: 1-oct y 31-oct). Avisa con el arreglo (`sync.sh config EDIT_VIDEO_SRC

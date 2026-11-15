@@ -9,6 +9,64 @@ Una entrada por radar, la más nueva arriba. Formato:
 - Decisión de Sergio: pendiente | sí | no
 ```
 
+## 2026-11-15 · radar quincenal
+
+Issues y PRs abiertos en `durang/edit-video`: **ninguno** (tampoco cerrados). Desde el último radar no hubo commits
+(3.14.2 sigue siendo lo último). Fuentes: HyperFrames 0.8.226 → **0.9.52** (≈ 60 versiones; la **0.9.0** del 2-nov
+solo rompe el render distribuido en Lambda/Cloud Run); los proyectos locales siguen fijados en 0.8.105/0.8.106.
+whisper.cpp 1.9.5 y openai-whisper sin cambios; GSAP **3.15.1** (4-nov, parche); skill de motion de LottieFiles y
+MatAnyone 2 sin commits; FFmpeg de Homebrew 9.0.2_1, sigue sin libass (L3 resuelta aparte).
+
+**Implementado (3.14.3, probado lo que se puede probar aquí):**
+- **`troubleshooting.md` · HyperFrames 0.8.226 → 0.9.52** (de sus notas de versión, sin probar: requiere subir):
+  audio **mezclado dos veces** si el nombre del archivo lleva espacio o acento (< 0.9.47, #7747 — nos toca de lleno
+  en español), render en blanco donde un `set` corta un tween (< 0.9.20, #7318), acentos en otra fuente/peso
+  (< 0.9.20, #7299), snapshot que falla en vez de salir negro (≥ 0.9.4), el render limita picos y avisa si baja la
+  mezcla (≥ 0.8.228), menos disco en renders largos (≥ 0.9.17/0.9.40), `check` de safe zones 9:16 (≥ 0.9.44).
+- **`qa.md` (Técnico)** · medios sin espacios ni acentos, con comando: probado en una carpeta de prueba (caza
+  `voz final.wav` y `canción.mp3`, ignora `._*`) y en 5 proyectos reales de HyperFrames (0 falsos positivos).
+  Más: avisos `outside_safe_zone` en 0 o justificados (≥ 0.9.44); `set` que corta un tween, cuadro a cuadro.
+- `donde-renderizar.md`: disco justo con ≥ 0.9.17/0.9.40.
+
+**Limitaciones:**
+- **L5** · términos de Sonilo **leídos** (sonilo.com/licensing): la API es comercial (también para clientes finales),
+  de prepago, sin plan y sin atribución; Pro cubre anuncios, clientes y YouTube monetizado; lo del plan gratis no es
+  comercial; no garantizan cero reclamos de Content ID; no se puede distribuir la pista a Spotify/Apple Music.
+- **L1** · VideoMaMa++ (20-oct, KAIST/Adobe): no comercial y solo NVIDIA → descartado. MatAnyone 2 sin cambios.
+- **L2** · ningún issue de `clip-path`; 0.9.40 "los píxeles de un cuadro ya no dependen de los anteriores" y extrae
+  cada video al tamaño en que se ve → re-probar el caso v5 al subir.
+- **L8** · `check` ≥ 0.9.44 avisa del texto fuera de las safe zones de TikTok/Reels/Shorts (#7680).
+- **L10** · ports MLX de SeedVR2 3B/7B y un 1.4B destilado (jul). **L4** · los términos de Mirelo siguen sin
+  aparecer. **L7, L9**: nada nuevo (la ASD de los artículos de podcast usa la pista del micrófono activo, no la boca).
+
+**Propuestas (decide Sergio):**
+- **Subir HyperFrames a ≥ 0.9.52 y `npx hyperframes skills update`** (con permiso): ahora es un salto de menor
+  (0.8 → 0.9) y el CLI ya no lo da solo. Trae #7747 (audio doble), #7318 (set/tween), #7680 (safe zone) y lo del
+  radar anterior. Prueba: re-render de una pieza de nivel 3 vieja + `qa.sh`; `check` sobre un 9:16; y el caso L2.
+- **L5 · Sonilo por API como fuente de música** cuando el director no pasa pista: `motion-design.md` §7 y
+  `nivel-3.md` §1.8, con su licencia en `CREDITS.md`. Prueba: una cama de 30 s para una pieza de nivel 3 (≈ US$0.07)
+  y subir un privado a YouTube para ver si hay reclamo. Requiere cuenta y gasto → tu decisión.
+- **Safe zone 9:16 (propuesta pendiente, con dato nuevo):** Meta unificó Stories y Reels en mar-2026: arriba 14 %
+  (≈ 269 px en 1080×1920), abajo 20–35 % (384–672 px), lados 6 % (≈ 65 px) (billo.app). → el rótulo superior del
+  nivel 2 en **y ≥ 270** (antes se proponía 230); el 20 % inferior se queda como mínimo; con CTA de anuncio, 35 %.
+- **clipper con material de otros:** Instagram (abr-2026, según socialpilot, terceros) baja el alcance a cuentas que
+  en 30 días publican sobre todo contenido reciclado y a lo que lleva marca de agua de otra plataforma → una línea en
+  `clipper.md`: clips de terceros solo con permiso, y nunca con la marca de agua de origen (ya está en `qa.md`).
+- **Tarea programada del radar**: su texto sigue diciendo `~/clawd/projects/edit-video` (no existe; tercer radar
+  que tiene que buscar el repo). Cambiarlo a `~/clawd/projects/Edit Video/edit-video`.
+- **WIP sin subir en el repo de clientes**, el mismo que el 1-nov (`_general/tiempos.jsonl`, `APRENDIZAJES.md` de dos
+  clientes y un `kit/ESTILO.md`): el radar lo apartó otra vez con `git stash` y lo devolvió al terminar. Subirlo
+  quien lo escribió (`sync.sh push`), o decir si se descarta.
+- Siguen pendientes las del 1-oct, 15-oct y 1-nov (clipper a −14 LUFS, catálogo HeyGen, Parakeet, `--engine whisper`
+  fijo, OCR N/N, Mirelo, MatAnyone 2, SeedVR2).
+
+**Niveles 2 y 3:** sin datos nuevos de peso. OpusClip 2026 (12.2 M clips): 80.2 % con subtítulos, 78.6 % animados vs
+1.6 % estáticos → la línea del nivel 2 sigue. Instagram traduce solo subtítulos y audio de Reels (es/en/pt/hi): el
+subtítulo quemado sigue siendo lo que se ve sin sonido; no cambia nada. Tendencias de motion "2027": artículos
+genéricos, nada que cambie el contrato del nivel 3 (sigue el "autenticidad sobre pulido" del radar anterior).
+
+- Decisión de Sergio: pendiente
+
 ## 2026-11-01 · radar quincenal
 
 Issues y PRs abiertos en `durang/edit-video`: **ninguno**. Desde el último radar entraron 3.14.0 y 3.14.1 (dónde

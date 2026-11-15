@@ -96,11 +96,18 @@ video de 8 min son ~1,000 cuadros: caro y poco fiable para un agente cansado).
 - [ ] **Render con varios workers o por tramos en HyperFrames < 0.8.216**: revisar **cuadro a cuadro** (no a
       0.5 s) cada punch-in o zoom que se cruce con un corte o con otro movimiento del mismo elemento — ahí el
       fondo puede saltar de zoom en 3 de cada 8 cuadros, o un tramo saltar en su primer cuadro, aunque el
-      preview esté limpio (`troubleshooting.md`, versión de HyperFrames)
+      preview esté limpio (`troubleshooting.md`, versión de HyperFrames). Lo mismo donde un `set` o un corte
+      interrumpe un tween del mismo elemento con HyperFrames < 0.9.20 (puede salir en blanco)
 
 **Técnico**
 - [ ] Duración, resolución y fps correctos · audio presente y en sincronía
 - [ ] Ninguna franja negra en un borde (`qa.sh` avisa de la de 8 px a la derecha: HyperFrames < 0.8.155, `troubleshooting.md`)
+- [ ] **Medios del proyecto sin espacios ni acentos en el nombre** (HyperFrames < 0.9.47 mezcla esos audios **dos
+      veces**: voz doblada en el export, limpia en el preview). En la carpeta del proyecto, antes de renderizar:
+      `LC_ALL=C find . -type f ! -name '._*' -not -path './node_modules/*' \( -name '* *' -o -name "*[! -~]*" \)`
+      → vacío. Si sale algo: renombrar en ASCII (`voz-final.wav`) y cambiar la ruta en la composición
+- [ ] En 9:16 con HyperFrames ≥ 0.9.44: los avisos `outside_safe_zone` de `npx hyperframes check` en 0, o cada
+      uno justificado (p. ej. un fondo a sangre que no es texto) — `troubleshooting.md`
 
 ## 3 · Si falla algo
 
